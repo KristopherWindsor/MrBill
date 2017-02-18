@@ -6,6 +6,10 @@
 <body>
     <h1>Mr. Bill FAQ</h1>
 
+    <div>
+        <img src="assets/mrbill.png" alt="">
+    </div>
+
     <h2>What is Mr. Bill?</h2>
     <p>Mr. Bill is here to help you track expenses! Send him a text each time you spend $$, and he will keep track.</p>
 
