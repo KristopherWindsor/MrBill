@@ -23,7 +23,7 @@ class V1Test extends TestCase
         $v1 = new V1([]);
         $this->assertEquals(
             '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>Something is wrong.</Message></Response>',
-            $v1->result
+            $v1->getResult()
         );
     }
 
@@ -38,7 +38,7 @@ class V1Test extends TestCase
         $v1 = new V1($request);
         $this->assertEquals(
             '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>Hello, I\'m Mr. Bill. Just let me know each time you spend $$, and I\'ll help you track expenses. Type "?" for help.<Media>https://mrbill.kristopherwindsor.com/assets/mrbill.png</Media></Message></Response>',
-            $v1->result
+            $v1->getResult()
         );
     }
 
@@ -54,7 +54,7 @@ class V1Test extends TestCase
         $v1 = new V1($request);
         $this->assertEquals(
             '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>Every time you spend $$, send me a text like: 8.99 #eatout #lunch lunch with friends</Message></Response>',
-            $v1->result
+            $v1->getResult()
         );
     }
 }

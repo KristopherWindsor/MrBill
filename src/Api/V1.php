@@ -7,45 +7,50 @@ use MrBill\Messages;
 
 class V1
 {
-	public $result;
+    protected $responseText;
 
-	public function __construct(array $post)
-	{
-		if (empty($post['MessageSid'])) {
-			$this->setResult('Something is wrong.');
-			return;
-		}
+    public function __construct(array $post)
+    {
+        if (empty($post['MessageSid'])) {
+            $this->responseText = 'Something is wrong.';
+            return;
+        }
 
-		$from = (int) str_replace('+', '', $post['From']);
+        $from = (int) str_replace('+', '', $post['From']);
 
-		$message = new Message($from, $post['Body'], time(), true);
-		if (!iterator_to_array(Messages::getHistoryForPhone($from))) {
-			$this->setResult($this->getWelcomeText());
-		} elseif ($message->isHelpRequest()) {
-			$this->setResult($this->getHelpText());
-		}
+        $incomingMessage = new Message($from, $post['Body'], time(), true);
+        if (!iterator_to_array(Messages::getHistoryForPhone($from))) {
+            $this->responseText = $this->getWelcomeText();
+        } elseif ($incomingMessage->isHelpRequest()) {
+            $this->responseText = $this->getHelpText();
+        }
 
-		Messages::persistNewMessage($message);
-	}
+        Messages::persistNewMessage($incomingMessage);
 
-	protected function setResult(string $text) : void
-	{
-		$this->result = $this->wrapTextIntoResponse($text);
-	}
+        if ($this->responseText) {
+            $replyMessage = new Message($from, $this->responseText, time(), false);
+            Messages::persistNewMessage($replyMessage);
+        }
+    }
 
-	protected function wrapTextIntoResponse(string $text) : string
-	{
-		return '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>' . $text . '</Message></Response>';
-	}
+    public function getResult() : string
+    {
+        return $this->responseText ? $this->wrapTextIntoResponse($this->responseText) : '';
+    }
 
-	protected function getWelcomeText() : string
-	{
-		return 'Hello, I\'m Mr. Bill. Just let me know each time you spend $$, and I\'ll help you track expenses. Type "?" for help.' .
-			'<Media>https://mrbill.kristopherwindsor.com/assets/mrbill.png</Media>';
-	}
+    protected function wrapTextIntoResponse(string $text) : string
+    {
+        return '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>' . $text . '</Message></Response>';
+    }
 
-	protected function getHelpText() : string
-	{
-		return 'Every time you spend $$, send me a text like: 8.99 #eatout #lunch lunch with friends';
-	}
+    protected function getWelcomeText() : string
+    {
+        return 'Hello, I\'m Mr. Bill. Just let me know each time you spend $$, and I\'ll help you track expenses. Type "?" for help.' .
+            '<Media>https://mrbill.kristopherwindsor.com/assets/mrbill.png</Media>';
+    }
+
+    protected function getHelpText() : string
+    {
+        return 'Every time you spend $$, send me a text like: 8.99 #eatout #lunch lunch with friends';
+    }
 }
