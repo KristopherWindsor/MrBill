@@ -1,0 +1,8 @@
+### Standard stuff to ignore ###
+.vagrant
+.DS_Store
+
+# composer
+composer.lock
+composer.phar
+vendor/
