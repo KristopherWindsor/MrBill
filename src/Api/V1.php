@@ -3,17 +3,21 @@
 namespace MrBill\Api;
 
 use MrBill\Message;
-use MrBill\Messages;
+use MrBill\MessageProvider;
 
 class V1
 {
+    protected $messageProvider;
+
     protected $totalHelpRequests = 0;
     protected $totalMessageCount = 0;
 
     protected $responseText = '';
 
-    public function __construct(array $post)
+    public function __construct(MessageProvider $messageProvider, array $post)
     {
+        $this->messageProvider = $messageProvider;
+
         if (empty($post['MessageSid']) || empty($post['From']) || empty($post['Body'])) {
             $this->responseText = 'Something is wrong.';
             return;
@@ -29,17 +33,17 @@ class V1
             $this->responseText = $this->getHelpText($this->totalHelpRequests);
         }
 
-        Messages::persistNewMessage($incomingMessage);
+        $this->messageProvider->persistNewMessage($incomingMessage);
 
         if ($this->responseText) {
             $replyMessage = new Message($from, $this->responseText, time(), false);
-            Messages::persistNewMessage($replyMessage);
+            $this->messageProvider->persistNewMessage($replyMessage);
         }
     }
 
     protected function gatherInfoAboutPhone($from) : void
     {
-        foreach (Messages::getHistoryForPhone($from) as $message) {
+        foreach ($this->messageProvider->getHistoryForPhone($from) as $message) {
             // First message is not processed as a help request
             if ($this->totalMessageCount && $message->isHelpRequest()) {
                 $this->totalHelpRequests++;

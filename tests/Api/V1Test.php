@@ -3,7 +3,7 @@
 namespace MrBill\Api;
 
 use MrBill\Message;
-use MrBill\Messages;
+use MrBill\MessageProvider;
 use PHPUnit\Framework\TestCase;
 
 require_once dirname(__DIR__, 2) . '/vendor/autoload.php'; // TODO move to bootstrap
@@ -15,12 +15,12 @@ class V1Test extends TestCase
 
     public function setUp()
     {
-        Messages::removeAllMessageData();
+        (new MessageProvider())->removeAllMessageData();
     }
 
     public function testInvalidRequest()
     {
-        $v1 = new V1([]);
+        $v1 = new V1(new MessageProvider(), []);
         $this->assertEquals(
             '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>Something is wrong.</Message></Response>',
             $v1->getResult()
@@ -35,7 +35,7 @@ class V1Test extends TestCase
                 'From' => '14087226296',
                 'Body' => 'hello',
             ];
-        $v1 = new V1($request);
+        $v1 = new V1(new MessageProvider(), $request);
         $this->assertEquals(
             '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>Hello, I\'m Mr. Bill. Just let me know each time you spend $$, and I\'ll help you track expenses. Type "?" for help.<Media>https://mrbill.kristopherwindsor.com/assets/mrbill.png</Media></Message></Response>',
             $v1->getResult()
@@ -50,15 +50,15 @@ class V1Test extends TestCase
                 'From' => '14087226296',
                 'Body' => ' ?',
             ];
-        $v1 = new V1($request); // First one will be a welcome message
+        $v1 = new V1(new MessageProvider(), $request); // First one will be a welcome message
 
-        $v1 = new V1($request);
+        $v1 = new V1(new MessageProvider(), $request);
         $this->assertEquals(
             '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>1/4 Let\'s see how I can help you! Text "?" again to cycle through the help messages.</Message></Response>',
             $v1->getResult()
         );
 
-        $v1 = new V1($request);
+        $v1 = new V1(new MessageProvider(), $request);
         $this->assertEquals(
             '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>2/4 Every time you spend $$, send me a text like: 8.99 #eatout #lunch lunch with friends</Message></Response>',
             $v1->getResult()

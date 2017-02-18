@@ -6,22 +6,25 @@ use PHPUnit\Framework\TestCase;
 
 require_once dirname(__DIR__) . '/vendor/autoload.php'; // TODO move to bootstrap
 
-class MessagesTest extends TestCase
+class MessageProviderTest extends TestCase
 {
     const TEST_PHONE = 14087226296;
 
+    private $messageProvider;
+
     public function setUp()
     {
-        Messages::removeAllMessageData();
+        $this->messageProvider = new MessageProvider();
+        $this->messageProvider->removeAllMessageData();
     }
 
     public function testPersistAndGetMessage()
     {
         $newMessage = new Message(self::TEST_PHONE, 'message' . uniqid(), time(), true);
-        Messages::persistNewMessage($newMessage);
+        $this->messageProvider->persistNewMessage($newMessage);
 
         $found = 0;
-        foreach (Messages::getHistoryForPhone(self::TEST_PHONE) as $loadedMessage) {
+        foreach ($this->messageProvider->getHistoryForPhone(self::TEST_PHONE) as $loadedMessage) {
             $found++;
             $this->assertEquals($newMessage->message, $loadedMessage->message);
         }
