@@ -14,8 +14,9 @@ class MessageTest extends TestCase
     public function testIsHelp()
     {
         $scenarios = [
-            [true, new Message(self::TEST_PHONE, 'heLp ', time(), true)],
-            [false, new Message(self::TEST_PHONE, 'heLp ', time(), false)],
+            [true, new Message(self::TEST_PHONE, '?', time(), true)],
+            [true, new Message(self::TEST_PHONE, ' ? ', time(), true)],
+            [false, new Message(self::TEST_PHONE, ' ? ', time(), false)],
             [false, new Message(self::TEST_PHONE, 'hello', time(), true)],
             [false, new Message(self::TEST_PHONE, 'hello', time(), false)],
         ];

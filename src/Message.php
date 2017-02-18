@@ -22,7 +22,7 @@ class Message
 
     public function isHelpRequest() : bool
     {
-        return $this->isFromUser && strtolower(trim($this->message)) === 'help';
+        return $this->isFromUser && trim($this->message) === '?';
     }
 
     public function toJson() : string
