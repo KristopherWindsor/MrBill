@@ -51,9 +51,16 @@ class V1Test extends TestCase
                 'Body' => ' ?',
             ];
         $v1 = new V1($request); // First one will be a welcome message
+
         $v1 = new V1($request);
         $this->assertEquals(
-            '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>Every time you spend $$, send me a text like: 8.99 #eatout #lunch lunch with friends</Message></Response>',
+            '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>1/4 Let\'s see how I can help you! Text "?" again to cycle through the help messages.</Message></Response>',
+            $v1->getResult()
+        );
+
+        $v1 = new V1($request);
+        $this->assertEquals(
+            '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>2/4 Every time you spend $$, send me a text like: 8.99 #eatout #lunch lunch with friends</Message></Response>',
             $v1->getResult()
         );
     }

@@ -7,22 +7,26 @@ use MrBill\Messages;
 
 class V1
 {
-    protected $responseText;
+    protected $totalHelpRequests = 0;
+    protected $totalMessageCount = 0;
+
+    protected $responseText = '';
 
     public function __construct(array $post)
     {
-        if (empty($post['MessageSid'])) {
+        if (empty($post['MessageSid']) || empty($post['From']) || empty($post['Body'])) {
             $this->responseText = 'Something is wrong.';
             return;
         }
 
         $from = (int) str_replace('+', '', $post['From']);
+        $this->gatherInfoAboutPhone($from);
 
         $incomingMessage = new Message($from, $post['Body'], time(), true);
-        if (!iterator_to_array(Messages::getHistoryForPhone($from))) {
+        if (!$this->totalMessageCount) {
             $this->responseText = $this->getWelcomeText();
         } elseif ($incomingMessage->isHelpRequest()) {
-            $this->responseText = $this->getHelpText();
+            $this->responseText = $this->getHelpText($this->totalHelpRequests);
         }
 
         Messages::persistNewMessage($incomingMessage);
@@ -30,6 +34,17 @@ class V1
         if ($this->responseText) {
             $replyMessage = new Message($from, $this->responseText, time(), false);
             Messages::persistNewMessage($replyMessage);
+        }
+    }
+
+    protected function gatherInfoAboutPhone($from) : void
+    {
+        foreach (Messages::getHistoryForPhone($from) as $message) {
+            // First message is not processed as a help request
+            if ($this->totalMessageCount && $message->isHelpRequest()) {
+                $this->totalHelpRequests++;
+            }
+            $this->totalMessageCount++;
         }
     }
 
@@ -49,8 +64,14 @@ class V1
             '<Media>https://mrbill.kristopherwindsor.com/assets/mrbill.png</Media>';
     }
 
-    protected function getHelpText() : string
+    protected function getHelpText(int $index) : string
     {
-        return 'Every time you spend $$, send me a text like: 8.99 #eatout #lunch lunch with friends';
+        return [
+            '1/4 Let\'s see how I can help you! Text "?" again to cycle through the help messages.',
+            '2/4 Every time you spend $$, send me a text like: 8.99 #eatout #lunch lunch with friends',
+            '3/4 The hashtags are important for categorizing expenses. The description is optional.',
+            '4/4 Once you have given me a few bills, I\'ll show you a report about your spending.',
+            'For more info, see the FAQ https://mrbill.kristopherwindsor.com/faq.php',
+        ][$index % 5];
     }
 }
