@@ -26,6 +26,40 @@ class MessageTest extends TestCase
         }
     }
 
+    public function testIsAnswer()
+    {
+        $scenarios = [
+            [false, new Message(self::TEST_PHONE, ' y ', time(), false)],
+            [true, new Message(self::TEST_PHONE, ' y ', time(), true)],
+            [true, new Message(self::TEST_PHONE, 'no', time(), true)],
+            [false, new Message(self::TEST_PHONE, 'sup', time(), true)],
+        ];
+
+        foreach ($scenarios as $index => [$expected, $message]) {
+            $this->assertEquals($expected, $message->isAnswer(), 'Case ' . $index);
+        }
+    }
+
+    public function testIsExpenseRecord()
+    {
+        $scenarios = [
+            [false, new Message(self::TEST_PHONE, '8.50 #hash #tag', time(), false)],
+            [true, new Message(self::TEST_PHONE, '8.50 #hash #tag', time(), true)],
+
+            [false, new Message(self::TEST_PHONE, '9', time(), true)],
+            [false, new Message(self::TEST_PHONE, '#hash #tag', time(), true)],
+            [false, new Message(self::TEST_PHONE, '#hash 78', time(), true)],
+
+            [true, new Message(self::TEST_PHONE, '9 #lunch some words', time(), true)],
+            [true, new Message(self::TEST_PHONE, '1001.09 words #tag', time(), true)],
+            [true, new Message(self::TEST_PHONE, '9 #h', time(), true)],
+        ];
+
+        foreach ($scenarios as $index => [$expected, $message]) {
+            $this->assertEquals($expected, $message->isExpenseRecord(), 'Case ' . $index);
+        }
+    }
+
     public function testToJson()
     {
         $message = new Message(self::TEST_PHONE, 'some message', self::TEST_TIMESTAMP, true);
