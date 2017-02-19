@@ -37,7 +37,7 @@ class V1Test extends TestCase
             ];
         $v1 = new V1(new MessageProvider(), $request);
         $this->assertEquals(
-            '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>Hello, I\'m Mr. Bill. Just let me know each time you spend $$, and I\'ll help you track expenses. Type "?" for help.<Media>https://mrbill.kristopherwindsor.com/assets/mrbill.png</Media></Message></Response>',
+            '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>Hello, I\'m Mr. Bill. Just let me know each time you spend $$, and I\'ll help you track expenses. Type "?" for help.</Message><Redirect>https://mrbill.kristopherwindsor.com/assets/mrbill.xml</Redirect></Response>',
             $v1->getResult()
         );
     }

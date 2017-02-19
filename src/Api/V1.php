@@ -13,6 +13,7 @@ class V1
     protected $totalMessageCount = 0;
 
     protected $responseText = '';
+    protected $addMrBillPicture = false;
 
     public function __construct(MessageProvider $messageProvider, array $post)
     {
@@ -29,6 +30,7 @@ class V1
         $incomingMessage = new Message($from, $post['Body'], time(), true);
         if (!$this->totalMessageCount) {
             $this->responseText = $this->getWelcomeText();
+            $this->addMrBillPicture = true;
         } elseif ($incomingMessage->isHelpRequest()) {
             $this->responseText = $this->getHelpText($this->totalHelpRequests);
         }
@@ -54,18 +56,21 @@ class V1
 
     public function getResult() : string
     {
-        return $this->responseText ? $this->wrapTextIntoResponse($this->responseText) : '';
-    }
+        $result = '<?xml version="1.0" encoding="UTF-8" ?><Response>';
 
-    protected function wrapTextIntoResponse(string $text) : string
-    {
-        return '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>' . $text . '</Message></Response>';
+        if ($this->responseText)
+            $result .= '<Message>' . $this->responseText . '</Message>';
+
+        if ($this->addMrBillPicture)
+            $result .= '<Redirect>https://mrbill.kristopherwindsor.com/assets/mrbill.xml</Redirect>';
+
+        $result .= '</Response>';
+        return $result;
     }
 
     protected function getWelcomeText() : string
     {
-        return 'Hello, I\'m Mr. Bill. Just let me know each time you spend $$, and I\'ll help you track expenses. Type "?" for help.' .
-            '<Media>https://mrbill.kristopherwindsor.com/assets/mrbill.png</Media>';
+        return 'Hello, I\'m Mr. Bill. Just let me know each time you spend $$, and I\'ll help you track expenses. Type "?" for help.';
     }
 
     protected function getHelpText(int $index) : string
