@@ -1,6 +1,7 @@
 ### Standard stuff to ignore ###
 .vagrant
 .DS_Store
+.idea
 
 # composer
 composer.lock
