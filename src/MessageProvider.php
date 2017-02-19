@@ -3,39 +3,37 @@
 namespace MrBill;
 
 use Generator;
+use MrBill\Persistence\DataStore;
 
 class MessageProvider
 {
-    public function getHistoryForPhone($userPhone) : Generator
+    /** @var DataStore */
+    protected $dataStore;
+
+    public function __construct(DataStore $dataStore)
     {
-        foreach ($this->getAllMessages() as $message) {
-            if ($message->userPhone == $userPhone) {
-                yield $message;
-            }
+        $this->dataStore = $dataStore;
+    }
+
+    public function getHistoryForPhone(int $userPhone) : Generator
+    {
+        foreach ($this->dataStore->get('messages' . $userPhone) as $messageInfo) {
+            yield Message::createFromJson($messageInfo);
         }
     }
 
     public function persistNewMessage(Message $message) : void
     {
-        file_put_contents($this->getDataFileName(), $message->toJson() . "\n", FILE_APPEND);
+        $this->dataStore->append($this->getDataStoreKey($message->userPhone), $message->toJson());
     }
 
-    protected function getAllMessages() : Generator
+    public function removeAllMessageData(int $phone) : void
     {
-        $lines = explode("\n", file_get_contents($this->getDataFileName()));
-        foreach ($lines as $line) {
-            if ($line)
-                yield Message::createFromJson($line);
-        }
+        $this->dataStore->remove($this->getDataStoreKey($phone));
     }
 
-    protected function getDataFileName() : string
+    protected function getDataStoreKey(int $phone) : string
     {
-        return '/var/www/messageHistory.db';
-    }
-
-    public function removeAllMessageData() : void
-    {
-        file_put_contents($this->getDataFileName(), '');
+        return 'messages' . $phone;
     }
 }

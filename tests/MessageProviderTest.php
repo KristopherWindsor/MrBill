@@ -2,6 +2,7 @@
 
 namespace MrBill;
 
+use MrBill\Persistence\DataStore;
 use PHPUnit\Framework\TestCase;
 
 require_once dirname(__DIR__) . '/vendor/autoload.php'; // TODO move to bootstrap
@@ -10,12 +11,13 @@ class MessageProviderTest extends TestCase
 {
     const TEST_PHONE = 14087226296;
 
+    /** @var MessageProvider */
     private $messageProvider;
 
     public function setUp()
     {
-        $this->messageProvider = new MessageProvider();
-        $this->messageProvider->removeAllMessageData();
+        $this->messageProvider = new MessageProvider(new DataStore());
+        $this->messageProvider->removeAllMessageData(self::TEST_PHONE);
     }
 
     public function testPersistAndGetMessage()
