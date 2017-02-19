@@ -22,7 +22,7 @@ class V1Test extends TestCase
     {
         $this->testPhone = new PhoneNumber(self::TEST_PHONE);
 
-        (new ConversationFactory(new DataStore()))->removeAllMessageData($this->testPhone);
+        (new ConversationFactory(new DataStore()))->getConversation($this->testPhone)->removeAllMessageData();
     }
 
     public function testInvalidRequest()

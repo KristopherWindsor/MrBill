@@ -15,25 +15,8 @@ class ConversationFactory
         $this->dataStore = $dataStore;
     }
 
-    public function getHistoryForPhone(PhoneNumber $phone) : Generator
+    public function getConversation(PhoneNumber $phoneNumber) : Conversation
     {
-        foreach ($this->dataStore->get('messages' . $phone) as $messageInfo) {
-            yield Message::createFromJson($messageInfo);
-        }
-    }
-
-    public function persistNewMessage(Message $message) : void
-    {
-        $this->dataStore->append($this->getDataStoreKey($message->phone), $message->toJson());
-    }
-
-    public function removeAllMessageData(PhoneNumber $phone) : void
-    {
-        $this->dataStore->remove($this->getDataStoreKey($phone));
-    }
-
-    protected function getDataStoreKey(PhoneNumber $phone) : string
-    {
-        return 'messages' . $phone;
+        return new Conversation($phoneNumber, $this->dataStore);
     }
 }

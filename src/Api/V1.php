@@ -2,56 +2,42 @@
 
 namespace MrBill\Api;
 
+use MrBill\Conversation;
 use MrBill\Message;
 use MrBill\ConversationFactory;
 use MrBill\PhoneNumber;
 
 class V1
 {
-    protected $messageProvider;
-
-    protected $totalHelpRequests = 0;
-    protected $totalMessageCount = 0;
+    /** @var Conversation */
+    protected $conversation;
 
     protected $responseText = '';
     protected $addMrBillPicture = false;
 
-    public function __construct(ConversationFactory $messageProvider, array $post)
+    public function __construct(ConversationFactory $conversationFactory, array $post)
     {
-        $this->messageProvider = $messageProvider;
-
         if (empty($post['MessageSid']) || empty($post['From']) || empty($post['Body'])) {
             $this->responseText = 'Something is wrong.';
             return;
         }
 
         $from = new PhoneNumber($post['From']);
-        $this->gatherInfoAboutPhone($from);
+        $this->conversation = $conversationFactory->getConversation($from);
 
         $incomingMessage = new Message($from, $post['Body'], time(), true);
-        if (!$this->totalMessageCount) {
+        if (!$this->conversation->totalMessages) {
             $this->responseText = $this->getWelcomeText();
             $this->addMrBillPicture = true;
         } elseif ($incomingMessage->isHelpRequest()) {
-            $this->responseText = $this->getHelpText($this->totalHelpRequests);
+            $this->responseText = $this->getHelpText($this->conversation->totalHelpRequests);
         }
 
-        $this->messageProvider->persistNewMessage($incomingMessage);
+        $this->conversation->persistNewMessage($incomingMessage);
 
         if ($this->responseText) {
             $replyMessage = new Message($from, $this->responseText, time(), false);
-            $this->messageProvider->persistNewMessage($replyMessage);
-        }
-    }
-
-    protected function gatherInfoAboutPhone(PhoneNumber $from) : void
-    {
-        foreach ($this->messageProvider->getHistoryForPhone($from) as $message) {
-            // First message is not processed as a help request
-            if ($this->totalMessageCount && $message->isHelpRequest()) {
-                $this->totalHelpRequests++;
-            }
-            $this->totalMessageCount++;
+            $this->conversation->persistNewMessage($replyMessage);
         }
     }
 

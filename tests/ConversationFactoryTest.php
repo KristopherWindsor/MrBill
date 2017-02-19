@@ -12,7 +12,7 @@ class ConversationFactoryTest extends TestCase
     const TEST_PHONE = 14087226296;
 
     /** @var ConversationFactory */
-    private $messageProvider;
+    private $conversationFactory;
 
     /** @var PhoneNumber */
     private $testPhone;
@@ -21,20 +21,12 @@ class ConversationFactoryTest extends TestCase
     {
         $this->testPhone = new PhoneNumber(self::TEST_PHONE);
 
-        $this->messageProvider = new ConversationFactory(new DataStore());
-        $this->messageProvider->removeAllMessageData($this->testPhone);
+        $this->conversationFactory = new ConversationFactory(new DataStore());
     }
 
-    public function testPersistAndGetMessage()
+    public function testGetConversation()
     {
-        $newMessage = new Message($this->testPhone, 'message' . uniqid(), time(), true);
-        $this->messageProvider->persistNewMessage($newMessage);
-
-        $found = 0;
-        foreach ($this->messageProvider->getHistoryForPhone($this->testPhone) as $loadedMessage) {
-            $found++;
-            $this->assertEquals($newMessage->message, $loadedMessage->message);
-        }
-        $this->assertEquals(1, $found);
+        $conversation = $this->conversationFactory->getConversation($this->testPhone);
+        $this->assertEquals($this->testPhone, $conversation->getPhoneNumber());
     }
 }
