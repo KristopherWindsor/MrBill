@@ -61,6 +61,19 @@ class MessageTest extends TestCase
         }
     }
 
+    public function testIsReportRequest()
+    {
+        $scenarios = [
+            [false, new Message($this->testPhone, 'report', time(), false)],
+            [true, new Message($this->testPhone, 'report', time(), true)],
+            [false, new Message($this->testPhone, 'something', time(), true)],
+        ];
+
+        foreach ($scenarios as $index => [$expected, $message]) {
+            $this->assertEquals($expected, $message->isReportRequest(), 'Case ' . $index);
+        }
+    }
+
     public function testToJson()
     {
         $message = new Message($this->testPhone, 'some message', self::TEST_TIMESTAMP, true);

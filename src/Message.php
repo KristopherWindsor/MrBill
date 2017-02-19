@@ -42,6 +42,12 @@ class Message
         return ExpenseRecord::getExpenseRecordIfValid($this->message) !== null;
     }
 
+    public function isReportRequest() : bool
+    {
+        $message = trim(strtolower($this->message));
+        return $this->isFromUser && in_array($message, ['report']);
+    }
+
     public function isUnknownIntent() : bool
     {
         return $this->isFromUser && !$this->isHelpRequest() && !$this->isAnswer() && !$this->isExpenseRecord();
