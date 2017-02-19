@@ -4,17 +4,22 @@ namespace MrBill;
 
 class Message
 {
-    public $userPhone, $message, $timestamp, $isFromUser;
+    public $phone, $message, $timestamp, $isFromUser;
 
-    public static function createFromJson($jsonString) : Message
+    public static function createFromJson(string $jsonString) : Message
     {
         $object = json_decode($jsonString);
-        return new Message($object->phone, $object->message, $object->timestamp, $object->isFromUser);
+        return new Message(
+            new PhoneNumber($object->phone),
+            $object->message,
+            $object->timestamp,
+            $object->isFromUser
+        );
     }
 
-    public function __construct(int $userPhone, string $message, int $timestamp, bool $isFromUser)
+    public function __construct(PhoneNumber $phone, string $message, int $timestamp, bool $isFromUser)
     {
-        $this->userPhone = $userPhone;
+        $this->phone = $phone;
         $this->message = $message;
         $this->timestamp = $timestamp;
         $this->isFromUser = $isFromUser;
@@ -46,7 +51,7 @@ class Message
     {
         return json_encode(
             [
-                'phone' => $this->userPhone,
+                'phone' => $this->phone,
                 'message' => $this->message,
                 'timestamp' => $this->timestamp,
                 'isFromUser' => $this->isFromUser,

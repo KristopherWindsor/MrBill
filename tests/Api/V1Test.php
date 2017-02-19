@@ -5,6 +5,7 @@ namespace MrBill\Api;
 use MrBill\Message;
 use MrBill\MessageProvider;
 use MrBill\Persistence\DataStore;
+use MrBill\PhoneNumber;
 use PHPUnit\Framework\TestCase;
 
 require_once dirname(__DIR__, 2) . '/vendor/autoload.php'; // TODO move to bootstrap
@@ -14,9 +15,14 @@ class V1Test extends TestCase
     const TEST_PHONE = 14087226296;
     const TEST_TIMESTAMP = 1487403557;
 
+    /** @var PhoneNumber */
+    private $testPhone;
+
     public function setUp()
     {
-        (new MessageProvider(new DataStore()))->removeAllMessageData(self::TEST_PHONE);
+        $this->testPhone = new PhoneNumber(self::TEST_PHONE);
+
+        (new MessageProvider(new DataStore()))->removeAllMessageData($this->testPhone);
     }
 
     public function testInvalidRequest()

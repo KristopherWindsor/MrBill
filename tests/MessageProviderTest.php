@@ -14,19 +14,24 @@ class MessageProviderTest extends TestCase
     /** @var MessageProvider */
     private $messageProvider;
 
+    /** @var PhoneNumber */
+    private $testPhone;
+
     public function setUp()
     {
+        $this->testPhone = new PhoneNumber(self::TEST_PHONE);
+
         $this->messageProvider = new MessageProvider(new DataStore());
-        $this->messageProvider->removeAllMessageData(self::TEST_PHONE);
+        $this->messageProvider->removeAllMessageData($this->testPhone);
     }
 
     public function testPersistAndGetMessage()
     {
-        $newMessage = new Message(self::TEST_PHONE, 'message' . uniqid(), time(), true);
+        $newMessage = new Message($this->testPhone, 'message' . uniqid(), time(), true);
         $this->messageProvider->persistNewMessage($newMessage);
 
         $found = 0;
-        foreach ($this->messageProvider->getHistoryForPhone(self::TEST_PHONE) as $loadedMessage) {
+        foreach ($this->messageProvider->getHistoryForPhone($this->testPhone) as $loadedMessage) {
             $found++;
             $this->assertEquals($newMessage->message, $loadedMessage->message);
         }

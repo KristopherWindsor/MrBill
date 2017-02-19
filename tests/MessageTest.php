@@ -11,14 +11,22 @@ class MessageTest extends TestCase
     const TEST_PHONE = 14087226296;
     const TEST_TIMESTAMP = 1487403557;
 
+    /** @var PhoneNumber */
+    private $testPhone;
+
+    public function setUp()
+    {
+        $this->testPhone = new PhoneNumber(self::TEST_PHONE);
+    }
+
     public function testIsHelp()
     {
         $scenarios = [
-            [true, new Message(self::TEST_PHONE, '?', time(), true)],
-            [true, new Message(self::TEST_PHONE, ' ? ', time(), true)],
-            [false, new Message(self::TEST_PHONE, ' ? ', time(), false)],
-            [false, new Message(self::TEST_PHONE, 'hello', time(), true)],
-            [false, new Message(self::TEST_PHONE, 'hello', time(), false)],
+            [true, new Message($this->testPhone, '?', time(), true)],
+            [true, new Message($this->testPhone, ' ? ', time(), true)],
+            [false, new Message($this->testPhone, ' ? ', time(), false)],
+            [false, new Message($this->testPhone, 'hello', time(), true)],
+            [false, new Message($this->testPhone, 'hello', time(), false)],
         ];
 
         foreach ($scenarios as $index => [$expected, $message]) {
@@ -29,10 +37,10 @@ class MessageTest extends TestCase
     public function testIsAnswer()
     {
         $scenarios = [
-            [false, new Message(self::TEST_PHONE, ' y ', time(), false)],
-            [true, new Message(self::TEST_PHONE, ' y ', time(), true)],
-            [true, new Message(self::TEST_PHONE, 'no', time(), true)],
-            [false, new Message(self::TEST_PHONE, 'sup', time(), true)],
+            [false, new Message($this->testPhone, ' y ', time(), false)],
+            [true, new Message($this->testPhone, ' y ', time(), true)],
+            [true, new Message($this->testPhone, 'no', time(), true)],
+            [false, new Message($this->testPhone, 'sup', time(), true)],
         ];
 
         foreach ($scenarios as $index => [$expected, $message]) {
@@ -43,9 +51,9 @@ class MessageTest extends TestCase
     public function testIsExpenseRecord()
     {
         $scenarios = [
-            [false, new Message(self::TEST_PHONE, '8.50 #hash #tag', time(), false)],
-            [false, new Message(self::TEST_PHONE, '9', time(), true)],
-            [true, new Message(self::TEST_PHONE, '8.50 #hash #tag', time(), true)],
+            [false, new Message($this->testPhone, '8.50 #hash #tag', time(), false)],
+            [false, new Message($this->testPhone, '9', time(), true)],
+            [true, new Message($this->testPhone, '8.50 #hash #tag', time(), true)],
         ];
 
         foreach ($scenarios as $index => [$expected, $message]) {
@@ -55,17 +63,17 @@ class MessageTest extends TestCase
 
     public function testToJson()
     {
-        $message = new Message(self::TEST_PHONE, 'some message', self::TEST_TIMESTAMP, true);
+        $message = new Message($this->testPhone, 'some message', self::TEST_TIMESTAMP, true);
 
         $this->assertEquals('{"phone":' . self::TEST_PHONE . ',"message":"some message","timestamp":' . self::TEST_TIMESTAMP . ',"isFromUser":true}', $message->toJson());
     }
 
     public function testFromJson()
     {
-        $message = new Message(self::TEST_PHONE, 'some message', self::TEST_TIMESTAMP, true);
+        $message = new Message($this->testPhone, 'some message', self::TEST_TIMESTAMP, true);
         $loadedMessage = Message::createFromJson($message->toJson());
 
-        $this->assertEquals(self::TEST_PHONE, $loadedMessage->userPhone);
+        $this->assertEquals($this->testPhone, $loadedMessage->phone);
         $this->assertEquals('some message', $loadedMessage->message);
         $this->assertEquals(self::TEST_TIMESTAMP, $loadedMessage->timestamp);
         $this->assertEquals(true, $loadedMessage->isFromUser);

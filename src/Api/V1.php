@@ -4,6 +4,7 @@ namespace MrBill\Api;
 
 use MrBill\Message;
 use MrBill\MessageProvider;
+use MrBill\PhoneNumber;
 
 class V1
 {
@@ -24,7 +25,7 @@ class V1
             return;
         }
 
-        $from = (int) str_replace('+', '', $post['From']);
+        $from = new PhoneNumber($post['From']);
         $this->gatherInfoAboutPhone($from);
 
         $incomingMessage = new Message($from, $post['Body'], time(), true);
@@ -43,7 +44,7 @@ class V1
         }
     }
 
-    protected function gatherInfoAboutPhone($from) : void
+    protected function gatherInfoAboutPhone(PhoneNumber $from) : void
     {
         foreach ($this->messageProvider->getHistoryForPhone($from) as $message) {
             // First message is not processed as a help request
