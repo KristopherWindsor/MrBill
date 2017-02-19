@@ -7,11 +7,11 @@ use PHPUnit\Framework\TestCase;
 
 require_once dirname(__DIR__) . '/vendor/autoload.php'; // TODO move to bootstrap
 
-class MessageProviderTest extends TestCase
+class ConversationFactoryTest extends TestCase
 {
     const TEST_PHONE = 14087226296;
 
-    /** @var MessageProvider */
+    /** @var ConversationFactory */
     private $messageProvider;
 
     /** @var PhoneNumber */
@@ -21,7 +21,7 @@ class MessageProviderTest extends TestCase
     {
         $this->testPhone = new PhoneNumber(self::TEST_PHONE);
 
-        $this->messageProvider = new MessageProvider(new DataStore());
+        $this->messageProvider = new ConversationFactory(new DataStore());
         $this->messageProvider->removeAllMessageData($this->testPhone);
     }
 

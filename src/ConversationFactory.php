@@ -5,7 +5,7 @@ namespace MrBill;
 use Generator;
 use MrBill\Persistence\DataStore;
 
-class MessageProvider
+class ConversationFactory
 {
     /** @var DataStore */
     protected $dataStore;

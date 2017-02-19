@@ -3,7 +3,7 @@
 namespace MrBill\Api;
 
 use MrBill\Message;
-use MrBill\MessageProvider;
+use MrBill\ConversationFactory;
 use MrBill\PhoneNumber;
 
 class V1
@@ -16,7 +16,7 @@ class V1
     protected $responseText = '';
     protected $addMrBillPicture = false;
 
-    public function __construct(MessageProvider $messageProvider, array $post)
+    public function __construct(ConversationFactory $messageProvider, array $post)
     {
         $this->messageProvider = $messageProvider;
 

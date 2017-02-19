@@ -3,7 +3,7 @@
 namespace MrBill\Api;
 
 use MrBill\Message;
-use MrBill\MessageProvider;
+use MrBill\ConversationFactory;
 use MrBill\Persistence\DataStore;
 use MrBill\PhoneNumber;
 use PHPUnit\Framework\TestCase;
@@ -22,12 +22,12 @@ class V1Test extends TestCase
     {
         $this->testPhone = new PhoneNumber(self::TEST_PHONE);
 
-        (new MessageProvider(new DataStore()))->removeAllMessageData($this->testPhone);
+        (new ConversationFactory(new DataStore()))->removeAllMessageData($this->testPhone);
     }
 
     public function testInvalidRequest()
     {
-        $v1 = new V1(new MessageProvider(new DataStore()), []);
+        $v1 = new V1(new ConversationFactory(new DataStore()), []);
         $this->assertEquals(
             '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>Something is wrong.</Message></Response>',
             $v1->getResult()
@@ -42,7 +42,7 @@ class V1Test extends TestCase
                 'From' => '14087226296',
                 'Body' => 'hello',
             ];
-        $v1 = new V1(new MessageProvider(new DataStore()), $request);
+        $v1 = new V1(new ConversationFactory(new DataStore()), $request);
         $this->assertEquals(
             '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>Hello, I\'m Mr. Bill. Just let me know each time you spend $$, and I\'ll help you track expenses. Type "?" for help.</Message><Redirect>https://mrbill.kristopherwindsor.com/assets/mrbill.xml</Redirect></Response>',
             $v1->getResult()
@@ -57,15 +57,15 @@ class V1Test extends TestCase
                 'From' => '14087226296',
                 'Body' => ' ?',
             ];
-        $v1 = new V1(new MessageProvider(new DataStore()), $request); // First one will be a welcome message
+        $v1 = new V1(new ConversationFactory(new DataStore()), $request); // First one will be a welcome message
 
-        $v1 = new V1(new MessageProvider(new DataStore()), $request);
+        $v1 = new V1(new ConversationFactory(new DataStore()), $request);
         $this->assertEquals(
             '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>1/4 Let\'s see how I can help you! Text "?" again to cycle through the help messages.</Message></Response>',
             $v1->getResult()
         );
 
-        $v1 = new V1(new MessageProvider(new DataStore()), $request);
+        $v1 = new V1(new ConversationFactory(new DataStore()), $request);
         $this->assertEquals(
             '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>2/4 Every time you spend $$, send me a text like: 8.99 #eatout #lunch lunch with friends</Message></Response>',
             $v1->getResult()
