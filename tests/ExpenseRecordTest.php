@@ -4,8 +4,6 @@ namespace MrBill;
 
 use PHPUnit\Framework\TestCase;
 
-require_once dirname(__DIR__) . '/vendor/autoload.php'; // TODO move to bootstrap
-
 class ExpenseRecordTest extends TestCase
 {
     public function testValidAndInvalid()

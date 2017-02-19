@@ -7,8 +7,6 @@ use MrBill\Persistence\DataStore;
 use MrBill\PhoneNumber;
 use PHPUnit\Framework\TestCase;
 
-require_once dirname(__DIR__, 2) . '/vendor/autoload.php'; // TODO move to bootstrap
-
 class ConversationTest extends TestCase
 {
     const TEST_PHONE = 14087226296;
