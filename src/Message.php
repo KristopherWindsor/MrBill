@@ -34,20 +34,7 @@ class Message
     public function isExpenseRecord() : bool
     {
         if (!$this->isFromUser) return false;
-
-        $parts = array_filter(explode(' ', str_replace("\n", ' ', $this->message)), 'trim');
-        if (count($parts) < 2) return false;
-
-        $amount = str_replace(['$', '¢', '£', '€', '.'], '', $parts[0]);
-        if (!ctype_digit($amount)) return false;
-
-        $totalHashtags = 0;
-        for ($i = 1; $i < count($parts); $i++) {
-            if (substr($parts[$i], 0, 1) == '#') {
-                $totalHashtags++;
-            }
-        }
-        return $totalHashtags > 0;
+        return ExpenseRecord::getExpenseRecordIfValid($this->message) !== null;
     }
 
     public function isUnknownIntent() : bool

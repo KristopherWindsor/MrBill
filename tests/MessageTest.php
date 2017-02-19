@@ -44,15 +44,8 @@ class MessageTest extends TestCase
     {
         $scenarios = [
             [false, new Message(self::TEST_PHONE, '8.50 #hash #tag', time(), false)],
-            [true, new Message(self::TEST_PHONE, '8.50 #hash #tag', time(), true)],
-
             [false, new Message(self::TEST_PHONE, '9', time(), true)],
-            [false, new Message(self::TEST_PHONE, '#hash #tag', time(), true)],
-            [false, new Message(self::TEST_PHONE, '#hash 78', time(), true)],
-
-            [true, new Message(self::TEST_PHONE, '9 #lunch some words', time(), true)],
-            [true, new Message(self::TEST_PHONE, '1001.09 words #tag', time(), true)],
-            [true, new Message(self::TEST_PHONE, '9 #h', time(), true)],
+            [true, new Message(self::TEST_PHONE, '8.50 #hash #tag', time(), true)],
         ];
 
         foreach ($scenarios as $index => [$expected, $message]) {
