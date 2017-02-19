@@ -1,7 +1,7 @@
 <?php
 
 use MrBill\Api\V1;
-use MrBill\ConversationFactory;
+use MrBill\Data\ConversationFactory;
 use MrBill\Persistence\DataStore;
 
 require_once dirname(dirname(__DIR__)) . '/vendor/autoload.php';

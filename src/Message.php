@@ -50,7 +50,11 @@ class Message
 
     public function isUnknownIntent() : bool
     {
-        return $this->isFromUser && !$this->isHelpRequest() && !$this->isAnswer() && !$this->isExpenseRecord();
+        return $this->isFromUser &&
+            !$this->isHelpRequest() &&
+            !$this->isAnswer() &&
+            !$this->isExpenseRecord() &&
+            !$this->isReportRequest();
     }
 
     public function toJson() : string

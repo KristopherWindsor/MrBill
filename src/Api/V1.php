@@ -2,9 +2,9 @@
 
 namespace MrBill\Api;
 
-use MrBill\Conversation;
+use MrBill\Data\Conversation;
 use MrBill\Message;
-use MrBill\ConversationFactory;
+use MrBill\Data\ConversationFactory;
 use MrBill\PhoneNumber;
 
 class V1

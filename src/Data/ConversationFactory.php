@@ -1,9 +1,11 @@
 <?php
 
-namespace MrBill;
+namespace MrBill\Data;
 
 use Generator;
+use MrBill\Data\Conversation;
 use MrBill\Persistence\DataStore;
+use MrBill\PhoneNumber;
 
 class ConversationFactory
 {

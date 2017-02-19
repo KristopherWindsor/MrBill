@@ -1,10 +1,11 @@
 <?php
 
-namespace MrBill;
+namespace MrBill\Data;
 
-use Generator;
 use Exception;
+use MrBill\Message;
 use MrBill\Persistence\DataStore;
+use MrBill\PhoneNumber;
 
 /**
  * Represents the full conversation between Mr. Bill and one phone number

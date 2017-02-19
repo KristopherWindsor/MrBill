@@ -3,7 +3,7 @@
 namespace MrBill\Api;
 
 use MrBill\Message;
-use MrBill\ConversationFactory;
+use MrBill\Data\ConversationFactory;
 use MrBill\Persistence\DataStore;
 use MrBill\PhoneNumber;
 use PHPUnit\Framework\TestCase;
