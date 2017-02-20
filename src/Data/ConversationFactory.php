@@ -6,17 +6,10 @@ use Generator;
 use MrBill\Data\Conversation;
 use MrBill\Persistence\DataStore;
 use MrBill\PhoneNumber;
+use MrBill\Model\Repository\Repository;
 
-class ConversationFactory
+class ConversationFactory extends Repository
 {
-    /** @var DataStore */
-    protected $dataStore;
-
-    public function __construct(DataStore $dataStore)
-    {
-        $this->dataStore = $dataStore;
-    }
-
     public function getConversation(PhoneNumber $phoneNumber) : Conversation
     {
         return new Conversation($phoneNumber, $this->dataStore);
