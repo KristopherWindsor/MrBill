@@ -30,7 +30,7 @@ class Token implements Serializable
         return new static($phoneNumber, $documentId, $secret, $expiry);
     }
 
-    public static function createFromJson(string $jsonString) : Serializable
+    public static function createFromJson(string $jsonString) : Token
     {
         $object = json_decode($jsonString);
         return new static(
