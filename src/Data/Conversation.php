@@ -4,7 +4,7 @@ namespace MrBill\Data;
 
 use Exception;
 use MrBill\Model\Message;
-use MrBill\Persistence\DataStore;
+use MrBill\Model\Repository\MessageRepository;
 use MrBill\PhoneNumber;
 
 /**
@@ -15,19 +15,19 @@ class Conversation
     /** @var PhoneNumber */
     protected $phone;
 
-    /** @var DataStore */
-    protected $dataStore;
+    /** @var MessageRepository */
+    protected $messageRepository;
 
     public $totalHelpRequests = 0;
     public $totalMessages = 0;
 
-    public function __construct(PhoneNumber $phone, DataStore $dataStore)
+    public function __construct(PhoneNumber $phone, MessageRepository $messageRepository)
     {
         $this->phone = $phone;
-        $this->dataStore = $dataStore;
+        $this->messageRepository = $messageRepository;
 
-        foreach ($dataStore->get($this->getDataStoreKey($phone)) as $item) {
-            $this->processOneMessage(Message::createFromJson($item));
+        foreach ($messageRepository->getAllMessagesForPhone($phone) as $message) {
+            $this->processOneMessage($message);
         }
     }
 
@@ -52,18 +52,15 @@ class Conversation
         if ($this->phone != $message->phone)
             throw new Exception();
 
-        $this->dataStore->append($this->getDataStoreKey($this->phone), $message->toJson());
+        $this->messageRepository->persistMessage($message);
+
         $this->processOneMessage($message);
     }
 
     public function removeAllMessageData() : void
     {
-        $this->dataStore->remove($this->getDataStoreKey($this->phone));
-        $this->totalHelpRequests = $this->totalMessages = 0;
-    }
+        $this->messageRepository->removeAllMessagesForPhone($this->phone);
 
-    protected function getDataStoreKey(PhoneNumber $phone) : string
-    {
-        return 'messages' . $phone;
+        $this->totalHelpRequests = $this->totalMessages = 0;
     }
 }

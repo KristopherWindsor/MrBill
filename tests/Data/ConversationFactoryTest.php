@@ -2,6 +2,7 @@
 
 namespace MrBill\Data;
 
+use MrBill\Model\Repository\MessageRepository;
 use MrBill\Persistence\DataStore;
 use MrBill\PhoneNumber;
 use PHPUnit\Framework\TestCase;
@@ -20,7 +21,7 @@ class ConversationFactoryTest extends TestCase
     {
         $this->testPhone = new PhoneNumber(self::TEST_PHONE);
 
-        $this->conversationFactory = new ConversationFactory(new DataStore());
+        $this->conversationFactory = new ConversationFactory(new MessageRepository(new DataStore()));
     }
 
     public function testGetConversation()

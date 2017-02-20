@@ -9,7 +9,7 @@ class Message implements Serializable
 {
     public $phone, $message, $timestamp, $isFromUser;
 
-    public static function createFromJson(string $jsonString) : Serializable
+    public static function createFromJson(string $jsonString) : Message
     {
         $object = json_decode($jsonString);
         return new Message(
