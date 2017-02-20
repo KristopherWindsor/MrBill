@@ -1,7 +1,8 @@
 <?php
 
-namespace MrBill;
+namespace MrBill\Model;
 
+use MrBill\PhoneNumber;
 use PHPUnit\Framework\TestCase;
 
 class MessageTest extends TestCase

@@ -3,7 +3,7 @@
 namespace MrBill\Data;
 
 use Exception;
-use MrBill\Message;
+use MrBill\Model\Message;
 use MrBill\Persistence\DataStore;
 use MrBill\PhoneNumber;
 

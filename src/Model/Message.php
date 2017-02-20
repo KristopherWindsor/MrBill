@@ -1,12 +1,15 @@
 <?php
 
-namespace MrBill;
+namespace MrBill\Model;
 
-class Message
+use MrBill\ExpenseRecord;
+use MrBill\PhoneNumber;
+
+class Message implements Serializable
 {
     public $phone, $message, $timestamp, $isFromUser;
 
-    public static function createFromJson(string $jsonString) : Message
+    public static function createFromJson(string $jsonString) : Serializable
     {
         $object = json_decode($jsonString);
         return new Message(

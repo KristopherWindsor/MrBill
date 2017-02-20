@@ -2,7 +2,7 @@
 
 namespace MrBill\Data;
 
-use MrBill\Message;
+use MrBill\Model\Message;
 use MrBill\Persistence\DataStore;
 use MrBill\PhoneNumber;
 use PHPUnit\Framework\TestCase;
