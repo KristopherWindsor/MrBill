@@ -13,7 +13,7 @@ class V1
     protected $conversation;
 
     protected $responseText = '';
-    protected $addMrBillPicture = false;
+    protected $addExtendedWelcomeMessages = false;
 
     public function __construct(ConversationFactory $conversationFactory, array $post)
     {
@@ -28,7 +28,7 @@ class V1
         $incomingMessage = new Message($from, $post['Body'], time(), true);
         if (!$this->conversation->totalMessages) {
             $this->responseText = $this->getWelcomeText();
-            $this->addMrBillPicture = true;
+            $this->addExtendedWelcomeMessages = true;
         } elseif ($incomingMessage->isHelpRequest()) {
             $this->responseText = $this->getHelpText($this->conversation->totalHelpRequests);
         }
@@ -48,8 +48,9 @@ class V1
         if ($this->responseText)
             $result .= '<Message>' . $this->responseText . '</Message>';
 
-        if ($this->addMrBillPicture)
-            $result .= '<Redirect>https://mrbill.kristopherwindsor.com/assets/mrbill.xml</Redirect>';
+        if ($this->addExtendedWelcomeMessages)
+            $result .= '<Redirect>https://mrbill.kristopherwindsor.com/api/sleep.php?sleep=4' .
+                '&amp;content=welcome2</Redirect>';
 
         $result .= '</Response>';
         return $result;
@@ -57,17 +58,18 @@ class V1
 
     protected function getWelcomeText() : string
     {
-        return 'Hello, I\'m Mr. Bill. Just let me know each time you spend $$, and I\'ll help you track expenses. Type "?" for help.';
+        return 'Hi, I\'m Mr. Bill. Just text me each time you spend $$, and I\'ll help you track expenses. ' .
+            'That\'s right... you keep track of your expenses by texting them to me.';
     }
 
     protected function getHelpText(int $index) : string
     {
         return [
-            '1/4 Let\'s see how I can help you! Text "?" again to cycle through the help messages.',
-            '2/4 Every time you spend $$, send me a text like: 8.99 #eatout #lunch lunch with friends',
-            '3/4 The hashtags are important for categorizing expenses. The description is optional.',
-            '4/4 Once you have given me a few bills, I\'ll show you a report about your spending.',
-            'For more info, see the FAQ https://mrbill.kristopherwindsor.com/faq.php',
+            '1/5 Let\'s see how I can help you! Text "?" again to cycle through the help messages.',
+            '2/5 Every time you spend $$, send me a text like: 8.99 #eatout #lunch lunch with friends',
+            '3/5 The hashtags are important for categorizing expenses. The description is optional.',
+            '4/5 Once you have given me a few bills, I\'ll show you a report about your spending.',
+            '5/5 For more info, see the FAQ https://mrbill.kristopherwindsor.com/faq.php',
         ][$index % 5];
     }
 }

@@ -51,8 +51,15 @@ class V1Test extends TestCase
                 'Body' => 'hello',
             ];
         $v1 = new V1($this->conversationFactory, $request);
+
+        $expected =
+            '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>Hi, I\'m Mr. Bill. Just text me each time you ' .
+                'spend $$, and I\'ll help you track expenses. That\'s right... you keep track of your expenses by ' .
+                'texting them to me.</Message><Redirect>https://mrbill.kristopherwindsor.com/api/sleep.php?' .
+                'sleep=4&amp;content=welcome2</Redirect></Response>';
+
         $this->assertEquals(
-            '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>Hello, I\'m Mr. Bill. Just let me know each time you spend $$, and I\'ll help you track expenses. Type "?" for help.</Message><Redirect>https://mrbill.kristopherwindsor.com/assets/mrbill.xml</Redirect></Response>',
+            $expected,
             $v1->getResult()
         );
     }
@@ -69,13 +76,13 @@ class V1Test extends TestCase
 
         $v1 = new V1($this->conversationFactory, $request);
         $this->assertEquals(
-            '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>1/4 Let\'s see how I can help you! Text "?" again to cycle through the help messages.</Message></Response>',
+            '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>1/5 Let\'s see how I can help you! Text "?" again to cycle through the help messages.</Message></Response>',
             $v1->getResult()
         );
 
         $v1 = new V1($this->conversationFactory, $request);
         $this->assertEquals(
-            '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>2/4 Every time you spend $$, send me a text like: 8.99 #eatout #lunch lunch with friends</Message></Response>',
+            '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>2/5 Every time you spend $$, send me a text like: 8.99 #eatout #lunch lunch with friends</Message></Response>',
             $v1->getResult()
         );
     }
