@@ -26,6 +26,14 @@ class Report1
         return !$this->conversation;
     }
 
+    public function getDateText() : string
+    {
+        $format = 'M jS, Y';
+
+        return date($format, $this->conversation->firstExpenseMessageTimestamp) . ' &mdash; ' .
+            date($format, $this->conversation->lastExpenseMessageTimestamp);
+    }
+
     public function getTableContents() : string
     {
         if ($this->hasInitializationError())

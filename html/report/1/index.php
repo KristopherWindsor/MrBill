@@ -5,7 +5,7 @@ use MrBill\Model\Repository\MessageRepository;
 use MrBill\Persistence\DataStore;
 
 require_once dirname(__DIR__, 3) . '/vendor/autoload.php';
-$_GET['phone']=14087226296;//test
+
 $report = new Report1(new ConversationFactory(new MessageRepository(new DataStore())), $_GET);
 
 if ($report->hasInitializationError()) {
@@ -20,6 +20,8 @@ if ($report->hasInitializationError()) {
 </head>
 <body>
     <h1>Your Expenses</h1>
+
+    <h2><?= $report->getDateText() ?></h2>
 
     <p>This report is in beta.</p>
 

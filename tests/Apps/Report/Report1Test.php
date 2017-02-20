@@ -46,6 +46,19 @@ class Report1Test extends TestCase
         );
     }
 
+    public function testGetDateText()
+    {
+        $time = 1234567890;
+
+        $this->assertEquals('Jan 1st, 1970 &mdash; Jan 1st, 1970', $this->report1->getDateText());
+
+        $this->conversation->persistNewMessage(new Message($this->phone, '5 #h', $time, true));
+        $this->assertEquals('Feb 14th, 2009 &mdash; Feb 14th, 2009', $this->report1->getDateText());
+
+        $this->conversation->persistNewMessage(new Message($this->phone, '5 #h', $time + 3600*24, true));
+        $this->assertEquals('Feb 14th, 2009 &mdash; Feb 15th, 2009', $this->report1->getDateText());
+    }
+
     public function testGetTableContents()
     {
         $this->assertEquals('', $this->report1->getTableContents());

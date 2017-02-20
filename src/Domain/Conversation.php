@@ -21,6 +21,8 @@ class Conversation
 
     public $totalHelpRequests = 0;
     public $totalMessages = 0;
+    public $firstExpenseMessageTimestamp = 0;
+    public $lastExpenseMessageTimestamp = 0;
 
     public function __construct(PhoneNumber $phone, MessageRepository $messageRepository)
     {
@@ -41,6 +43,13 @@ class Conversation
         if ($this->totalMessages && $message->isHelpRequest())
             $this->totalHelpRequests++;
         $this->totalMessages++;
+
+        if ($message->isFromUser && ExpenseRecord::getAllExpensesFromMessage($message->message)) {
+            // Assumes messages are ordered by time
+            if (!$this->firstExpenseMessageTimestamp)
+                $this->firstExpenseMessageTimestamp = $message->timestamp;
+            $this->lastExpenseMessageTimestamp = $message->timestamp;
+        }
     }
 
     public function getPhoneNumber() : PhoneNumber
@@ -62,7 +71,10 @@ class Conversation
     {
         $this->messageRepository->removeAllMessagesForPhone($this->phone);
 
-        $this->totalHelpRequests = $this->totalMessages = 0;
+        $this->totalHelpRequests            =
+        $this->totalMessages                =
+        $this->firstExpenseMessageTimestamp =
+        $this->lastExpenseMessageTimestamp  = 0;
     }
 
     public function getAllExpenseRecords() : Generator
