@@ -3,6 +3,7 @@
 namespace MrBill\Domain;
 
 use Exception;
+use Generator;
 use MrBill\Model\Message;
 use MrBill\Model\Repository\MessageRepository;
 use MrBill\PhoneNumber;
@@ -62,5 +63,16 @@ class Conversation
         $this->messageRepository->removeAllMessagesForPhone($this->phone);
 
         $this->totalHelpRequests = $this->totalMessages = 0;
+    }
+
+    public function getAllExpenseRecords() : Generator
+    {
+        foreach ($this->messageRepository->getAllMessagesForPhone($this->phone) as $message) {
+            /** @var Message $message */
+            if ($message->isFromUser) {
+                foreach (ExpenseRecord::getAllExpensesFromMessage($message->message) as $expenseRecord)
+                    yield $expenseRecord;
+            }
+        }
     }
 }

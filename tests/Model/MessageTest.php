@@ -47,19 +47,6 @@ class MessageTest extends TestCase
         }
     }
 
-    public function testIsExpenseRecord()
-    {
-        $scenarios = [
-            [false, new Message($this->testPhone, '8.50 #hash #tag', time(), false)],
-            [false, new Message($this->testPhone, '9', time(), true)],
-            [true, new Message($this->testPhone, '8.50 #hash #tag', time(), true)],
-        ];
-
-        foreach ($scenarios as $index => [$expected, $message]) {
-            $this->assertEquals($expected, $message->isExpenseRecord(), 'Case ' . $index);
-        }
-    }
-
     public function testIsReportRequest()
     {
         $scenarios = [

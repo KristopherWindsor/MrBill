@@ -6,24 +6,52 @@ use PHPUnit\Framework\TestCase;
 
 class ExpenseRecordTest extends TestCase
 {
-    public function testValidAndInvalid()
+    public function testConstructorHashtagCalculation()
+    {
+        $message = '5.00 #c #b #a #b #f #b #e #b #d';
+        $expenseRecord = new ExpenseRecord($message);
+        $this->assertEquals(['a', 'b', 'c', 'd', 'e', 'f'], $expenseRecord->hashtags);
+    }
+
+    public function testGetAllExpensesFromMessage()
     {
         $scenarios = [
-            [true, '5 #hash'],
-            [true, '5.05 description #hash'],
-            [true, '$55 #hash'],
-            [true, '5 #multiple #hash'],
-            [true, '5 #multiple words #hash words'],
-            [true, '  5    #hash   '],
+            [1, '5 #hash'],
+            [1, '5.05 description #hash'],
+            [1, '$55 #hash'],
+            [1, '5 #multiple #hash'],
+            [1, '5 #multiple words #hash words'],
+            [1, '  5    #hash   '],
 
-            [false, '5.05 no hash tag'],
-            [false, 'no #dollar #amount'],
-            [false, '#dollar 5.05 #wrongplace'],
-            [false, ''],
+            [2, "5 #hash\n6 #hash"],
+            [2, "not parseable\n5 #hash\n6 #hash\n\n\n"],
+
+            [0, '5.05 no hash tag'],
+            [0, 'no #dollar #amount'],
+            [0, '#dollar 5.05 #wrongplace'],
+            [0, ''],
         ];
 
-        foreach ($scenarios as $index => [$expected, $text]) {
-            $this->assertEquals($expected, ExpenseRecord::getExpenseRecordIfValid($text) !== null, 'Case ' . $index);
+        foreach ($scenarios as $index => [$expectedCount, $text]) {
+            $this->assertCount(
+                $expectedCount,
+                ExpenseRecord::getAllExpensesFromMessage($text),
+                'Case ' . $index
+            );
+        }
+    }
+
+    public function testGetHashtagsCanonical()
+    {
+        $scenarios = [
+            ['5 #cat', '#cat'],
+            ['5 #cat #dog', '#cat#dog'],
+            ['5 #dog #cat', '#cat#dog'],
+        ];
+
+        foreach ($scenarios as $index => [$message, $canonical]) {
+            $expenseRecord = new ExpenseRecord($message);
+            $this->assertEquals($canonical, $expenseRecord->getHashtagsCanonical(), 'Case ' . $index);
         }
     }
 }

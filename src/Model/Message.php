@@ -39,25 +39,10 @@ class Message implements Serializable
         return $this->isFromUser && in_array($message, ['y', 'n', 'yes', 'no', 'a', 'b', 'c', 'd']);
     }
 
-    public function isExpenseRecord() : bool
-    {
-        if (!$this->isFromUser) return false;
-        return ExpenseRecord::getExpenseRecordIfValid($this->message) !== null;
-    }
-
     public function isReportRequest() : bool
     {
         $message = trim(strtolower($this->message));
         return $this->isFromUser && in_array($message, ['report']);
-    }
-
-    public function isUnknownIntent() : bool
-    {
-        return $this->isFromUser &&
-            !$this->isHelpRequest() &&
-            !$this->isAnswer() &&
-            !$this->isExpenseRecord() &&
-            !$this->isReportRequest();
     }
 
     public function toJson() : string

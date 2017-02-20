@@ -10,6 +10,8 @@ class ConversationFactory
     /** @var MessageRepository */
     protected $messageRepository;
 
+    protected $conversations = [];
+
     public function __construct(MessageRepository $messageRepository)
     {
         $this->messageRepository = $messageRepository;
@@ -17,6 +19,7 @@ class ConversationFactory
 
     public function getConversation(PhoneNumber $phoneNumber) : Conversation
     {
-        return new Conversation($phoneNumber, $this->messageRepository);
+        return $this->conversations[$phoneNumber->scalar] ??
+            $this->conversations[$phoneNumber->scalar] = new Conversation($phoneNumber, $this->messageRepository);
     }
 }
