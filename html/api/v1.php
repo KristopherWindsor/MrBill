@@ -1,6 +1,6 @@
 <?php
 
-use MrBill\Api\V1;
+use MrBill\Apps\Api\V1;
 use MrBill\Domain\ConversationFactory;
 use MrBill\Persistence\DataStore;
 use MrBill\Model\Repository\MessageRepository;

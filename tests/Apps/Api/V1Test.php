@@ -1,8 +1,7 @@
 <?php
 
-namespace MrBill\Api;
+namespace MrBill\Apps\Api;
 
-use MrBill\Model\Message;
 use MrBill\Domain\ConversationFactory;
 use MrBill\Model\Repository\MessageRepository;
 use MrBill\Persistence\DataStore;

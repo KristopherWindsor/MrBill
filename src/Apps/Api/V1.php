@@ -1,6 +1,6 @@
 <?php
 
-namespace MrBill\Api;
+namespace MrBill\Apps\Api;
 
 use MrBill\Domain\Conversation;
 use MrBill\Model\Message;
