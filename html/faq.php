@@ -13,6 +13,16 @@
     <h2>What is Mr. Bill?</h2>
     <p>Mr. Bill is here to help you track expenses! Send him a text each time you spend $$, and he will keep track.</p>
 
+    <h2>How is Mr. Bill different from traditional tools (Mint, YNAB, etc.)?</h2>
+    <p>
+        Mr. Bill strives for accuracy.
+        <ul>
+            <li>Cash payments are recorded, not lost. Same with payments made by gift card, Venmo, etc.</li>
+            <li>Purchases at megastores (Amazon, Walmart, etc.) can be split into multiple categories,
+                not lumped into "home goods."</li>
+        </ul>
+    </p>
+
     <h2>How can I get a report of my expenses?</h2>
     <p>Mr. Bill will text you a link to your reports.
         You can also text "report" to Mr. Bill, and he will give you a report immediately.</p>
