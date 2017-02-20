@@ -1,6 +1,6 @@
 <?php
 
-namespace MrBill;
+namespace MrBill\Domain;
 
 use PHPUnit\Framework\TestCase;
 

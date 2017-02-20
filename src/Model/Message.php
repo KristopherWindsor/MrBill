@@ -2,7 +2,7 @@
 
 namespace MrBill\Model;
 
-use MrBill\ExpenseRecord;
+use MrBill\Domain\ExpenseRecord;
 use MrBill\PhoneNumber;
 
 class Message implements Serializable
