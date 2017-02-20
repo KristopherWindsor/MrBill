@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Response>
     <Message>
-        <Body>After you've entered a few expenses, I'll show you some useful reports about your spending.</Body>
+        <Body>After you've entered a few expenses, I'll show you some useful reports about your spending. Text "?" for help.</Body>
     </Message>
     <Redirect>https://mrbill.kristopherwindsor.com/assets/mrbill.xml</Redirect>
 </Response>

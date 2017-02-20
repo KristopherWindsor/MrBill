@@ -56,7 +56,7 @@ class V1Test extends TestCase
             '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>Hi, I\'m Mr. Bill. Just text me each time you ' .
                 'spend $$, and I\'ll help you track expenses. That\'s right... you keep track of your expenses by ' .
                 'texting them to me.</Message><Redirect>https://mrbill.kristopherwindsor.com/api/sleep.php?' .
-                'sleep=4&amp;content=welcome2</Redirect></Response>';
+                'sleep=6&amp;content=welcome2</Redirect></Response>';
 
         $this->assertEquals(
             $expected,

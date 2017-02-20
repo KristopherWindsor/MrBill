@@ -49,7 +49,7 @@ class V1
             $result .= '<Message>' . $this->responseText . '</Message>';
 
         if ($this->addExtendedWelcomeMessages)
-            $result .= '<Redirect>https://mrbill.kristopherwindsor.com/api/sleep.php?sleep=4' .
+            $result .= '<Redirect>https://mrbill.kristopherwindsor.com/api/sleep.php?sleep=6' .
                 '&amp;content=welcome2</Redirect>';
 
         $result .= '</Response>';

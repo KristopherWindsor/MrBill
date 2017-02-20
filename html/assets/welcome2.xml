@@ -3,8 +3,7 @@
     <Message>
         <Body>We'll use hashtags for categories. For example:
 30.00 #gas
-7.99 #food
-Text "?" for help.</Body>
+7.99 #food</Body>
     </Message>
-    <Redirect>https://mrbill.kristopherwindsor.com/api/sleep.php?seconds=2&amp;content=welcome3</Redirect>
+    <Redirect>https://mrbill.kristopherwindsor.com/api/sleep.php?sleep=2&amp;content=welcome3</Redirect>
 </Response>
