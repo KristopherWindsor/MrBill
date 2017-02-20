@@ -13,7 +13,7 @@ use MrBill\Model\Token;
  */
 class TokenRepository extends Repository
 {
-    public function persistToken(Token $token)
+    public function persistToken(Token $token) : void
     {
         $this->dataStore->put($this->getDataStoreKey($token->phone, $token->documentId), $token->toJson());
     }
@@ -28,7 +28,7 @@ class TokenRepository extends Repository
         return Token::createFromJson($tokenString);
     }
 
-    public function deleteToken(PhoneNumber $phoneNumber, int $documentId)
+    public function deleteToken(PhoneNumber $phoneNumber, int $documentId) : void
     {
         $key = $this->getDataStoreKey($phoneNumber, $documentId);
 
