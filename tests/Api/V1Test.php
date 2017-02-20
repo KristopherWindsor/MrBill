@@ -3,7 +3,7 @@
 namespace MrBill\Api;
 
 use MrBill\Model\Message;
-use MrBill\Data\ConversationFactory;
+use MrBill\Domain\ConversationFactory;
 use MrBill\Model\Repository\MessageRepository;
 use MrBill\Persistence\DataStore;
 use MrBill\PhoneNumber;

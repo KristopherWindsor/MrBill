@@ -1,6 +1,6 @@
 <?php
 
-namespace MrBill\Data;
+namespace MrBill\Domain;
 
 use MrBill\Model\Repository\MessageRepository;
 use MrBill\Persistence\DataStore;

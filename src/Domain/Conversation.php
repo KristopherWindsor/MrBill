@@ -1,6 +1,6 @@
 <?php
 
-namespace MrBill\Data;
+namespace MrBill\Domain;
 
 use Exception;
 use MrBill\Model\Message;
