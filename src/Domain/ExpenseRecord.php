@@ -37,6 +37,7 @@ class ExpenseRecord
         if (!$this->hashtags)
             throw new Exception();
         $this->hashtags = array_values(array_unique($this->hashtags));
+        sort($this->hashtags);
 
         $this->message = implode(' ', $parts);
     }

@@ -67,8 +67,8 @@ class Report1Test extends TestCase
             $this->conversation->persistNewMessage(new Message($this->phone, $message, time(), true));
 
         $expected = <<<HTML
+<tr><td>#eatout#food</td><td>7</td>
 <tr><td>#food</td><td>2</td>
-<tr><td>#food#eatout</td><td>7</td>
 <tr><td>#gas</td><td>6.5</td>
 
 HTML;
