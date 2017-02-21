@@ -28,9 +28,14 @@ class V1
         $incomingMessage = Message::createWithEntropy($from, $post['Body'], time(), true);
         $messageWithMeaning = $this->conversation->persistNewMessage($incomingMessage);
 
+        $isTenthExpense = $messageWithMeaning->isExpenseMessage() && $this->conversation->totalExpenseMessages == 10;
+
         if ($messageWithMeaning->isFirstMessage()) {
             $this->responseText = $this->getWelcomeText();
             $this->addExtendedWelcomeMessages = true;
+
+        } elseif ($messageWithMeaning->isReportRequest() || $isTenthExpense) {
+            $this->responseText = $this->createReportAndGetReply();
 
         } elseif ($messageWithMeaning->isExpenseMessage()) {
             $this->responseText = $this->getExpenseReply();
@@ -83,7 +88,7 @@ class V1
     protected function getExpenseReply() : string
     {
         if ($this->conversation->totalExpenseMessages == 1)
-            return 'Got it. I\'ll send you a report once I\'ve got a few expenses.';
+            return 'Got it. I\'ll send you a report once I\'ve got a few more expenses.';
         if ($this->conversation->totalExpenseMessages == 5)
             return 'Keep them coming!';
         return '';
@@ -92,5 +97,10 @@ class V1
     protected function getUnknownMessageReply() : string
     {
         return 'Not sure what you mean? For each expense you have, text me the price followed by a #hashtag';
+    }
+
+    protected function createReportAndGetReply() : string
+    {
+        return ''; // TODO
     }
 }

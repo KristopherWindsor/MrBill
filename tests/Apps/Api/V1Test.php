@@ -77,7 +77,7 @@ class V1Test extends TestCase
 
         $expected = [
             1 => '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>Got it. I\'ll send you a report once ' .
-                'I\'ve got a few expenses.</Message></Response>',
+                'I\'ve got a few more expenses.</Message></Response>',
             5 => '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>Keep them coming!</Message></Response>',
         ];
 
