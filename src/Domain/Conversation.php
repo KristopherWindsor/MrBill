@@ -15,6 +15,8 @@ use MrBill\PhoneNumber;
  */
 class Conversation
 {
+    private const REPORT_ID = 1;
+
     /** @var PhoneNumber */
     protected $phone;
 
@@ -125,16 +127,12 @@ class Conversation
 
     public function getExistingReportToken() : ?Token
     {
-        $documentId = 1; // For now, all reports are id=1
-
-        return $this->tokenRepository->getTokenIfExists($this->phone, $documentId);
+        return $this->tokenRepository->getTokenIfExists($this->phone, self::REPORT_ID);
     }
 
     public function getOrCreateActiveReportToken() : Token
     {
-        $documentId = 1; // For now, all reports are id=1
-
-        $existingToken = $this->tokenRepository->getTokenIfExists($this->phone, $documentId);
+        $existingToken = $this->tokenRepository->getTokenIfExists($this->phone, self::REPORT_ID);
 
         return
             $existingToken && !$existingToken->isExpired() ? $existingToken :
@@ -142,7 +140,7 @@ class Conversation
             $this->tokenRepository->persistToken(
                 new Token(
                     $this->phone,
-                    $documentId,
+                    self::REPORT_ID,
                     dechex(random_int(pow(2, 48), pow(2, 52) - 1)),
                     time() + 3600 * 24 * 30
                 )
