@@ -21,6 +21,7 @@ class Conversation
 
     public $totalHelpRequests = 0;
     public $totalMessages = 0;
+    public $totalIncomingMessages = 0;
     public $firstExpenseMessageTimestamp = 0;
     public $lastExpenseMessageTimestamp = 0;
 
@@ -37,19 +38,28 @@ class Conversation
     /**
      * All messages need to be processed in order to build up the state of the Conversation
      * @param Message $message
+     * @return MessageWithMeaning
      */
-    protected function processOneMessage(Message $message)
+    protected function processOneMessage(Message $message) : MessageWithMeaning
     {
-        if ($this->totalMessages && $message->isHelpRequest())
-            $this->totalHelpRequests++;
+        $meaning = new MessageWithMeaning($message, $this->totalIncomingMessages);
+
         $this->totalMessages++;
 
-        if ($message->isFromUser && ExpenseRecord::getAllExpensesFromMessage($message->message)) {
+        if ($meaning->isHelpRequest())
+            $this->totalHelpRequests++;
+
+        if ($message->isFromUser)
+            $this->totalIncomingMessages++;
+
+        if ($meaning->isExpenseMessage()) {
             // Assumes messages are ordered by time
             if (!$this->firstExpenseMessageTimestamp)
                 $this->firstExpenseMessageTimestamp = $message->timestamp;
             $this->lastExpenseMessageTimestamp = $message->timestamp;
         }
+
+        return $meaning;
     }
 
     public function getPhoneNumber() : PhoneNumber
@@ -57,20 +67,28 @@ class Conversation
         return $this->phone;
     }
 
-    public function persistNewMessage(Message $message) : void
+    /**
+     * Add a message to the conversation (persists immediately).
+     *
+     * @param Message $message
+     * @return MessageWithMeaning the inferred meaning of message
+     * @throws Exception
+     */
+    public function persistNewMessage(Message $message) : MessageWithMeaning
     {
         if ($this->phone != $message->phone)
             throw new Exception();
 
         $this->messageRepository->persistMessage($message);
 
-        $this->processOneMessage($message);
+        return $this->processOneMessage($message);
     }
 
     public function removeAllMessageData() : void
     {
         $this->messageRepository->removeAllMessagesForPhone($this->phone);
 
+        $this->totalIncomingMessages        =
         $this->totalHelpRequests            =
         $this->totalMessages                =
         $this->firstExpenseMessageTimestamp =

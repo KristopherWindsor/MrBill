@@ -39,6 +39,7 @@ class Report1Test extends TestCase
         $this->conversation = $this->conversationFactory->getConversation($this->phone);
 
         $this->conversation->removeAllMessageData();
+        $this->conversation->persistNewMessage(new Message($this->phone, 'hi', time(), true, 0));
 
         $this->report1 = new Report1(
             $this->conversationFactory,
