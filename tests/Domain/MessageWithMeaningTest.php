@@ -39,8 +39,11 @@ class MessageWithMeaningTest extends TestCase
         return [
             ['5 #h',     true,  7, 'exp'],
             ['?',        true,  0, '1st'],
+            ['a',        true,  0, '1st'],
             ['?',        true,  7, 'help'],
+            [' ? ',      true,  7, 'help'],
             ['report',   true,  7, 'rr'],
+            ['rePORt',   true,  7, 'rr'],
             ['garbage',  true,  7, '???'],
             ['whatever', false, 7, 'misc'],
         ];
