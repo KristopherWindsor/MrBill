@@ -32,48 +32,6 @@ class MessageTest extends TestCase
         $this->assertNotEquals($message1, $message2);
     }
 
-    public function testIsHelp()
-    {
-        $scenarios = [
-            [true, new Message($this->testPhone, '?', time(), true, 0)],
-            [true, new Message($this->testPhone, ' ? ', time(), true, 0)],
-            [false, new Message($this->testPhone, ' ? ', time(), false, 0)],
-            [false, new Message($this->testPhone, 'hello', time(), true, 0)],
-            [false, new Message($this->testPhone, 'hello', time(), false, 0)],
-        ];
-
-        foreach ($scenarios as $index => [$expected, $message]) {
-            $this->assertEquals($expected, $message->isHelpRequest(), 'Case ' . $index);
-        }
-    }
-
-    public function testIsAnswer()
-    {
-        $scenarios = [
-            [false, new Message($this->testPhone, ' y ', time(), false, 0)],
-            [true, new Message($this->testPhone, ' y ', time(), true, 0)],
-            [true, new Message($this->testPhone, 'no', time(), true, 0)],
-            [false, new Message($this->testPhone, 'sup', time(), true, 0)],
-        ];
-
-        foreach ($scenarios as $index => [$expected, $message]) {
-            $this->assertEquals($expected, $message->isAnswer(), 'Case ' . $index);
-        }
-    }
-
-    public function testIsReportRequest()
-    {
-        $scenarios = [
-            [false, new Message($this->testPhone, 'report', time(), false, 0)],
-            [true, new Message($this->testPhone, 'report', time(), true, 0)],
-            [false, new Message($this->testPhone, 'something', time(), true, 0)],
-        ];
-
-        foreach ($scenarios as $index => [$expected, $message]) {
-            $this->assertEquals($expected, $message->isReportRequest(), 'Case ' . $index);
-        }
-    }
-
     public function testToJson()
     {
         $message = new Message($this->testPhone, 'some message', self::TEST_TIMESTAMP, true, 2);

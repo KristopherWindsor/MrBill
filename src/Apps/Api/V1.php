@@ -26,14 +26,14 @@ class V1
         $this->conversation = $conversationFactory->getConversation($from);
 
         $incomingMessage = Message::createWithEntropy($from, $post['Body'], time(), true);
-        if (!$this->conversation->totalMessages) {
+        $messageWithMeaning = $this->conversation->persistNewMessage($incomingMessage);
+
+        if ($messageWithMeaning->isFirstMessage()) {
             $this->responseText = $this->getWelcomeText();
             $this->addExtendedWelcomeMessages = true;
-        } elseif ($incomingMessage->isHelpRequest()) {
-            $this->responseText = $this->getHelpText($this->conversation->totalHelpRequests);
+        } elseif ($messageWithMeaning->isHelpRequest()) {
+            $this->responseText = $this->getHelpText($this->conversation->totalHelpRequests - 1);
         }
-
-        $this->conversation->persistNewMessage($incomingMessage);
 
         if ($this->responseText) {
             $replyMessage = Message::createWithEntropy($from, $this->responseText, time(), false);

@@ -11,16 +11,13 @@ class Message implements Serializable
     /** @var int a random integer assigned to each message, to make messages unique */
     public $entropy;
 
-    public static function createFromJson(string $jsonString) : Message
+    public function __construct(PhoneNumber $phone, string $message, int $timestamp, bool $isFromUser, int $entropy)
     {
-        $object = json_decode($jsonString);
-        return new Message(
-            new PhoneNumber($object->phone),
-            $object->message,
-            $object->timestamp,
-            $object->isFromUser,
-            @$object->entropy
-        );
+        $this->phone = $phone;
+        $this->message = $message;
+        $this->timestamp = $timestamp;
+        $this->isFromUser = $isFromUser;
+        $this->entropy = $entropy;
     }
 
     public static function createWithEntropy(
@@ -34,30 +31,16 @@ class Message implements Serializable
         return new Message($phone, $message, $timestamp, $isFromUser, $entropy);
     }
 
-    public function __construct(PhoneNumber $phone, string $message, int $timestamp, bool $isFromUser, int $entropy)
+    public static function createFromJson(string $jsonString) : Message
     {
-        $this->phone = $phone;
-        $this->message = $message;
-        $this->timestamp = $timestamp;
-        $this->isFromUser = $isFromUser;
-        $this->entropy = $entropy;
-    }
-
-    public function isHelpRequest() : bool
-    {
-        return $this->isFromUser && trim($this->message) === '?';
-    }
-
-    public function isAnswer() : bool
-    {
-        $message = trim(strtolower($this->message));
-        return $this->isFromUser && in_array($message, ['y', 'n', 'yes', 'no', 'a', 'b', 'c', 'd']);
-    }
-
-    public function isReportRequest() : bool
-    {
-        $message = trim(strtolower($this->message));
-        return $this->isFromUser && in_array($message, ['report']);
+        $object = json_decode($jsonString);
+        return new Message(
+            new PhoneNumber($object->phone),
+            $object->message,
+            $object->timestamp,
+            $object->isFromUser,
+            @$object->entropy
+        );
     }
 
     public function toJson() : string
