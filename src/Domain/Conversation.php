@@ -19,9 +19,12 @@ class Conversation
     /** @var MessageRepository */
     protected $messageRepository;
 
-    public $totalHelpRequests = 0;
     public $totalMessages = 0;
     public $totalIncomingMessages = 0;
+
+    public $totalHelpRequests = 0;
+
+    public $totalExpenseMessages = 0;
     public $firstExpenseMessageTimestamp = 0;
     public $lastExpenseMessageTimestamp = 0;
 
@@ -53,6 +56,8 @@ class Conversation
             $this->totalIncomingMessages++;
 
         if ($meaning->isExpenseMessage()) {
+            $this->totalExpenseMessages++;
+
             // Assumes messages are ordered by time
             if (!$this->firstExpenseMessageTimestamp)
                 $this->firstExpenseMessageTimestamp = $message->timestamp;
@@ -88,6 +93,7 @@ class Conversation
     {
         $this->messageRepository->removeAllMessagesForPhone($this->phone);
 
+        $this->totalExpenseMessages         =
         $this->totalIncomingMessages        =
         $this->totalHelpRequests            =
         $this->totalMessages                =
