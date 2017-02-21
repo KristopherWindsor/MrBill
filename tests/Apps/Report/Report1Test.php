@@ -52,10 +52,10 @@ class Report1Test extends TestCase
 
         $this->assertEquals('Jan 1st, 1970 &mdash; Jan 1st, 1970', $this->report1->getDateText());
 
-        $this->conversation->persistNewMessage(new Message($this->phone, '5 #h', $time, true));
+        $this->conversation->persistNewMessage(new Message($this->phone, '5 #h', $time, true, 0));
         $this->assertEquals('Feb 14th, 2009 &mdash; Feb 14th, 2009', $this->report1->getDateText());
 
-        $this->conversation->persistNewMessage(new Message($this->phone, '5 #h', $time + 3600*24, true));
+        $this->conversation->persistNewMessage(new Message($this->phone, '5 #h', $time + 3600*24, true, 0));
         $this->assertEquals('Feb 14th, 2009 &mdash; Feb 15th, 2009', $this->report1->getDateText());
     }
 
@@ -64,7 +64,7 @@ class Report1Test extends TestCase
         $this->assertEquals('', $this->report1->getTableContents());
 
         foreach (['5 #gas', '7 #food #eatout', '1.50 #gas', '2 #food'] as $message)
-            $this->conversation->persistNewMessage(new Message($this->phone, $message, time(), true));
+            $this->conversation->persistNewMessage(new Message($this->phone, $message, time(), true, 0));
 
         $expected = <<<HTML
 <tr><td>#eatout#food</td><td>7</td>

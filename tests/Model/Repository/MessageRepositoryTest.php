@@ -22,7 +22,8 @@ class MessageRepositoryTest extends TestCase
             new PhoneNumber(14087226296),
             'a message',
             time(),
-            true
+            true,
+            0
         );
 
         $this->messageRepository = new MessageRepository(new DataStore());

@@ -25,7 +25,7 @@ class V1
         $from = new PhoneNumber($post['From']);
         $this->conversation = $conversationFactory->getConversation($from);
 
-        $incomingMessage = new Message($from, $post['Body'], time(), true);
+        $incomingMessage = Message::createWithEntropy($from, $post['Body'], time(), true);
         if (!$this->conversation->totalMessages) {
             $this->responseText = $this->getWelcomeText();
             $this->addExtendedWelcomeMessages = true;
@@ -36,7 +36,7 @@ class V1
         $this->conversation->persistNewMessage($incomingMessage);
 
         if ($this->responseText) {
-            $replyMessage = new Message($from, $this->responseText, time(), false);
+            $replyMessage = Message::createWithEntropy($from, $this->responseText, time(), false);
             $this->conversation->persistNewMessage($replyMessage);
         }
     }

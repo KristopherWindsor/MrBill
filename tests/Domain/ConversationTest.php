@@ -35,8 +35,8 @@ class ConversationTest extends TestCase
 
     public function testPersistAndCountMessages()
     {
-        $newMessage = new Message($this->testPhone, 'message' . uniqid(), time(), true);
-        $helpMessage = new Message($this->testPhone, '?', time(), true);
+        $newMessage = new Message($this->testPhone, 'message' . uniqid(), time(), true, 0);
+        $helpMessage = new Message($this->testPhone, '?', time(), true, 0);
 
         $this->assertEquals(0, $this->conversation->totalMessages);
         $this->conversation->persistNewMessage($newMessage);
