@@ -20,7 +20,7 @@ if ($report->hasInitializationError()) {
 <head>
     <title>Your Expenses &mdash; Mr. Bill</title>
 </head>
-<body>
+<body style="max-width: 800px">
     <h1>Your Expenses</h1>
 
     <h2><?= $report->getDateText() ?></h2>
