@@ -31,8 +31,15 @@ class V1
         if ($messageWithMeaning->isFirstMessage()) {
             $this->responseText = $this->getWelcomeText();
             $this->addExtendedWelcomeMessages = true;
+
+        } elseif ($messageWithMeaning->isExpenseMessage()) {
+            $this->responseText = $this->getExpenseReply();
+
         } elseif ($messageWithMeaning->isHelpRequest()) {
             $this->responseText = $this->getHelpText($this->conversation->totalHelpRequests - 1);
+
+        } elseif ($messageWithMeaning->hasNoKnownMeaning() && $this->conversation->totalIncomingMessages <= 3) {
+            $this->responseText = $this->getUnknownMessageReply();
         }
 
         if ($this->responseText) {
@@ -71,5 +78,19 @@ class V1
             '4/5 Once you have given me a few bills, I\'ll show you a report about your spending.',
             '5/5 For more info, see the FAQ https://mrbill.kristopherwindsor.com/faq.php',
         ][$index % 5];
+    }
+
+    protected function getExpenseReply() : string
+    {
+        if ($this->conversation->totalExpenseMessages == 1)
+            return 'Got it. I\'ll send you a report once I\'ve got a few expenses.';
+        if ($this->conversation->totalExpenseMessages == 5)
+            return 'Keep them coming!';
+        return '';
+    }
+
+    protected function getUnknownMessageReply() : string
+    {
+        return 'Not sure what you mean? For each expense you have, text me the price followed by a #hashtag';
     }
 }

@@ -64,15 +64,43 @@ class V1Test extends TestCase
         );
     }
 
+    public function testExpenseRecord()
+    {
+        $this->testWelcomeMessage(); // Get those out of the way
+
+        $request =
+            [
+                'MessageSid' => 'abc',
+                'From' => '14087226296',
+                'Body' => '$7 #tag',
+            ];
+
+        $expected = [
+            1 => '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>Got it. I\'ll send you a report once ' .
+                'I\'ve got a few expenses.</Message></Response>',
+            5 => '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>Keep them coming!</Message></Response>',
+        ];
+
+        for ($i = 1; $i < 7; $i++) {
+            $v1 = new V1($this->conversationFactory, $request);
+            $this->assertEquals(
+                $expected[$i] ?? '<?xml version="1.0" encoding="UTF-8" ?><Response></Response>',
+                $v1->getResult(),
+                'Case ' . $i
+            );
+        }
+    }
+
     public function testHelpRequest()
     {
+        $this->testWelcomeMessage(); // Get those out of the way
+
         $request =
             [
                 'MessageSid' => 'abc',
                 'From' => '14087226296',
                 'Body' => ' ?',
             ];
-        $v1 = new V1($this->conversationFactory, $request); // First one will be a welcome message
 
         $v1 = new V1($this->conversationFactory, $request);
         $this->assertEquals(
