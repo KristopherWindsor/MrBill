@@ -2,24 +2,24 @@
 
 namespace MrBill\Domain;
 
-use MrBill\Model\Repository\MessageRepository;
+use MrBill\Model\Repository\RepositoryFactory;
 use MrBill\PhoneNumber;
 
 class ConversationFactory
 {
-    /** @var MessageRepository */
-    protected $messageRepository;
+    /** @var RepositoryFactory */
+    protected $repositoryFactory;
 
     protected $conversations = [];
 
-    public function __construct(MessageRepository $messageRepository)
+    public function __construct(RepositoryFactory $repositoryFactory)
     {
-        $this->messageRepository = $messageRepository;
+        $this->repositoryFactory = $repositoryFactory;
     }
 
     public function getConversation(PhoneNumber $phoneNumber) : Conversation
     {
-        return $this->conversations[$phoneNumber->scalar] ??
-            $this->conversations[$phoneNumber->scalar] = new Conversation($phoneNumber, $this->messageRepository);
+        return $this->conversations[$phoneNumber->scalar] ?? $this->conversations[$phoneNumber->scalar] =
+                new Conversation($phoneNumber, $this->repositoryFactory->getMessageRepository());
     }
 }

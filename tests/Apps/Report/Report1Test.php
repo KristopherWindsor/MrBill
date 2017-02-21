@@ -7,6 +7,7 @@ use MrBill\Domain\Conversation;
 use MrBill\Domain\ConversationFactory;
 use MrBill\Model\Message;
 use MrBill\Model\Repository\MessageRepository;
+use MrBill\Model\Repository\RepositoryFactory;
 use MrBill\Persistence\DataStore;
 use MrBill\PhoneNumber;
 use PHPUnit\Framework\TestCase;
@@ -15,9 +16,6 @@ class Report1Test extends TestCase
 {
     /** @var PhoneNumber */
     private $phone;
-
-    /** @var MessageRepository */
-    private $messageRepository;
 
     /** @var ConversationFactory */
     private $conversationFactory;
@@ -32,9 +30,9 @@ class Report1Test extends TestCase
     {
         $this->phone = new PhoneNumber(14087226296);
 
-        $this->messageRepository = new MessageRepository(new DataStore());
+        $repositoryFactory = new RepositoryFactory(new DataStore());
 
-        $this->conversationFactory = new ConversationFactory($this->messageRepository);
+        $this->conversationFactory = new ConversationFactory($repositoryFactory);
 
         $this->conversation = $this->conversationFactory->getConversation($this->phone);
 

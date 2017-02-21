@@ -1,12 +1,14 @@
 <?php
+
 use MrBill\Apps\Report\Report1;
 use MrBill\Domain\ConversationFactory;
-use MrBill\Model\Repository\MessageRepository;
+use MrBill\Model\Repository\RepositoryFactory;
 use MrBill\Persistence\DataStore;
 
 require_once dirname(__DIR__, 3) . '/vendor/autoload.php';
 
-$report = new Report1(new ConversationFactory(new MessageRepository(new DataStore())), $_GET);
+$factory = new ConversationFactory(new RepositoryFactory(new DataStore()));
+$report = new Report1($factory, $_GET);
 
 if ($report->hasInitializationError()) {
     http_response_code(400);
