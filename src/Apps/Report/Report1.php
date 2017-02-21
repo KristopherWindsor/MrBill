@@ -3,7 +3,7 @@
 namespace MrBill\Apps\Report;
 
 use MrBill\Domain\Conversation;
-use MrBill\Domain\ConversationFactory;
+use MrBill\Domain\DomainFactory;
 use MrBill\Domain\ExpenseRecord;
 use MrBill\PhoneNumber;
 
@@ -12,7 +12,7 @@ class Report1
     /** @var Conversation */
     protected $conversation;
 
-    public function __construct(ConversationFactory $conversationFactory, array $get)
+    public function __construct(DomainFactory $conversationFactory, array $get)
     {
         if (empty($get['phone']))
             return; // TODO look for token

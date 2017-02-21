@@ -2,7 +2,7 @@
 
 namespace MrBill\Apps\Api;
 
-use MrBill\Domain\ConversationFactory;
+use MrBill\Domain\DomainFactory;
 use MrBill\Model\Repository\MessageRepository;
 use MrBill\Model\Repository\RepositoryFactory;
 use MrBill\Persistence\DataStore;
@@ -17,7 +17,7 @@ class V1Test extends TestCase
     /** @var PhoneNumber */
     private $testPhone;
 
-    /** @var ConversationFactory */
+    /** @var DomainFactory */
     private $conversationFactory;
 
     public function setUp()
@@ -26,7 +26,7 @@ class V1Test extends TestCase
 
         $repositoryFactory = new RepositoryFactory(new DataStore());
 
-        $this->conversationFactory = new ConversationFactory($repositoryFactory);
+        $this->conversationFactory = new DomainFactory($repositoryFactory);
 
         $this->conversationFactory->getConversation($this->testPhone)->removeAllMessageData();
     }

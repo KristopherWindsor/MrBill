@@ -4,7 +4,7 @@ namespace MrBill\Apps\Api;
 
 use MrBill\Apps\Report\Report1;
 use MrBill\Domain\Conversation;
-use MrBill\Domain\ConversationFactory;
+use MrBill\Domain\DomainFactory;
 use MrBill\Model\Message;
 use MrBill\Model\Repository\MessageRepository;
 use MrBill\Model\Repository\RepositoryFactory;
@@ -17,7 +17,7 @@ class Report1Test extends TestCase
     /** @var PhoneNumber */
     private $phone;
 
-    /** @var ConversationFactory */
+    /** @var DomainFactory */
     private $conversationFactory;
 
     /** @var Conversation */
@@ -32,7 +32,7 @@ class Report1Test extends TestCase
 
         $repositoryFactory = new RepositoryFactory(new DataStore());
 
-        $this->conversationFactory = new ConversationFactory($repositoryFactory);
+        $this->conversationFactory = new DomainFactory($repositoryFactory);
 
         $this->conversation = $this->conversationFactory->getConversation($this->phone);
 

@@ -5,7 +5,7 @@ namespace MrBill\Domain;
 use MrBill\Model\Repository\RepositoryFactory;
 use MrBill\PhoneNumber;
 
-class ConversationFactory
+class DomainFactory
 {
     /** @var RepositoryFactory */
     protected $repositoryFactory;

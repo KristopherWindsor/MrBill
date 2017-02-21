@@ -23,7 +23,7 @@ class ConversationTest extends TestCase
     {
         $this->testPhone = new PhoneNumber(self::TEST_PHONE);
 
-        $this->conversation = (new ConversationFactory(new RepositoryFactory(new DataStore())))
+        $this->conversation = (new DomainFactory(new RepositoryFactory(new DataStore())))
             ->getConversation($this->testPhone);
 
         $this->conversation->removeAllMessageData();

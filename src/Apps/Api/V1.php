@@ -4,7 +4,7 @@ namespace MrBill\Apps\Api;
 
 use MrBill\Domain\Conversation;
 use MrBill\Model\Message;
-use MrBill\Domain\ConversationFactory;
+use MrBill\Domain\DomainFactory;
 use MrBill\PhoneNumber;
 
 class V1
@@ -15,7 +15,7 @@ class V1
     protected $responseText = '';
     protected $addExtendedWelcomeMessages = false;
 
-    public function __construct(ConversationFactory $conversationFactory, array $post)
+    public function __construct(DomainFactory $conversationFactory, array $post)
     {
         if (empty($post['MessageSid']) || empty($post['From']) || empty($post['Body'])) {
             $this->responseText = 'Something is wrong.';

@@ -8,11 +8,11 @@ use MrBill\Persistence\DataStore;
 use MrBill\PhoneNumber;
 use PHPUnit\Framework\TestCase;
 
-class ConversationFactoryTest extends TestCase
+class DomainFactoryTest extends TestCase
 {
     const TEST_PHONE = 14087226296;
 
-    /** @var ConversationFactory */
+    /** @var DomainFactory */
     private $conversationFactory;
 
     /** @var PhoneNumber */
@@ -22,7 +22,7 @@ class ConversationFactoryTest extends TestCase
     {
         $this->testPhone = new PhoneNumber(self::TEST_PHONE);
 
-        $this->conversationFactory = new ConversationFactory(new RepositoryFactory(new DataStore()));
+        $this->conversationFactory = new DomainFactory(new RepositoryFactory(new DataStore()));
     }
 
     public function testGetConversation()

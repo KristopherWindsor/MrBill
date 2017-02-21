@@ -1,13 +1,13 @@
 <?php
 
 use MrBill\Apps\Report\Report1;
-use MrBill\Domain\ConversationFactory;
+use MrBill\Domain\DomainFactory;
 use MrBill\Model\Repository\RepositoryFactory;
 use MrBill\Persistence\DataStore;
 
 require_once dirname(__DIR__, 3) . '/vendor/autoload.php';
 
-$factory = new ConversationFactory(new RepositoryFactory(new DataStore()));
+$factory = new DomainFactory(new RepositoryFactory(new DataStore()));
 $report = new Report1($factory, $_GET);
 
 if ($report->hasInitializationError()) {
