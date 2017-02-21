@@ -6,6 +6,8 @@ use Exception;
 use Generator;
 use MrBill\Model\Message;
 use MrBill\Model\Repository\MessageRepository;
+use MrBill\Model\Repository\TokenRepository;
+use MrBill\Model\Token;
 use MrBill\PhoneNumber;
 
 /**
@@ -19,6 +21,9 @@ class Conversation
     /** @var MessageRepository */
     protected $messageRepository;
 
+    /** @var TokenRepository */
+    protected $tokenRepository;
+
     public $totalMessages = 0;
     public $totalIncomingMessages = 0;
 
@@ -28,10 +33,14 @@ class Conversation
     public $firstExpenseMessageTimestamp = 0;
     public $lastExpenseMessageTimestamp = 0;
 
-    public function __construct(PhoneNumber $phone, MessageRepository $messageRepository)
-    {
+    public function __construct(
+        PhoneNumber $phone,
+        MessageRepository $messageRepository,
+        TokenRepository $tokenRepository
+    ) {
         $this->phone = $phone;
         $this->messageRepository = $messageRepository;
+        $this->tokenRepository = $tokenRepository;
 
         foreach ($messageRepository->getAllMessagesForPhone($phone) as $message) {
             $this->processOneMessage($message);
@@ -89,7 +98,7 @@ class Conversation
         return $this->processOneMessage($message);
     }
 
-    public function removeAllMessageData() : void
+    public function removeAllData() : void
     {
         $this->messageRepository->removeAllMessagesForPhone($this->phone);
 
@@ -99,6 +108,8 @@ class Conversation
         $this->totalMessages                =
         $this->firstExpenseMessageTimestamp =
         $this->lastExpenseMessageTimestamp  = 0;
+
+        $this->tokenRepository->deleteToken($this->phone, 1);
     }
 
     public function getAllExpenseRecords() : Generator
@@ -110,5 +121,31 @@ class Conversation
                     yield $expenseRecord;
             }
         }
+    }
+
+    public function getExistingReportToken() : ?Token
+    {
+        $documentId = 1; // For now, all reports are id=1
+
+        return $this->tokenRepository->getTokenIfExists($this->phone, $documentId);
+    }
+
+    public function getOrCreateActiveReportToken() : Token
+    {
+        $documentId = 1; // For now, all reports are id=1
+
+        $existingToken = $this->tokenRepository->getTokenIfExists($this->phone, $documentId);
+
+        return
+            $existingToken && !$existingToken->isExpired() ? $existingToken :
+
+            $this->tokenRepository->persistToken(
+                new Token(
+                    $this->phone,
+                    $documentId,
+                    dechex(random_int(pow(2, 48), pow(2, 52) - 1)),
+                    time() + 3600 * 24 * 30
+                )
+            );
     }
 }

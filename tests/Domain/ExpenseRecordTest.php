@@ -32,7 +32,7 @@ class ExpenseRecordTest extends TestCase
             [0, ''],
         ];
 
-        foreach ($scenarios as $index => [$expectedCount, $text]) {
+        foreach ($scenarios as $index => list($expectedCount, $text)) {
             $this->assertCount(
                 $expectedCount,
                 ExpenseRecord::getAllExpensesFromMessage($text),
@@ -49,7 +49,7 @@ class ExpenseRecordTest extends TestCase
             ['5 #dog #cat', '#cat#dog'],
         ];
 
-        foreach ($scenarios as $index => [$message, $canonical]) {
+        foreach ($scenarios as $index => list($message, $canonical)) {
             $expenseRecord = new ExpenseRecord($message);
             $this->assertEquals($canonical, $expenseRecord->getHashtagsCanonical(), 'Case ' . $index);
         }

@@ -13,9 +13,10 @@ use MrBill\Model\Token;
  */
 class TokenRepository extends Repository
 {
-    public function persistToken(Token $token) : void
+    public function persistToken(Token $token) : Token
     {
         $this->dataStore->put($this->getDataStoreKey($token->phone, $token->documentId), $token->toJson());
+        return $token;
     }
 
     public function getTokenIfExists(PhoneNumber $phoneNumber, int $documentId) : ?Token

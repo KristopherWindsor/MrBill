@@ -3,7 +3,6 @@
 namespace MrBill\Apps\Api;
 
 use MrBill\Domain\DomainFactory;
-use MrBill\Model\Repository\MessageRepository;
 use MrBill\Model\Repository\RepositoryFactory;
 use MrBill\Persistence\DataStore;
 use MrBill\PhoneNumber;
@@ -28,7 +27,7 @@ class V1Test extends TestCase
 
         $this->conversationFactory = new DomainFactory($repositoryFactory);
 
-        $this->conversationFactory->getConversation($this->testPhone)->removeAllMessageData();
+        $this->conversationFactory->getConversation($this->testPhone)->removeAllData();
     }
 
     public function testInvalidRequest()
@@ -69,7 +68,7 @@ class V1Test extends TestCase
         $request =
             [
                 'MessageSid' => 'abc',
-                'From' => '14087226296',
+                'From' => self::TEST_PHONE,
                 'Body' => '$7 #tag',
             ];
 
@@ -109,6 +108,29 @@ class V1Test extends TestCase
         $v1 = new V1($this->conversationFactory, $request);
         $this->assertEquals(
             '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>2/5 Every time you spend $$, send me a text like: 8.99 #eatout #lunch lunch with friends</Message></Response>',
+            $v1->getResult()
+        );
+    }
+
+    public function testCreateReportAndGetReply()
+    {
+        $this->testWelcomeMessage(); // Get those out of the way
+
+        $request =
+            [
+                'MessageSid' => 'abc',
+                'From' => '14087226296',
+                'Body' => 'report',
+            ];
+
+        $v1 = new V1($this->conversationFactory, $request);
+
+        $secret = $this->conversationFactory->getConversation($this->testPhone)->getExistingReportToken()->secret;
+
+        $this->assertEquals(
+            '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>Your report! ' .
+                'https://mrbill.kristopherwindsor.com/report/1?p=' . $this->testPhone . '&amp;s=' . $secret .
+                '</Message></Response>',
             $v1->getResult()
         );
     }

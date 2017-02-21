@@ -23,10 +23,12 @@ class ConversationTest extends TestCase
     {
         $this->testPhone = new PhoneNumber(self::TEST_PHONE);
 
-        $this->conversation = (new DomainFactory(new RepositoryFactory(new DataStore())))
+        $repositoryFactory = new RepositoryFactory(new DataStore());
+
+        $this->conversation = (new DomainFactory($repositoryFactory))
             ->getConversation($this->testPhone);
 
-        $this->conversation->removeAllMessageData();
+        $this->conversation->removeAllData();
     }
 
     public function testGetPhoneNumber()
@@ -89,5 +91,27 @@ class ConversationTest extends TestCase
         $this->assertEquals(2, $this->conversation->totalExpenseMessages);
         $this->assertEquals($time + 1, $this->conversation->firstExpenseMessageTimestamp);
         $this->assertEquals($time + 2, $this->conversation->lastExpenseMessageTimestamp);
+    }
+
+    public function testGetOrCreateActiveReportToken()
+    {
+        $token = $this->conversation->getOrCreateActiveReportToken();
+        $this->assertEquals($this->testPhone, $token->phone);
+        $this->assertEquals(1, $token->documentId);
+        $this->assertNotEmpty($token->secret);
+        $this->assertFalse($token->isExpired());
+
+        // Might get a different instance, but the properties should be identical
+        $token2 = $this->conversation->getOrCreateActiveReportToken();
+        $this->assertTrue($token == $token2);
+    }
+
+    public function testGetExistingReportTokenAndGetOrCreateActiveReportToken()
+    {
+        $this->assertEmpty($this->conversation->getExistingReportToken());
+
+        $token = $this->conversation->getOrCreateActiveReportToken();
+
+        $this->assertTrue($token == $this->conversation->getExistingReportToken());
     }
 }

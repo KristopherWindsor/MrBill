@@ -8,6 +8,7 @@ use MrBill\Domain\DomainFactory;
 use MrBill\Model\Message;
 use MrBill\Model\Repository\MessageRepository;
 use MrBill\Model\Repository\RepositoryFactory;
+use MrBill\Model\Token;
 use MrBill\Persistence\DataStore;
 use MrBill\PhoneNumber;
 use PHPUnit\Framework\TestCase;
@@ -16,6 +17,9 @@ class Report1Test extends TestCase
 {
     /** @var PhoneNumber */
     private $phone;
+
+    /** @var RepositoryFactory */
+    private $repositoryFactory;
 
     /** @var DomainFactory */
     private $conversationFactory;
@@ -30,19 +34,35 @@ class Report1Test extends TestCase
     {
         $this->phone = new PhoneNumber(14087226296);
 
-        $repositoryFactory = new RepositoryFactory(new DataStore());
+        $this->repositoryFactory = new RepositoryFactory(new DataStore());
 
-        $this->conversationFactory = new DomainFactory($repositoryFactory);
+        $this->conversationFactory = new DomainFactory($this->repositoryFactory);
 
         $this->conversation = $this->conversationFactory->getConversation($this->phone);
 
-        $this->conversation->removeAllMessageData();
+        $this->conversation->removeAllData();
         $this->conversation->persistNewMessage(new Message($this->phone, 'hi', time(), true, 0));
 
         $this->report1 = new Report1(
             $this->conversationFactory,
-            ['phone' => $this->phone->scalar]
+            ['p' => $this->phone->scalar, 's' => $this->conversation->getOrCreateActiveReportToken()->secret]
         );
+    }
+
+    public function testInvalidRequestBadSecret()
+    {
+        $report = new Report1($this->conversationFactory, ['p' => $this->phone->scalar, 's' => 'bad']);
+        $this->assertTrue($report->hasInitializationError());
+    }
+
+    public function testInvalidRequestExpiredToken()
+    {
+        $this->repositoryFactory->getTokenRepository()->persistToken(
+            new Token($this->phone, 1, 'mysecret', time() - 1)
+        );
+
+        $report = new Report1($this->conversationFactory, ['p' => $this->phone->scalar, 's' => 'mysecret']);
+        $this->assertTrue($report->hasInitializationError());
     }
 
     public function testGetDateText()

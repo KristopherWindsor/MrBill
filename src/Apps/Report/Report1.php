@@ -14,11 +14,17 @@ class Report1
 
     public function __construct(DomainFactory $conversationFactory, array $get)
     {
-        if (empty($get['phone']))
-            return; // TODO look for token
+        if (empty($get['p']) || empty($get['s']))
+            return;
 
-        $phone = new PhoneNumber($get['phone']);
-        $this->conversation = $conversationFactory->getConversation($phone);
+        $phone = new PhoneNumber($get['p']);
+        $conversation = $conversationFactory->getConversation($phone);
+
+        $token = $conversation->getExistingReportToken();
+        if (!$token || $token->isExpired() || $get['s'] != $token->secret)
+            return;
+
+        $this->conversation = $conversation;
     }
 
     public function hasInitializationError() : bool
@@ -28,6 +34,9 @@ class Report1
 
     public function getDateText() : string
     {
+        if ($this->hasInitializationError())
+            return '';
+
         $format = 'M jS, Y';
 
         return date($format, $this->conversation->firstExpenseMessageTimestamp) . ' &mdash; ' .

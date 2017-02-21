@@ -9,6 +9,9 @@ use MrBill\PhoneNumber;
 
 class V1
 {
+    /** @var PhoneNumber */
+    protected $phone;
+
     /** @var Conversation */
     protected $conversation;
 
@@ -22,10 +25,10 @@ class V1
             return;
         }
 
-        $from = new PhoneNumber($post['From']);
-        $this->conversation = $conversationFactory->getConversation($from);
+        $this->phone = new PhoneNumber($post['From']);
+        $this->conversation = $conversationFactory->getConversation($this->phone);
 
-        $incomingMessage = Message::createWithEntropy($from, $post['Body'], time(), true);
+        $incomingMessage = Message::createWithEntropy($this->phone, $post['Body'], time(), true);
         $messageWithMeaning = $this->conversation->persistNewMessage($incomingMessage);
 
         $isTenthExpense = $messageWithMeaning->isExpenseMessage() && $this->conversation->totalExpenseMessages == 10;
@@ -48,7 +51,7 @@ class V1
         }
 
         if ($this->responseText) {
-            $replyMessage = Message::createWithEntropy($from, $this->responseText, time(), false);
+            $replyMessage = Message::createWithEntropy($this->phone, $this->responseText, time(), false);
             $this->conversation->persistNewMessage($replyMessage);
         }
     }
@@ -101,6 +104,9 @@ class V1
 
     protected function createReportAndGetReply() : string
     {
-        return ''; // TODO
+        $token = $this->conversation->getOrCreateActiveReportToken();
+
+        return 'Your report! https://mrbill.kristopherwindsor.com/report/1?p=' .
+            $this->phone . '&amp;s=' . $token->secret;
     }
 }

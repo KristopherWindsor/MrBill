@@ -20,6 +20,11 @@ class DomainFactory
     public function getConversation(PhoneNumber $phoneNumber) : Conversation
     {
         return $this->conversations[$phoneNumber->scalar] ?? $this->conversations[$phoneNumber->scalar] =
-                new Conversation($phoneNumber, $this->repositoryFactory->getMessageRepository());
+
+        new Conversation(
+            $phoneNumber,
+            $this->repositoryFactory->getMessageRepository(),
+            $this->repositoryFactory->getTokenRepository()
+        );
     }
 }
