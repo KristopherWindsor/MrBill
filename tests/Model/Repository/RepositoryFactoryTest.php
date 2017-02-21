@@ -24,7 +24,7 @@ class RepositoryFactoryTest extends TestCase
         $this->assertTrue($a === $b);
     }
 
-    public function testGetTokeneRepository()
+    public function testGetTokenRepository()
     {
         $a = $this->repositoryFactory->getTokenRepository();
         $b = $this->repositoryFactory->getTokenRepository();

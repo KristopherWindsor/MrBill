@@ -18,7 +18,7 @@ class V1
     protected $responseText = '';
     protected $addExtendedWelcomeMessages = false;
 
-    public function __construct(DomainFactory $conversationFactory, array $post)
+    public function __construct(DomainFactory $domainFactory, array $post)
     {
         if (empty($post['MessageSid']) || empty($post['From']) || empty($post['Body'])) {
             $this->responseText = 'Something is wrong.';
@@ -26,7 +26,7 @@ class V1
         }
 
         $this->phone = new PhoneNumber($post['From']);
-        $this->conversation = $conversationFactory->getConversation($this->phone);
+        $this->conversation = $domainFactory->getConversation($this->phone);
 
         $incomingMessage = Message::createWithEntropy($this->phone, $post['Body'], time(), true);
         $messageWithMeaning = $this->conversation->persistNewMessage($incomingMessage);

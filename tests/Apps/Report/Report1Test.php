@@ -22,7 +22,7 @@ class Report1Test extends TestCase
     private $repositoryFactory;
 
     /** @var DomainFactory */
-    private $conversationFactory;
+    private $domainFactory;
 
     /** @var Conversation */
     private $conversation;
@@ -36,22 +36,22 @@ class Report1Test extends TestCase
 
         $this->repositoryFactory = new RepositoryFactory(new DataStore());
 
-        $this->conversationFactory = new DomainFactory($this->repositoryFactory);
+        $this->domainFactory = new DomainFactory($this->repositoryFactory);
 
-        $this->conversation = $this->conversationFactory->getConversation($this->phone);
+        $this->conversation = $this->domainFactory->getConversation($this->phone);
 
         $this->conversation->removeAllData();
         $this->conversation->persistNewMessage(new Message($this->phone, 'hi', time(), true, 0));
 
         $this->report1 = new Report1(
-            $this->conversationFactory,
+            $this->domainFactory,
             ['p' => $this->phone->scalar, 's' => $this->conversation->getOrCreateActiveReportToken()->secret]
         );
     }
 
     public function testInvalidRequestBadSecret()
     {
-        $report = new Report1($this->conversationFactory, ['p' => $this->phone->scalar, 's' => 'bad']);
+        $report = new Report1($this->domainFactory, ['p' => $this->phone->scalar, 's' => 'bad']);
         $this->assertTrue($report->hasInitializationError());
     }
 
@@ -61,7 +61,7 @@ class Report1Test extends TestCase
             new Token($this->phone, 1, 'mysecret', time() - 1)
         );
 
-        $report = new Report1($this->conversationFactory, ['p' => $this->phone->scalar, 's' => 'mysecret']);
+        $report = new Report1($this->domainFactory, ['p' => $this->phone->scalar, 's' => 'mysecret']);
         $this->assertTrue($report->hasInitializationError());
     }
 

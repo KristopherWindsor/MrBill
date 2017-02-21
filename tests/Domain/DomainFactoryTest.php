@@ -13,7 +13,7 @@ class DomainFactoryTest extends TestCase
     const TEST_PHONE = 14087226296;
 
     /** @var DomainFactory */
-    private $conversationFactory;
+    private $domainFactory;
 
     /** @var PhoneNumber */
     private $testPhone;
@@ -22,12 +22,12 @@ class DomainFactoryTest extends TestCase
     {
         $this->testPhone = new PhoneNumber(self::TEST_PHONE);
 
-        $this->conversationFactory = new DomainFactory(new RepositoryFactory(new DataStore()));
+        $this->domainFactory = new DomainFactory(new RepositoryFactory(new DataStore()));
     }
 
     public function testGetConversation()
     {
-        $conversation = $this->conversationFactory->getConversation($this->testPhone);
+        $conversation = $this->domainFactory->getConversation($this->testPhone);
         $this->assertEquals($this->testPhone, $conversation->getPhoneNumber());
     }
 }

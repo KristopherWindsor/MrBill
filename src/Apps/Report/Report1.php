@@ -12,13 +12,13 @@ class Report1
     /** @var Conversation */
     protected $conversation;
 
-    public function __construct(DomainFactory $conversationFactory, array $get)
+    public function __construct(DomainFactory $domainFactory, array $get)
     {
         if (empty($get['p']) || empty($get['s']))
             return;
 
         $phone = new PhoneNumber($get['p']);
-        $conversation = $conversationFactory->getConversation($phone);
+        $conversation = $domainFactory->getConversation($phone);
 
         $token = $conversation->getExistingReportToken();
         if (!$token || $token->isExpired() || $get['s'] != $token->secret)

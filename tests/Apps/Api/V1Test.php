@@ -17,7 +17,7 @@ class V1Test extends TestCase
     private $testPhone;
 
     /** @var DomainFactory */
-    private $conversationFactory;
+    private $domainFactory;
 
     public function setUp()
     {
@@ -25,14 +25,14 @@ class V1Test extends TestCase
 
         $repositoryFactory = new RepositoryFactory(new DataStore());
 
-        $this->conversationFactory = new DomainFactory($repositoryFactory);
+        $this->domainFactory = new DomainFactory($repositoryFactory);
 
-        $this->conversationFactory->getConversation($this->testPhone)->removeAllData();
+        $this->domainFactory->getConversation($this->testPhone)->removeAllData();
     }
 
     public function testInvalidRequest()
     {
-        $v1 = new V1($this->conversationFactory, []);
+        $v1 = new V1($this->domainFactory, []);
         $this->assertEquals(
             '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>Something is wrong.</Message></Response>',
             $v1->getResult()
@@ -47,7 +47,7 @@ class V1Test extends TestCase
                 'From' => '14087226296',
                 'Body' => 'hello',
             ];
-        $v1 = new V1($this->conversationFactory, $request);
+        $v1 = new V1($this->domainFactory, $request);
 
         $expected =
             '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>Hi, I\'m Mr. Bill. Just text me each time you ' .
@@ -79,7 +79,7 @@ class V1Test extends TestCase
         ];
 
         for ($i = 1; $i < 7; $i++) {
-            $v1 = new V1($this->conversationFactory, $request);
+            $v1 = new V1($this->domainFactory, $request);
             $this->assertEquals(
                 $expected[$i] ?? '<?xml version="1.0" encoding="UTF-8" ?><Response></Response>',
                 $v1->getResult(),
@@ -99,13 +99,13 @@ class V1Test extends TestCase
                 'Body' => ' ?',
             ];
 
-        $v1 = new V1($this->conversationFactory, $request);
+        $v1 = new V1($this->domainFactory, $request);
         $this->assertEquals(
             '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>1/5 Let\'s see how I can help you! Text "?" again to cycle through the help messages.</Message></Response>',
             $v1->getResult()
         );
 
-        $v1 = new V1($this->conversationFactory, $request);
+        $v1 = new V1($this->domainFactory, $request);
         $this->assertEquals(
             '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>2/5 Every time you spend $$, send me a text like: 8.99 #eatout #lunch lunch with friends</Message></Response>',
             $v1->getResult()
@@ -123,9 +123,9 @@ class V1Test extends TestCase
                 'Body' => 'report',
             ];
 
-        $v1 = new V1($this->conversationFactory, $request);
+        $v1 = new V1($this->domainFactory, $request);
 
-        $secret = $this->conversationFactory->getConversation($this->testPhone)->getExistingReportToken()->secret;
+        $secret = $this->domainFactory->getConversation($this->testPhone)->getExistingReportToken()->secret;
 
         $this->assertEquals(
             '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>Your report! ' .
