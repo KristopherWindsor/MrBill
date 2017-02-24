@@ -32,12 +32,20 @@ class DataStoreTest extends TestCase
     {
         $this->dataStore->append($this->key, 'item1');
         $this->dataStore->append($this->key, 'item2');
-        $index = -1;
-        $expected = ['item1', 'item2'];
-        foreach ($this->dataStore->get($this->key) as $index => $value) {
-            $this->assertEquals($expected[$index], $value);
-        }
-        $this->assertEquals(1, $index);
+        $this->checkKeyForItems1And2();
+    }
+
+    public function testPutAndGetNewlinesLost()
+    {
+        $this->dataStore->put($this->key, "\nit\nem1\n");
+        $this->checkKeyForItems1And2(1);
+    }
+
+    public function testAppendAndGetNewlinesLost()
+    {
+        $this->dataStore->append($this->key, "\nit\nem1\n");
+        $this->dataStore->append($this->key, "\nit\nem2\n");
+        $this->checkKeyForItems1And2();
     }
 
     public function testDelete()
@@ -47,5 +55,15 @@ class DataStoreTest extends TestCase
 
         $this->dataStore->remove($this->key);
         $this->assertFalse($this->dataStore->exists($this->key));
+    }
+
+    protected function checkKeyForItems1And2($totalExpectedItems = 2)
+    {
+        $index = -1;
+        $expected = ['item1', 'item2'];
+        foreach ($this->dataStore->get($this->key) as $index => $value) {
+            $this->assertEquals($expected[$index], $value);
+        }
+        $this->assertEquals($totalExpectedItems - 1, $index);
     }
 }

@@ -24,11 +24,15 @@ class DataStore
 
     public function append(string $key, string $item) : void
     {
+        // Newlines are silently lost!
+        $item = str_replace("\n", '', $item);
         file_put_contents($this->getFileNameForKey($key), $item . "\n", FILE_APPEND);
     }
 
     public function put(string $key, string $item) : void
     {
+        // Newlines are silently lost!
+        $item = str_replace("\n", '', $item);
         file_put_contents($this->getFileNameForKey($key), $item . "\n");
     }
 
