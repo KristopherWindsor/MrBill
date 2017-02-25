@@ -4,7 +4,8 @@ namespace MrBill\Apps\Report;
 
 use MrBill\Domain\Conversation;
 use MrBill\Domain\DomainFactory;
-use MrBill\Domain\ExpenseRecord;
+use MrBill\Domain\ExpensesFromMessageParser;
+use MrBill\Model\Expense;
 use MrBill\PhoneNumber;
 
 class Report1
@@ -50,9 +51,8 @@ class Report1
 
 
         $result = '';
-        foreach ($this->getDataForTable() as $key => $amound) {
-            /** @var ExpenseRecord $expenseRecord */
-            $result .= '<tr><td>' . $key . '</td><td>' . $amound . "</td>\n";
+        foreach ($this->getDataForTable() as $key => $amount) {
+            $result .= '<tr><td>' . $key . '</td><td>' . $amount . "</td>\n";
         }
         return $result;
     }
@@ -62,12 +62,12 @@ class Report1
         $data = [];
 
         foreach ($this->conversation->getAllExpenseRecords() as $expenseRecord) {
-            /** @var ExpenseRecord $expenseRecord */
-            $key = $expenseRecord->getHashtagsCanonical();
+            /** @var Expense $expenseRecord */
+            $key = '#' . implode('#', $expenseRecord->hashTags);
             if (isset($data[$key])) {
-                $data[$key] += $expenseRecord->amount;
+                $data[$key] += $expenseRecord->amountInCents / 100; // TODO some refactoring..
             } else {
-                $data[$key] = $expenseRecord->amount;
+                $data[$key] = $expenseRecord->amountInCents / 100;
             }
         }
         ksort($data);

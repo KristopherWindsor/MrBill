@@ -26,7 +26,7 @@ class MessageWithMeaning
     ) {
         $text = strtolower(trim($message->message));
 
-        $hasExpenseRecords = (bool) ExpenseRecord::getAllExpensesFromMessage($message->message);
+        $hasExpenseRecords = (bool) (new ExpensesFromMessageParser)->parse($message);
 
         if ($message->isFromUser) {
             if (!$totalPrecedingIncomingMessages)

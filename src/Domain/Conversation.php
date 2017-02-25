@@ -114,18 +114,10 @@ class Conversation
     protected function persistExpenses(MessageWithMeaning $messageWithMeaning)
     {
         if ($messageWithMeaning->isExpenseMessage()) {
-            foreach (ExpenseRecord::getAllExpensesFromMessage($messageWithMeaning->message) as $expenseRecord)
-                /** @var ExpenseRecord $expenseRecord */
-                $this->expenseRepository->persist(
-                    Expense::createFromMessageWithEntropy(
-                        $messageWithMeaning->message->phone,
-                        $messageWithMeaning->message->timestamp,
-                        $expenseRecord->amount * 100, // TODO figure out where this cents-to-dollars conversion goes
-                        $expenseRecord->hashtags,
-                        $expenseRecord->message,
-                        $messageWithMeaning->message->getHash()
-                    )
-                );
+            $parser = new ExpensesFromMessageParser();
+            foreach ($parser->parse($messageWithMeaning->message) as $expense)
+                /** @var Expense $expense */
+                $this->expenseRepository->persist($expense);
         }
     }
 
@@ -148,7 +140,8 @@ class Conversation
         foreach ($this->messageRepository->getAllMessagesForPhone($this->phone) as $message) {
             /** @var Message $message */
             if ($message->isFromUser) {
-                foreach (ExpenseRecord::getAllExpensesFromMessage($message->message) as $expenseRecord)
+                $parser = new ExpensesFromMessageParser();
+                foreach ($parser->parse($message) as $expenseRecord)
                     yield $expenseRecord;
             }
         }
