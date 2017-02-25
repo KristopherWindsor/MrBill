@@ -29,8 +29,6 @@ class ConversationTest extends TestCase
 
         $this->conversation = (new DomainFactory($repositoryFactory))
             ->getConversation($this->testPhone);
-
-        $this->conversation->removeAllData();
     }
 
     public function testGetPhoneNumber()
@@ -93,6 +91,27 @@ class ConversationTest extends TestCase
         $this->assertEquals(2, $this->conversation->totalExpenseMessages);
         $this->assertEquals($time + 1, $this->conversation->firstExpenseMessageTimestamp);
         $this->assertEquals($time + 2, $this->conversation->lastExpenseMessageTimestamp);
+    }
+
+    public function testRemoveAllData()
+    {
+        $newMessage = new Message($this->testPhone, 'message' . uniqid(), time(), true, 0);
+        $expenseMessage = new Message($this->testPhone, '5.55 #tag', time(), true, 0);
+        $outgoingMessage = new Message($this->testPhone, 'out', time(), false, 0);
+        $helpMessage = new Message($this->testPhone, '?', time(), true, 0);
+
+        $this->conversation->persistNewMessage($newMessage);
+        $this->conversation->persistNewMessage($expenseMessage);
+        $this->conversation->persistNewMessage($outgoingMessage);
+        $this->conversation->persistNewMessage($helpMessage);
+
+        $this->conversation->removeAllData();
+        $this->assertEquals(0, $this->conversation->totalMessages);
+        $this->assertEquals(0, $this->conversation->totalIncomingMessages);
+        $this->assertEquals(0, $this->conversation->totalHelpRequests);
+        $this->assertEquals(0, $this->conversation->totalExpenseMessages);
+        $this->assertEquals(0, $this->conversation->firstExpenseMessageTimestamp);
+        $this->assertEquals(0, $this->conversation->lastExpenseMessageTimestamp);
     }
 
     public function testGetOrCreateActiveReportToken()
