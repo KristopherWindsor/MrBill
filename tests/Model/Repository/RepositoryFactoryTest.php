@@ -32,4 +32,13 @@ class RepositoryFactoryTest extends TestCase
         $this->assertNotEmpty($a);
         $this->assertTrue($a === $b);
     }
+
+    public function testGetExpenseRepository()
+    {
+        $a = $this->repositoryFactory->getExpenseRepository();
+        $b = $this->repositoryFactory->getExpenseRepository();
+
+        $this->assertNotEmpty($a);
+        $this->assertTrue($a === $b);
+    }
 }
