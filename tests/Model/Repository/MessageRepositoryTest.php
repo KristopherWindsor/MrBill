@@ -11,8 +11,13 @@ use PHPUnit\Framework\TestCase;
 
 class MessageRepositoryTest extends TestCase
 {
+    const TEST_TIME = 1488012941;
+
     /** @var Message */
     private $message;
+
+    /** @var MockDataStore */
+    private $mockDataStore;
 
     /** @var MessageRepository */
     private $messageRepository;
@@ -22,19 +27,35 @@ class MessageRepositoryTest extends TestCase
         $this->message = new Message(
             new PhoneNumber(14087226296),
             'a message',
-            time(),
+            self::TEST_TIME,
             true,
             0
         );
 
-        $this->messageRepository = new MessageRepository(new MockDataStore());
+        $this->mockDataStore = new MockDataStore();
+
+        $this->messageRepository = new MessageRepository($this->mockDataStore);
     }
 
-    public function testRemoveAllAndPersistAndGetAll()
+    public function testPersist()
+    {
+        for ($i = 0; $i < 2; $i++)
+            $this->messageRepository->persistMessage($this->message);
+
+        $this->assertEquals(
+            [
+                'messages14087226296' => [
+                    '{"phone":14087226296,"message":"a message","timestamp":1488012941,"isFromUser":true,"entropy":0}',
+                    '{"phone":14087226296,"message":"a message","timestamp":1488012941,"isFromUser":true,"entropy":0}'
+                ]
+            ],
+            $this->mockDataStore->storage
+        );
+    }
+
+    public function testPersistAndGetAll()
     {
         $phone = $this->message->phone;
-
-        $this->messageRepository->removeAllMessagesForPhone($phone);
 
         for ($i = 0; $i < 2; $i++)
             $this->messageRepository->persistMessage($this->message);
@@ -48,7 +69,7 @@ class MessageRepositoryTest extends TestCase
             $this->assertEquals($this->message, $message);
     }
 
-    public function testPersistAndRemoveAllAndGetAll()
+    public function testPersistAndRemoveAll()
     {
         $phone = $this->message->phone;
 
@@ -57,10 +78,6 @@ class MessageRepositoryTest extends TestCase
 
         $this->messageRepository->removeAllMessagesForPhone($phone);
 
-        $messages = iterator_to_array(
-            $this->messageRepository->getAllMessagesForPhone($phone)
-        );
-
-        $this->assertCount(0, $messages);
+        $this->assertEmpty($this->mockDataStore->storage);
     }
 }
