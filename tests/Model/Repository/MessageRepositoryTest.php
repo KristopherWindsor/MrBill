@@ -27,7 +27,7 @@ class MessageRepositoryTest extends TestCase
             0
         );
 
-        $this->messageRepository = new MessageRepository(new DataStore());
+        $this->messageRepository = new MessageRepository(new MockDataStore());
     }
 
     public function testRemoveAllAndPersistAndGetAll()

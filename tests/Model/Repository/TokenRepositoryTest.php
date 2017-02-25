@@ -25,7 +25,7 @@ class TokenRepositoryTest extends TestCase
             1234567890
         );
 
-        $this->tokenRepository = new TokenRepository(new DataStore());
+        $this->tokenRepository = new TokenRepository(new MockDataStore());
     }
 
     public function testPutAndDoesExist()

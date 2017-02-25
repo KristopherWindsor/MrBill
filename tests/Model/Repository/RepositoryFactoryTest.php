@@ -13,7 +13,7 @@ class RepositoryFactoryTest extends TestCase
 
     public function setUp()
     {
-        $this->repositoryFactory = new RepositoryFactory(new DataStore());
+        $this->repositoryFactory = new RepositoryFactory(new MockDataStore());
     }
 
     public function testGetMessageRepository()

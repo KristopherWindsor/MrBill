@@ -57,7 +57,7 @@ class ExpenseRepositoryTest extends TestCase
             9
         );
 
-        $this->expenseRepository = new ExpenseRepository(new DataStore());
+        $this->expenseRepository = new ExpenseRepository(new MockDataStore());
     }
 
     public function testRemoveAndPutAndGet()
