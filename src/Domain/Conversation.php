@@ -4,7 +4,9 @@ namespace MrBill\Domain;
 
 use Exception;
 use Generator;
+use MrBill\Model\Expense;
 use MrBill\Model\Message;
+use MrBill\Model\Repository\ExpenseRepository;
 use MrBill\Model\Repository\MessageRepository;
 use MrBill\Model\Repository\TokenRepository;
 use MrBill\Model\Token;
@@ -26,6 +28,9 @@ class Conversation
     /** @var TokenRepository */
     protected $tokenRepository;
 
+    /** @var ExpenseRepository */
+    protected $expenseRepository;
+
     public $totalMessages = 0;
     public $totalIncomingMessages = 0;
 
@@ -38,11 +43,13 @@ class Conversation
     public function __construct(
         PhoneNumber $phone,
         MessageRepository $messageRepository,
-        TokenRepository $tokenRepository
+        TokenRepository $tokenRepository,
+        ExpenseRepository $expenseRepository
     ) {
         $this->phone = $phone;
         $this->messageRepository = $messageRepository;
         $this->tokenRepository = $tokenRepository;
+        $this->expenseRepository = $expenseRepository;
 
         foreach ($messageRepository->getAllMessagesForPhone($phone) as $message) {
             $this->processOneMessage($message);
@@ -97,7 +104,29 @@ class Conversation
 
         $this->messageRepository->persistMessage($message);
 
-        return $this->processOneMessage($message);
+        $messageWithMeaning = $this->processOneMessage($message);
+
+     ///needs a test!!   $this->persistExpenses($messageWithMeaning);
+
+        return $messageWithMeaning;
+    }
+
+    protected function persistExpenses(MessageWithMeaning $messageWithMeaning)
+    {
+        if ($messageWithMeaning->isExpenseMessage()) {
+            foreach (ExpenseRecord::getAllExpensesFromMessage($messageWithMeaning->message) as $expenseRecord)
+                /** @var ExpenseRecord $expenseRecord */
+                $this->expenseRepository->persist(
+                    Expense::createFromMessageWithEntropy(
+                        $messageWithMeaning->message->phone,
+                        $messageWithMeaning->message->timestamp,
+                        $expenseRecord->amount * 100, // TODO figure out where this cents-to-dollars conversion goes
+                        $expenseRecord->hashtags,
+                        $expenseRecord->message,
+                        $messageWithMeaning->message->getHash()
+                    )
+                );
+        }
     }
 
     public function removeAllData() : void

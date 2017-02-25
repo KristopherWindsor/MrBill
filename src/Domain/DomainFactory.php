@@ -24,7 +24,8 @@ class DomainFactory
         new Conversation(
             $phoneNumber,
             $this->repositoryFactory->getMessageRepository(),
-            $this->repositoryFactory->getTokenRepository()
+            $this->repositoryFactory->getTokenRepository(),
+            $this->repositoryFactory->getExpenseRepository()
         );
     }
 }
