@@ -4,7 +4,7 @@ namespace MrBill\Model;
 
 use MrBill\PhoneNumber;
 
-class Message implements Serializable
+class Message extends Hashable implements Serializable
 {
     public $phone, $message, $timestamp, $isFromUser;
 
