@@ -31,28 +31,26 @@ class Message extends Hashable implements Serializable
         return new Message($phone, $message, $timestamp, $isFromUser, $entropy);
     }
 
-    public static function createFromJson(string $jsonString) : Message
+    public static function createFromMap(array $map) : Message
     {
-        $object = json_decode($jsonString);
         return new Message(
-            new PhoneNumber($object->phone),
-            $object->message,
-            $object->timestamp,
-            $object->isFromUser,
-            @$object->entropy
+            new PhoneNumber($map['phone']),
+            $map['message'],
+            $map['timestamp'],
+            $map['isFromUser'],
+            @$map['entropy']
         );
     }
 
-    public function toJson() : string
+    public function toMap() : array
     {
-        return json_encode(
+        return
             [
                 'phone' => $this->phone,
                 'message' => $this->message,
                 'timestamp' => $this->timestamp,
                 'isFromUser' => $this->isFromUser,
                 'entropy' => $this->entropy,
-            ]
-        );
+            ];
     }
 }

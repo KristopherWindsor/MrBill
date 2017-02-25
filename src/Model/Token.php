@@ -30,27 +30,25 @@ class Token implements Serializable
         return new static($phoneNumber, $documentId, $secret, $expiry);
     }
 
-    public static function createFromJson(string $jsonString) : Token
+    public static function createFromMap(array $map) : Token
     {
-        $object = json_decode($jsonString);
         return new static(
-            new PhoneNumber($object->phone),
-            $object->documentId,
-            $object->secret,
-            $object->expiry
+            new PhoneNumber($map['phone']),
+            $map['documentId'],
+            $map['secret'],
+            $map['expiry']
         );
     }
 
-    public function toJson() : string
+    public function toMap() : array
     {
-        return json_encode(
+        return
             [
                 'phone' => $this->phone,
                 'documentId' => $this->documentId,
                 'secret' => $this->secret,
                 'expiry' => $this->expiry,
-            ]
-        );
+            ];
     }
 
     public function isExpired() : bool

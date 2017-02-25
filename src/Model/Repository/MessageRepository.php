@@ -11,14 +11,14 @@ class MessageRepository extends Repository
     public function persistMessage(Message $message) : void
     {
         $key = $this->getDataStoreKey($message->phone);
-        $this->dataStore->append($key, $message->toJson());
+        $this->dataStore->append($key, json_encode($message->toMap()));
     }
 
     public function getAllMessagesForPhone(PhoneNumber $phoneNumber) : Generator
     {
         $key = $this->getDataStoreKey($phoneNumber);
         foreach ($this->dataStore->get($key) as $item)
-            yield Message::createFromJson($item);
+            yield Message::createFromMap(json_decode($item, true));
     }
 
     public function removeAllMessagesForPhone(PhoneNumber $phoneNumber) : void

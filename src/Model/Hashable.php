@@ -4,8 +4,8 @@ namespace MrBill\Model;
 
 abstract class Hashable implements Serializable
 {
-    public function getHashTag() : string
+    public function getHash() : string
     {
-        return sha1($this->toJson());
+        return sha1(json_encode($this->toMap()));
     }
 }

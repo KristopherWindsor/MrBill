@@ -52,20 +52,20 @@ class TokenTest extends TestCase
         $this->assertEquals(self::TEST_EXPIRY, $this->token->expiry);
     }
 
-    public function testToJson()
+    public function testToMap()
     {
-        $json = $this->token->toJson();
+        $json = json_encode($this->token->toMap());
         $this->assertEquals(
             '{"phone":14087226296,"documentId":2,"secret":"abc123","expiry":1234567890}',
             $json
         );
     }
 
-    public function testCreateFromJson()
+    public function testCreateFromMap()
     {
-        $json = $this->token->toJson();
+        $map = $this->token->toMap();
 
-        $this->token = Token::createFromJson($json);
+        $this->token = Token::createFromMap($map);
 
         $this->testConstructedInstance();
     }

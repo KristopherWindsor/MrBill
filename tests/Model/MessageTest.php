@@ -32,21 +32,21 @@ class MessageTest extends TestCase
         $this->assertNotEquals($message1, $message2);
     }
 
-    public function testToJson()
+    public function testToMap()
     {
         $message = new Message($this->testPhone, 'some message', self::TEST_TIMESTAMP, true, 2);
 
         $this->assertEquals(
             '{"phone":' . self::TEST_PHONE . ',"message":"some message","timestamp":' . self::TEST_TIMESTAMP .
                 ',"isFromUser":true,"entropy":2}',
-            $message->toJson()
+            json_encode($message->toMap())
         );
     }
 
-    public function testFromJson()
+    public function testFromMap()
     {
         $message = new Message($this->testPhone, 'some message', self::TEST_TIMESTAMP, true, 0);
-        $loadedMessage = Message::createFromJson($message->toJson());
+        $loadedMessage = Message::createFromMap($message->toMap());
 
         $this->assertEquals($this->testPhone, $loadedMessage->phone);
         $this->assertEquals('some message', $loadedMessage->message);

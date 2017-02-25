@@ -4,6 +4,6 @@ namespace MrBill\Model;
 
 interface Serializable
 {
-    public function toJson() : string;
-    public static function createFromJson(string $json);
+    public function toMap() : array;
+    public static function createFromMap(array $map);
 }

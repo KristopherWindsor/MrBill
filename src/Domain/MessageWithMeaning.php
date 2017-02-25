@@ -14,6 +14,7 @@ class MessageWithMeaning
     protected const OUT_MISC          = 'om';
     protected const OUT_QUESTION      = 'oq';
 
+    /** @var Message */
     public $message;
 
     public $meaning;

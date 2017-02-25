@@ -15,7 +15,7 @@ class TokenRepository extends Repository
 {
     public function persistToken(Token $token) : Token
     {
-        $this->dataStore->put($this->getDataStoreKey($token->phone, $token->documentId), $token->toJson());
+        $this->dataStore->put($this->getDataStoreKey($token->phone, $token->documentId), json_encode($token->toMap()));
         return $token;
     }
 
@@ -26,7 +26,7 @@ class TokenRepository extends Repository
             return null;
 
         $tokenString = $this->dataStore->get($key)->current();
-        return Token::createFromJson($tokenString);
+        return Token::createFromMap(json_decode($tokenString, true));
     }
 
     public function deleteToken(PhoneNumber $phoneNumber, int $documentId) : void
