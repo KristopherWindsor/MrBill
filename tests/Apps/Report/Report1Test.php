@@ -10,6 +10,7 @@ use MrBill\Model\Repository\RepositoryFactory;
 use MrBill\Model\Token;
 use MrBill\Persistence\DataStore;
 use MrBill\PhoneNumber;
+use MrBillTest\Model\Repository\MockDataStore;
 use PHPUnit\Framework\TestCase;
 
 class Report1Test extends TestCase
@@ -33,7 +34,7 @@ class Report1Test extends TestCase
     {
         $this->phone = new PhoneNumber(14087226296);
 
-        $this->repositoryFactory = new RepositoryFactory(new DataStore());
+        $this->repositoryFactory = new RepositoryFactory(new MockDataStore());
 
         $this->domainFactory = new DomainFactory($this->repositoryFactory);
 

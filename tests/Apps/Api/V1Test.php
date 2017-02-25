@@ -7,6 +7,7 @@ use MrBill\Domain\DomainFactory;
 use MrBill\Model\Repository\RepositoryFactory;
 use MrBill\Persistence\DataStore;
 use MrBill\PhoneNumber;
+use MrBillTest\Model\Repository\MockDataStore;
 use PHPUnit\Framework\TestCase;
 
 class V1Test extends TestCase
@@ -24,7 +25,7 @@ class V1Test extends TestCase
     {
         $this->testPhone = new PhoneNumber(self::TEST_PHONE);
 
-        $repositoryFactory = new RepositoryFactory(new DataStore());
+        $repositoryFactory = new RepositoryFactory(new MockDataStore());
 
         $this->domainFactory = new DomainFactory($repositoryFactory);
 
