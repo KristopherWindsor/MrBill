@@ -4,7 +4,6 @@ namespace MrBillTest\Model\Repository;
 
 use MrBill\Model\Expense;
 use MrBill\Model\Repository\ExpenseRepository;
-use MrBill\Persistence\DataStore;
 use MrBill\PhoneNumber;
 use PHPUnit\Framework\TestCase;
 
@@ -24,14 +23,17 @@ class ExpenseRepositoryTest extends TestCase
     /** @var Expense */
     private $expense2;
 
+    /** @var MockDataStore */
+    private $mockDataStore;
+
     /** @var ExpenseRepository */
     private $expenseRepository;
 
     public function setUp()
     {
-        $this->time = time();
+        $this->time = 1488012941;
         $this->year = (int) date('Y', $this->time);
-        $this->month = (int) date('M', $this->time);
+        $this->month = (int) date('n', $this->time);
 
         $this->phone = new PhoneNumber(14087226296);
 
@@ -57,47 +59,97 @@ class ExpenseRepositoryTest extends TestCase
             9
         );
 
-        $this->expenseRepository = new ExpenseRepository(new MockDataStore());
+        $this->mockDataStore = new MockDataStore();
+
+        $this->expenseRepository = new ExpenseRepository($this->mockDataStore);
     }
 
-    public function testRemoveAndPutAndGet()
+    public function testPersistOneTime()
     {
-        $this->expenseRepository->removeForPhoneAndMonth($this->phone, $this->year, $this->month);
+        $this->expenseRepository->persist($this->expense1);
 
-        $this->expenseRepository->putForPhoneAndMonth($this->phone, $this->year, $this->month, [
-            $this->expense1,
-            $this->expense2,
-        ]);
-
-        $fetched = $this->expenseRepository->getForPhoneAndMonth($this->phone, $this->year, $this->month);
-        $this->assertCount(2, $fetched);
-        $this->assertEquals($this->expense1, $fetched[0]);
-        $this->assertEquals($this->expense2, $fetched[1]);
+        $this->assertEquals(
+            $this->getStorageOfOneExpense(),
+            $this->mockDataStore->storage
+        );
     }
 
-    public function testRemoveAndPersistAndGet()
+    public function testPersistMultipleTimes()
     {
-        $this->expenseRepository->removeForPhoneAndMonth($this->phone, $this->year, $this->month);
-
         $this->expenseRepository->persist($this->expense1);
         $this->expenseRepository->persist($this->expense2);
 
-        $fetched = $this->expenseRepository->getForPhoneAndMonth($this->phone, $this->year, $this->month);
-        $this->assertCount(2, $fetched);
-        $this->assertEquals($this->expense1, $fetched[0]);
-        $this->assertEquals($this->expense2, $fetched[1]);
+        $this->assertEquals(
+            $this->getStorageOfBothExpenses(),
+            $this->mockDataStore->storage
+        );
     }
 
-    public function putAndRemoveAndGet()
+    public function testPutForPhoneAndMonth()
     {
         $this->expenseRepository->putForPhoneAndMonth($this->phone, $this->year, $this->month, [
             $this->expense1,
             $this->expense2,
         ]);
 
-        $this->expenseRepository->removeForPhoneAndMonth($this->phone, $this->year, $this->month);
+        $this->assertEquals(
+            $this->getStorageOfBothExpenses(),
+            $this->mockDataStore->storage
+        );
+    }
 
+    public function testGetForPhoneAndMonthNoResults()
+    {
         $fetched = $this->expenseRepository->getForPhoneAndMonth($this->phone, $this->year, $this->month);
         $this->assertCount(0, $fetched);
+    }
+
+    public function testGetForPhoneAndMonthWithResults()
+    {
+        $this->testPersistMultipleTimes();
+
+        $fetched = $this->expenseRepository->getForPhoneAndMonth($this->phone, $this->year, $this->month);
+
+        $this->assertCount(2, $fetched);
+        $this->assertEquals($this->expense1, $fetched[0]);
+        $this->assertEquals($this->expense2, $fetched[1]);
+    }
+
+    public function testRemoveForPhoneAndMonth()
+    {
+        $this->testPersistOneTime();
+
+        $this->expenseRepository->removeForPhoneAndMonth($this->phone, $this->year, $this->month);
+
+        $this->assertEmpty(
+            $this->mockDataStore->storage
+        );
+    }
+
+    protected function getStorageOfOneExpense()
+    {
+        return
+            [
+                'expenses14087226296_2017_02' => [
+                    '[{"phone":14087226296,"timestamp":1488012941,"amountInCents":599,"hashTags":["hash","tag"],' .
+                    '"description":"description","sourceType":"_m","sourceId":"' .
+                    '11f6ad8ec52a2984abaafd7c3b516503785c2072","entropy":"7"}]'
+                ]
+            ];
+    }
+
+    protected function getStorageOfBothExpenses()
+    {
+        return
+            [
+                'expenses14087226296_2017_02' => [
+                    '[{"phone":14087226296,"timestamp":1488012941,"amountInCents":599,"hashTags":["hash","tag"],' .
+                    '"description":"description","sourceType":"_m","sourceId":"' .
+                    '11f6ad8ec52a2984abaafd7c3b516503785c2072","entropy":"7"},' .
+                    '{"phone":14087226296,"timestamp":1488012941,"amountInCents":1370,"hashTags":["a","b"],' .
+                    '"description":"description2","sourceType":"_m","sourceId":' .
+                    '"95cb0bfd2977c761298d9624e4b4d4c72a39974a","entropy":"9"}]'
+                ]
+            ];
     }
 }

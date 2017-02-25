@@ -11,7 +11,7 @@ class ExpenseRepository extends Repository
     {
         $phone = $expense->phone;
         $year = (int) date('Y', $expense->timestamp);
-        $month = (int) date('M', $expense->timestamp);
+        $month = (int) date('n', $expense->timestamp);
 
         $expenses = $this->getForPhoneAndMonth($phone, $year, $month);
         $expenses[] = $expense;
@@ -54,6 +54,6 @@ class ExpenseRepository extends Repository
 
     protected function getDataStoreKey(PhoneNumber $phone, int $year, int $month) : string
     {
-        return 'expenses' . $phone . '_' . $year . '_' . $month;
+        return 'expenses' . $phone . '_' . $year . '_' . ($month < 10 ? '0' : '') . $month;
     }
 }
