@@ -67,24 +67,23 @@ class Expense extends Hashable implements Serializable
         );
     }
 
-    public static function createFromJson(string $jsonString) : Expense
+    public static function createFromMap(array $map) : Expense
     {
-        $object = json_decode($jsonString);
         return new Expense(
-            new PhoneNumber($object->phone),
-            $object->timestamp,
-            $object->amountInCents,
-            $object->hashTags,
-            $object->description,
-            $object->sourceType,
-            $object->sourceId,
-            $object->entropy
+            new PhoneNumber($map['phone']),
+            $map['timestamp'],
+            $map['amountInCents'],
+            $map['hashTags'],
+            $map['description'],
+            $map['sourceType'],
+            $map['sourceId'],
+            $map['entropy']
         );
     }
 
-    public function toJson() : string
+    public function toMap() : array
     {
-        return json_encode(
+        return
             [
                 'phone'         => $this->phone,
                 'timestamp'     => $this->timestamp,
@@ -94,7 +93,6 @@ class Expense extends Hashable implements Serializable
                 'sourceType'    => $this->sourceType,
                 'sourceId'      => $this->sourceId,
                 'entropy'       => $this->entropy,
-            ]
-        );
+            ];
     }
 }

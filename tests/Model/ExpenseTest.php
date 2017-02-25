@@ -78,19 +78,19 @@ class ExpenseTest extends TestCase
         $this->assertNotEquals($this->expense, $expense2);
     }
 
-    public function testToJson()
+    public function testToMap()
     {
         $this->assertEquals(
             '{"phone":' . $this->testPhone . ',"timestamp":' . $this->time .
                 ',"amountInCents":599,"hashTags":["hash","tag"],"description":"description","sourceType":"_m",' .
                 '"sourceId":"11f6ad8ec52a2984abaafd7c3b516503785c2072","entropy":"7"}',
-            $this->expense->toJson()
+            json_encode($this->expense->toMap())
         );
     }
 
-    public function testFromJson()
+    public function testFromMap()
     {
-        $loadedExpense = Expense::createFromJson($this->expense->toJson());
+        $loadedExpense = Expense::createFromMap($this->expense->toMap());
 
         $this->assertEquals($this->expense->phone, $loadedExpense->phone);
         $this->assertEquals($this->expense->timestamp, $loadedExpense->timestamp);
