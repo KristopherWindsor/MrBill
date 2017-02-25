@@ -1,12 +1,11 @@
 <?php
 
-namespace MrBill\Apps\Api;
+namespace MrBillTest\Apps\Report;
 
 use MrBill\Apps\Report\Report1;
 use MrBill\Domain\Conversation;
 use MrBill\Domain\DomainFactory;
 use MrBill\Model\Message;
-use MrBill\Model\Repository\MessageRepository;
 use MrBill\Model\Repository\RepositoryFactory;
 use MrBill\Model\Token;
 use MrBill\Persistence\DataStore;

@@ -1,9 +1,10 @@
 <?php
 
-namespace MrBill\Domain;
+namespace MrBillTest\Domain;
 
+use MrBill\Domain\Conversation;
+use MrBill\Domain\DomainFactory;
 use MrBill\Model\Message;
-use MrBill\Model\Repository\MessageRepository;
 use MrBill\Model\Repository\RepositoryFactory;
 use MrBill\Persistence\DataStore;
 use MrBill\PhoneNumber;

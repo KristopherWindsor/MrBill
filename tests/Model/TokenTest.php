@@ -1,7 +1,8 @@
 <?php
 
-namespace MrBill\Model;
+namespace MrBillTest\Model;
 
+use MrBill\Model\Token;
 use MrBill\PhoneNumber;
 use PHPUnit\Framework\TestCase;
 

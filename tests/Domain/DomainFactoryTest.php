@@ -1,8 +1,8 @@
 <?php
 
-namespace MrBill\Domain;
+namespace MrBillTest\Domain;
 
-use MrBill\Model\Repository\MessageRepository;
+use MrBill\Domain\DomainFactory;
 use MrBill\Model\Repository\RepositoryFactory;
 use MrBill\Persistence\DataStore;
 use MrBill\PhoneNumber;

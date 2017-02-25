@@ -1,7 +1,8 @@
 <?php
 
-namespace MrBill\Domain;
+namespace MrBillTest\Domain;
 
+use MrBill\Domain\ExpenseRecord;
 use PHPUnit\Framework\TestCase;
 
 class ExpenseRecordTest extends TestCase

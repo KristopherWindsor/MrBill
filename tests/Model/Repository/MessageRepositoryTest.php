@@ -1,8 +1,9 @@
 <?php
 
-namespace MrBill\Model\Repository;
+namespace MrBillTest\Model\Repository;
 
 use MrBill\Model\Message;
+use MrBill\Model\Repository\MessageRepository;
 use MrBill\Model\Token;
 use MrBill\Persistence\DataStore;
 use MrBill\PhoneNumber;

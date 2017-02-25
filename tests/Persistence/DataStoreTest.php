@@ -1,7 +1,8 @@
 <?php
 
-namespace MrBill\Persistence;
+namespace MrBillTest\Persistence;
 
+use MrBill\Persistence\DataStore;
 use PHPUnit\Framework\TestCase;
 
 class DataStoreTest extends TestCase

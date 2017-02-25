@@ -1,7 +1,8 @@
 <?php
 
-namespace MrBill\Model\Repository;
+namespace MrBillTest\Model\Repository;
 
+use MrBill\Model\Repository\RepositoryFactory;
 use MrBill\Persistence\DataStore;
 use PHPUnit\Framework\TestCase;
 

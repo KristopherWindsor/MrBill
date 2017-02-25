@@ -1,7 +1,8 @@
 {
     "autoload": {
         "psr-4": {
-            "MrBill\\": "src/"
+            "MrBill\\": "src/",
+            "MrBillTest\\": "tests/"
         }
     },
     "require": {

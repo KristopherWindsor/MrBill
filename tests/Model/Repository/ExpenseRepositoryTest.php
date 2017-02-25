@@ -1,8 +1,9 @@
 <?php
 
-namespace MrBill\Model\Repository;
+namespace MrBillTest\Model\Repository;
 
 use MrBill\Model\Expense;
+use MrBill\Model\Repository\ExpenseRepository;
 use MrBill\Persistence\DataStore;
 use MrBill\PhoneNumber;
 use PHPUnit\Framework\TestCase;

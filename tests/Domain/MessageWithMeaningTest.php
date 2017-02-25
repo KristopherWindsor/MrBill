@@ -1,7 +1,8 @@
 <?php
 
-namespace MrBill\Domain;
+namespace MrBillTest\Domain;
 
+use MrBill\Domain\MessageWithMeaning;
 use MrBill\Model\Message;
 use MrBill\PhoneNumber;
 use PHPUnit\Framework\TestCase;
