@@ -4,6 +4,7 @@ namespace MrBill\Apps\Report;
 
 use MrBill\Domain\Conversation;
 use MrBill\Domain\DomainFactory;
+use MrBill\Domain\ExpenseSet;
 use MrBill\Domain\ExpensesFromMessageParser;
 use MrBill\Model\Expense;
 use MrBill\PhoneNumber;
@@ -12,6 +13,9 @@ class Report1
 {
     /** @var Conversation */
     protected $conversation;
+
+    /** @var ExpenseSet */
+    protected $expenseSet;
 
     public function __construct(DomainFactory $domainFactory, array $get)
     {
@@ -26,6 +30,7 @@ class Report1
             return;
 
         $this->conversation = $conversation;
+        $this->expenseSet = $domainFactory->getExpenseSet($phone);
     }
 
     public function hasInitializationError() : bool
@@ -61,7 +66,7 @@ class Report1
     {
         $data = [];
 
-        foreach ($this->conversation->getAllExpenseRecords() as $expenseRecord) {
+        foreach ($this->expenseSet->getExpenses() as $expenseRecord) {
             /** @var Expense $expenseRecord */
             $key = '#' . implode('#', $expenseRecord->hashTags);
             if (isset($data[$key])) {

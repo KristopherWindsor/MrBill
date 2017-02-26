@@ -4,7 +4,6 @@ namespace MrBillTest\Domain;
 
 use MrBill\Domain\DomainFactory;
 use MrBill\Model\Repository\RepositoryFactory;
-use MrBill\Persistence\DataStore;
 use MrBill\PhoneNumber;
 use MrBillTest\Model\Repository\MockDataStore;
 use PHPUnit\Framework\TestCase;
@@ -30,5 +29,11 @@ class DomainFactoryTest extends TestCase
     {
         $conversation = $this->domainFactory->getConversation($this->testPhone);
         $this->assertEquals($this->testPhone, $conversation->getPhoneNumber());
+    }
+
+    public function testGetExpenseSet()
+    {
+        $expenseSet = $this->domainFactory->getExpenseSet($this->testPhone);
+        $this->assertEquals($this->testPhone, $expenseSet->getPhoneNumber());
     }
 }

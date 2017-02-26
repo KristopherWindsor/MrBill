@@ -22,14 +22,14 @@ class Conversation
     /** @var PhoneNumber */
     protected $phone;
 
+    /** @var DomainFactory */
+    protected $domainFactory;
+
     /** @var MessageRepository */
     protected $messageRepository;
 
     /** @var TokenRepository */
     protected $tokenRepository;
-
-    /** @var ExpenseRepository */
-    protected $expenseRepository;
 
     public $totalMessages = 0;
     public $totalIncomingMessages = 0;
@@ -42,14 +42,14 @@ class Conversation
 
     public function __construct(
         PhoneNumber $phone,
+        DomainFactory $domainFactory,
         MessageRepository $messageRepository,
-        TokenRepository $tokenRepository,
-        ExpenseRepository $expenseRepository
+        TokenRepository $tokenRepository
     ) {
         $this->phone = $phone;
+        $this->domainFactory = $domainFactory;
         $this->messageRepository = $messageRepository;
         $this->tokenRepository = $tokenRepository;
-        $this->expenseRepository = $expenseRepository;
 
         foreach ($messageRepository->getAllMessagesForPhone($phone) as $message) {
             $this->processOneMessage($message);
@@ -117,7 +117,7 @@ class Conversation
             $parser = new ExpensesFromMessageParser();
             foreach ($parser->parse($messageWithMeaning->message) as $expense)
                 /** @var Expense $expense */
-                $this->expenseRepository->persist($expense);
+                $this->domainFactory->getExpenseSet($this->phone)->addExpense($expense);
         }
     }
 
@@ -133,18 +133,6 @@ class Conversation
         $this->lastExpenseMessageTimestamp  = 0;
 
         $this->tokenRepository->deleteToken($this->phone, 1);
-    }
-
-    public function getAllExpenseRecords() : Generator
-    {
-        foreach ($this->messageRepository->getAllMessagesForPhone($this->phone) as $message) {
-            /** @var Message $message */
-            if ($message->isFromUser) {
-                $parser = new ExpensesFromMessageParser();
-                foreach ($parser->parse($message) as $expenseRecord)
-                    yield $expenseRecord;
-            }
-        }
     }
 
     public function getExistingReportToken() : ?Token
