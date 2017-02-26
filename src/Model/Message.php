@@ -26,7 +26,7 @@ class Message extends Hashable implements Serializable
         int $timestamp,
         bool $isFromUser
     ) : Message {
-        $entropy = random_int(PHP_INT_MIN, PHP_INT_MAX);
+        $entropy = random_int(1 << 16, 1 << 32);
 
         return new Message($phone, $message, $timestamp, $isFromUser, $entropy);
     }

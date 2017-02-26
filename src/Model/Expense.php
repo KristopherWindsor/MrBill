@@ -53,7 +53,7 @@ class Expense extends Hashable implements Serializable
         string $description,
         string $messageId
     ) : Expense {
-        $entropy = random_int(PHP_INT_MIN, PHP_INT_MAX);
+        $entropy = random_int(1 << 16, 1 << 32);
 
         return new Expense(
             $phone,

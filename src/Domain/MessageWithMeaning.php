@@ -24,6 +24,8 @@ class MessageWithMeaning
         int $totalPrecedingIncomingMessages
       // Future: add parameters like isThereARecentlyAskedQuestion
     ) {
+        $this->message = $message;
+
         $text = strtolower(trim($message->message));
 
         $hasExpenseRecords = (bool) (new ExpensesFromMessageParser)->parse($message);

@@ -29,7 +29,7 @@ class V1
         $this->conversation = $domainFactory->getConversation($this->phone);
 
         $incomingMessage = Message::createWithEntropy($this->phone, $post['Body'], time(), true);
-        $messageWithMeaning = $this->conversation->persistNewMessage($incomingMessage);
+        $messageWithMeaning = $this->conversation->addMessage($incomingMessage);
 
         $isTenthExpense = $messageWithMeaning->isExpenseMessage() && $this->conversation->totalExpenseMessages == 10;
 
@@ -52,7 +52,7 @@ class V1
 
         if ($this->responseText) {
             $replyMessage = Message::createWithEntropy($this->phone, $this->responseText, time(), false);
-            $this->conversation->persistNewMessage($replyMessage);
+            $this->conversation->addMessage($replyMessage);
         }
     }
 

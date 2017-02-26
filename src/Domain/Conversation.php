@@ -97,7 +97,7 @@ class Conversation
      * @return MessageWithMeaning the inferred meaning of message
      * @throws Exception
      */
-    public function persistNewMessage(Message $message) : MessageWithMeaning
+    public function addMessage(Message $message) : MessageWithMeaning
     {
         if ($this->phone != $message->phone)
             throw new Exception();
@@ -106,7 +106,7 @@ class Conversation
 
         $messageWithMeaning = $this->processOneMessage($message);
 
-     ///needs a test!!   $this->persistExpenses($messageWithMeaning);
+        $this->persistExpenses($messageWithMeaning);
 
         return $messageWithMeaning;
     }

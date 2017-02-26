@@ -9,6 +9,14 @@ use PHPUnit\Framework\TestCase;
 
 class MessageWithMeaningTest extends TestCase
 {
+    public function testConstructor()
+    {
+        $message = new Message(new PhoneNumber(14087226296), '5 #h', time(), true, 0);
+        $messageWithMeaning = new MessageWithMeaning($message, 0);
+
+        $this->assertEquals($message, $messageWithMeaning->message);
+    }
+
     /**
      * @dataProvider meaningCalculationTestData
      *

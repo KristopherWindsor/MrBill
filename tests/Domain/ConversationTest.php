@@ -18,6 +18,9 @@ class ConversationTest extends TestCase
     /** @var PhoneNumber */
     private $testPhone;
 
+    /** @var MockDataStore */
+    private $mockDataStore;
+
     /** @var Conversation */
     private $conversation;
 
@@ -25,7 +28,9 @@ class ConversationTest extends TestCase
     {
         $this->testPhone = new PhoneNumber(self::TEST_PHONE);
 
-        $repositoryFactory = new RepositoryFactory(new MockDataStore());
+        $this->mockDataStore = new MockDataStore();
+
+        $repositoryFactory = new RepositoryFactory($this->mockDataStore);
 
         $this->conversation = (new DomainFactory($repositoryFactory))
             ->getConversation($this->testPhone);
@@ -36,58 +41,79 @@ class ConversationTest extends TestCase
         $this->assertEquals($this->testPhone, $this->conversation->getPhoneNumber());
     }
 
-    public function testPersistAndCountTotalMessages()
+    public function testAddMessageAndCheckDataStore()
+    {
+        $time = 1488067264;
+        $newMessage = new Message($this->testPhone, 'messageX', $time, true, 0);
+        $expenseMessage = new Message($this->testPhone, '5 #h', $time, true, 0);
+
+        $this->conversation->addMessage($newMessage);
+        $this->conversation->addMessage($expenseMessage);
+
+        $expenseEntropy = json_decode($this->mockDataStore->storage['expenses14087226296_2017_02'][0])[0]->entropy;
+
+        $this->assertEquals(
+            '{"messages14087226296":["{\"phone\":14087226296,\"message\":\"messageX\",\"timestamp\":1488067264,\"isFr' .
+            'omUser\":true,\"entropy\":0}","{\"phone\":14087226296,\"message\":\"5 #h\",\"timestamp\":1488067264,\"is' .
+            'FromUser\":true,\"entropy\":0}"],"expenses14087226296_2017_02":["[{\"phone\":14087226296,\"timestamp\":1' .
+            '488067264,\"amountInCents\":500,\"hashTags\":[\"h\"],\"description\":\"#h\",\"sourceType\":\"_m\",\"sour' .
+            'ceId\":\"1e05119546652dd6479618d9a6f8f472b04125ee\",\"entropy\":\"' . $expenseEntropy . '\"}]"]}',
+            json_encode($this->mockDataStore->storage)
+        );
+    }
+
+    public function testAddMessageAndCountTotalMessages()
     {
         $newMessage = new Message($this->testPhone, 'message' . uniqid(), time(), true, 0);
         $outgoingMessage = new Message($this->testPhone, 'out', time(), false, 0);
 
         $this->assertEquals(0, $this->conversation->totalMessages);
-        $this->conversation->persistNewMessage($newMessage);
+        $this->conversation->addMessage($newMessage);
         $this->assertEquals(1, $this->conversation->totalMessages);
-        $this->conversation->persistNewMessage($outgoingMessage);
+        $this->conversation->addMessage($outgoingMessage);
         $this->assertEquals(2, $this->conversation->totalMessages);
     }
 
-    public function testPersistAndCountIncomingMessages()
+    public function testAddMessageAndCountIncomingMessages()
     {
         $newMessage = new Message($this->testPhone, 'message' . uniqid(), time(), true, 0);
         $outgoingMessage = new Message($this->testPhone, 'out', time(), false, 0);
 
-        $this->conversation->persistNewMessage($outgoingMessage);
+        $this->conversation->addMessage($outgoingMessage);
         $this->assertEquals(0, $this->conversation->totalIncomingMessages);
 
-        $this->conversation->persistNewMessage($newMessage);
-        $this->conversation->persistNewMessage($newMessage);
+        $this->conversation->addMessage($newMessage);
+        $this->conversation->addMessage($newMessage);
         $this->assertEquals(2, $this->conversation->totalIncomingMessages);
     }
 
-    public function testPersistAndCountHelpMessages()
+    public function testAddMessageAndCountHelpMessages()
     {
         $newMessage = new Message($this->testPhone, 'message' . uniqid(), time(), true, 0);
         $helpMessage = new Message($this->testPhone, '?', time(), true, 0);
 
-        $this->conversation->persistNewMessage($newMessage);
+        $this->conversation->addMessage($newMessage);
         $this->assertEquals(0, $this->conversation->totalHelpRequests);
 
-        $this->conversation->persistNewMessage($helpMessage);
-        $this->conversation->persistNewMessage($helpMessage);
+        $this->conversation->addMessage($helpMessage);
+        $this->conversation->addMessage($helpMessage);
         $this->assertEquals(2, $this->conversation->totalHelpRequests);
     }
 
-    public function testPersistAndTrackExpenseMessages()
+    public function testAddMessageAndTrackExpenseMessages()
     {
         $time = time();
         $newMessage = new Message($this->testPhone, 'message' . uniqid(), $time, true, 0);
         $expenseMessage1 = new Message($this->testPhone, '5 #h', $time + 1, true, 0);
         $expenseMessage2 = new Message($this->testPhone, '5 #h', $time + 2, true, 0);
 
-        $this->conversation->persistNewMessage($newMessage);
+        $this->conversation->addMessage($newMessage);
         $this->assertEquals(0, $this->conversation->totalExpenseMessages);
         $this->assertEquals(0, $this->conversation->firstExpenseMessageTimestamp);
         $this->assertEquals(0, $this->conversation->lastExpenseMessageTimestamp);
 
-        $this->conversation->persistNewMessage($expenseMessage1);
-        $this->conversation->persistNewMessage($expenseMessage2);
+        $this->conversation->addMessage($expenseMessage1);
+        $this->conversation->addMessage($expenseMessage2);
         $this->assertEquals(2, $this->conversation->totalExpenseMessages);
         $this->assertEquals($time + 1, $this->conversation->firstExpenseMessageTimestamp);
         $this->assertEquals($time + 2, $this->conversation->lastExpenseMessageTimestamp);
@@ -100,10 +126,10 @@ class ConversationTest extends TestCase
         $outgoingMessage = new Message($this->testPhone, 'out', time(), false, 0);
         $helpMessage = new Message($this->testPhone, '?', time(), true, 0);
 
-        $this->conversation->persistNewMessage($newMessage);
-        $this->conversation->persistNewMessage($expenseMessage);
-        $this->conversation->persistNewMessage($outgoingMessage);
-        $this->conversation->persistNewMessage($helpMessage);
+        $this->conversation->addMessage($newMessage);
+        $this->conversation->addMessage($expenseMessage);
+        $this->conversation->addMessage($outgoingMessage);
+        $this->conversation->addMessage($helpMessage);
 
         $this->conversation->removeAllData();
         $this->assertEquals(0, $this->conversation->totalMessages);
