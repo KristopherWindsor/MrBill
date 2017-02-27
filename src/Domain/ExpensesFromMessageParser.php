@@ -24,7 +24,7 @@ class ExpensesFromMessageParser
                         $data['amount'] * self::CENTS_PER_DOLLAR,
                         $data['hashtags'],
                         $data['description'],
-                        $message->getHash()
+                        ['message' => $message->toMap()]
                     );
                 }
             }

@@ -20,8 +20,8 @@ class Expense extends Hashable implements Serializable
     public $description;
     /** @var string */
     public $sourceType;
-    /** @var string */
-    public $sourceId;
+    /** @var array */
+    public $sourceInfo;
     /** @var int a random integer assigned to each message, to make messages unique */
     public $entropy;
 
@@ -32,7 +32,7 @@ class Expense extends Hashable implements Serializable
         array $hashTags,
         string $description,
         string $sourceType,
-        string $sourceId,
+        array $sourceInfo,
         string $entropy
     ) {
         $this->phone = $phone;
@@ -41,7 +41,7 @@ class Expense extends Hashable implements Serializable
         $this->hashTags = $hashTags;
         $this->description = $description;
         $this->sourceType = $sourceType;
-        $this->sourceId = $sourceId;
+        $this->sourceInfo = $sourceInfo;
         $this->entropy = $entropy;
     }
 
@@ -51,7 +51,7 @@ class Expense extends Hashable implements Serializable
         int $amountInCents,
         array $hashTags,
         string $description,
-        string $messageId
+        array $sourceInfo
     ) : Expense {
         $entropy = random_int(1 << 16, 1 << 32);
 
@@ -62,7 +62,7 @@ class Expense extends Hashable implements Serializable
             $hashTags,
             $description,
             self::SOURCE_TYPE_MESSAGE,
-            $messageId,
+            $sourceInfo,
             $entropy
         );
     }
@@ -76,7 +76,7 @@ class Expense extends Hashable implements Serializable
             $map['hashTags'],
             $map['description'],
             $map['sourceType'],
-            $map['sourceId'],
+            $map['sourceInfo'],
             $map['entropy']
         );
     }
@@ -91,7 +91,7 @@ class Expense extends Hashable implements Serializable
                 'hashTags'      => $this->hashTags,
                 'description'   => $this->description,
                 'sourceType'    => $this->sourceType,
-                'sourceId'      => $this->sourceId,
+                'sourceInfo'    => $this->sourceInfo,
                 'entropy'       => $this->entropy,
             ];
     }

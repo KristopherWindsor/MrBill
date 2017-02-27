@@ -57,7 +57,8 @@ class ConversationTest extends TestCase
             'omUser\":true,\"entropy\":0}","{\"phone\":14087226296,\"message\":\"5 #h\",\"timestamp\":1488067264,\"is' .
             'FromUser\":true,\"entropy\":0}"],"expenses14087226296_2017_02":["[{\"phone\":14087226296,\"timestamp\":1' .
             '488067264,\"amountInCents\":500,\"hashTags\":[\"h\"],\"description\":\"#h\",\"sourceType\":\"_m\",\"sour' .
-            'ceId\":\"1e05119546652dd6479618d9a6f8f472b04125ee\",\"entropy\":\"' . $expenseEntropy . '\"}]"]}',
+            'ceInfo\":{\"message\":{\"phone\":14087226296,\"message\":\"5 #h\",\"timestamp\":1488067264,\"isFromUser' .
+            '\":true,\"entropy\":0}},\"entropy\":\"' . $expenseEntropy . '\"}]"]}',
             json_encode($this->mockDataStore->storage)
         );
     }

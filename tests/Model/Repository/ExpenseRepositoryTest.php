@@ -44,7 +44,7 @@ class ExpenseRepositoryTest extends TestCase
             ['hash', 'tag'],
             'description',
             Expense::SOURCE_TYPE_MESSAGE,
-            sha1('x'),
+            ['inf'],
             7
         );
 
@@ -55,7 +55,7 @@ class ExpenseRepositoryTest extends TestCase
             ['a', 'b'],
             'description2',
             Expense::SOURCE_TYPE_MESSAGE,
-            sha1('y'),
+            ['inf'],
             9
         );
 
@@ -132,8 +132,8 @@ class ExpenseRepositoryTest extends TestCase
             [
                 'expenses14087226296_2017_02' => [
                     '[{"phone":14087226296,"timestamp":1488012941,"amountInCents":599,"hashTags":["hash","tag"],' .
-                    '"description":"description","sourceType":"_m","sourceId":"' .
-                    '11f6ad8ec52a2984abaafd7c3b516503785c2072","entropy":"7"}]'
+                    '"description":"description","sourceType":"_m","sourceInfo":' .
+                    '["inf"],"entropy":"7"}]'
                 ]
             ];
     }
@@ -144,11 +144,11 @@ class ExpenseRepositoryTest extends TestCase
             [
                 'expenses14087226296_2017_02' => [
                     '[{"phone":14087226296,"timestamp":1488012941,"amountInCents":599,"hashTags":["hash","tag"],' .
-                    '"description":"description","sourceType":"_m","sourceId":"' .
-                    '11f6ad8ec52a2984abaafd7c3b516503785c2072","entropy":"7"},' .
+                    '"description":"description","sourceType":"_m","sourceInfo":' .
+                    '["inf"],"entropy":"7"},' .
                     '{"phone":14087226296,"timestamp":1488012941,"amountInCents":1370,"hashTags":["a","b"],' .
-                    '"description":"description2","sourceType":"_m","sourceId":' .
-                    '"95cb0bfd2977c761298d9624e4b4d4c72a39974a","entropy":"9"}]'
+                    '"description":"description2","sourceType":"_m","sourceInfo":' .
+                    '["inf"],"entropy":"9"}]'
                 ]
             ];
     }

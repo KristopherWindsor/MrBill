@@ -32,7 +32,7 @@ class ExpenseTest extends TestCase
             ['hash', 'tag'],
             'description',
             Expense::SOURCE_TYPE_MESSAGE,
-            sha1('x'),
+            ['inf' => 'ok'],
             7
         );
     }
@@ -45,7 +45,7 @@ class ExpenseTest extends TestCase
         $this->assertEquals(['hash', 'tag'], $this->expense->hashTags);
         $this->assertEquals('description', $this->expense->description);
         $this->assertEquals(Expense::SOURCE_TYPE_MESSAGE, $this->expense->sourceType);
-        $this->assertEquals(sha1('x'), $this->expense->sourceId);
+        $this->assertEquals(['inf' => 'ok'], $this->expense->sourceInfo);
         $this->assertEquals(7, $this->expense->entropy);
     }
 
@@ -57,7 +57,7 @@ class ExpenseTest extends TestCase
             599,
             ['h'],
             'des',
-            'mid'
+            ['inf']
         );
         $expense2 = Expense::createFromMessageWithEntropy(
             $this->testPhone,
@@ -65,7 +65,7 @@ class ExpenseTest extends TestCase
             599,
             ['h'],
             'des',
-            'mid'
+            ['inf']
         );
 
         $this->assertEquals($this->testPhone, $this->expense->phone);
@@ -74,7 +74,7 @@ class ExpenseTest extends TestCase
         $this->assertEquals(['h'], $this->expense->hashTags);
         $this->assertEquals('des', $this->expense->description);
         $this->assertEquals(Expense::SOURCE_TYPE_MESSAGE, $this->expense->sourceType);
-        $this->assertEquals('mid', $this->expense->sourceId);
+        $this->assertEquals(['inf'], $this->expense->sourceInfo);
 
         $this->assertNotEquals($this->expense, $expense2);
     }
@@ -84,7 +84,7 @@ class ExpenseTest extends TestCase
         $this->assertEquals(
             '{"phone":' . $this->testPhone . ',"timestamp":' . $this->time .
                 ',"amountInCents":599,"hashTags":["hash","tag"],"description":"description","sourceType":"_m",' .
-                '"sourceId":"11f6ad8ec52a2984abaafd7c3b516503785c2072","entropy":"7"}',
+                '"sourceInfo":{"inf":"ok"},"entropy":"7"}',
             json_encode($this->expense->toMap())
         );
     }
@@ -99,7 +99,7 @@ class ExpenseTest extends TestCase
         $this->assertEquals($this->expense->hashTags, $loadedExpense->hashTags);
         $this->assertEquals($this->expense->description, $loadedExpense->description);
         $this->assertEquals($this->expense->sourceType, $loadedExpense->sourceType);
-        $this->assertEquals($this->expense->sourceId, $loadedExpense->sourceId);
+        $this->assertEquals($this->expense->sourceInfo, $loadedExpense->sourceInfo);
         $this->assertEquals($this->expense->entropy, $loadedExpense->entropy);
     }
 }
