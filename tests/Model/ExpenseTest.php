@@ -31,7 +31,7 @@ class ExpenseTest extends TestCase
             599,
             ['hash', 'tag'],
             'description',
-            Expense::SOURCE_TYPE_MESSAGE,
+            Expense::STATUS_FROM_MESSAGE,
             ['inf' => 'ok'],
             7
         );
@@ -44,7 +44,7 @@ class ExpenseTest extends TestCase
         $this->assertEquals(599, $this->expense->amountInCents);
         $this->assertEquals(['hash', 'tag'], $this->expense->hashTags);
         $this->assertEquals('description', $this->expense->description);
-        $this->assertEquals(Expense::SOURCE_TYPE_MESSAGE, $this->expense->sourceType);
+        $this->assertEquals(Expense::STATUS_FROM_MESSAGE, $this->expense->sourceType);
         $this->assertEquals(['inf' => 'ok'], $this->expense->sourceInfo);
         $this->assertEquals(7, $this->expense->entropy);
     }
@@ -73,7 +73,7 @@ class ExpenseTest extends TestCase
         $this->assertEquals(599, $this->expense->amountInCents);
         $this->assertEquals(['h'], $this->expense->hashTags);
         $this->assertEquals('des', $this->expense->description);
-        $this->assertEquals(Expense::SOURCE_TYPE_MESSAGE, $this->expense->sourceType);
+        $this->assertEquals(Expense::STATUS_FROM_MESSAGE, $this->expense->sourceType);
         $this->assertEquals(['inf'], $this->expense->sourceInfo);
 
         $this->assertNotEquals($this->expense, $expense2);

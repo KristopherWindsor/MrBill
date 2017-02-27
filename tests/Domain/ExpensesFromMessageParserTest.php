@@ -87,7 +87,7 @@ class ExpensesFromMessageParserTest extends TestCase
         $this->assertEquals(500,                          $expense1->amountInCents);
         $this->assertEquals(['h'],                        $expense1->hashTags);
         $this->assertEquals('#h',                         $expense1->description);
-        $this->assertEquals(Expense::SOURCE_TYPE_MESSAGE, $expense1->sourceType);
+        $this->assertEquals(Expense::STATUS_FROM_MESSAGE, $expense1->sourceType);
         $this->assertEquals($message->toMap(),            $expense1->sourceInfo['message']);
     }
 }

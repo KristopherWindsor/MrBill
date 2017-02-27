@@ -6,7 +6,10 @@ use MrBill\PhoneNumber;
 
 class Expense extends Hashable implements Serializable
 {
-    const SOURCE_TYPE_MESSAGE = '_m';
+    const STATUS_FROM_MESSAGE                = '_m';
+    const STATUS_FROM_ALERT                  = '_a';
+    const STATUS_FROM_ALERT_UNKNOWN_HASHTAGS = '_u';
+    const STATUS_RESOLVED                    = '_r';
 
     /** @var PhoneNumber */
     public $phone;
@@ -61,7 +64,7 @@ class Expense extends Hashable implements Serializable
             $amountInCents,
             $hashTags,
             $description,
-            self::SOURCE_TYPE_MESSAGE,
+            self::STATUS_FROM_MESSAGE,
             $sourceInfo,
             $entropy
         );

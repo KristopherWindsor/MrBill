@@ -43,7 +43,7 @@ class ExpenseRepositoryTest extends TestCase
             599,
             ['hash', 'tag'],
             'description',
-            Expense::SOURCE_TYPE_MESSAGE,
+            Expense::STATUS_FROM_MESSAGE,
             ['inf'],
             7
         );
@@ -54,7 +54,7 @@ class ExpenseRepositoryTest extends TestCase
             1370,
             ['a', 'b'],
             'description2',
-            Expense::SOURCE_TYPE_MESSAGE,
+            Expense::STATUS_FROM_MESSAGE,
             ['inf'],
             9
         );
