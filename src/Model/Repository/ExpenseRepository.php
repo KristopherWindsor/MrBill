@@ -13,35 +13,25 @@ class ExpenseRepository extends Repository
         $year = (int) date('Y', $expense->timestamp);
         $month = (int) date('n', $expense->timestamp);
 
-        $expenses = $this->getForPhoneAndMonth($phone, $year, $month);
-        $expenses[] = $expense;
-        $this->putForPhoneAndMonth($phone, $year, $month, $expenses);
+        $this->addForPhoneAndMonth($phone, $year, $month, $expense);
     }
 
-    public function putForPhoneAndMonth(PhoneNumber $phoneNumber, int $year, int $month, array $expenses) : void
+    protected function addForPhoneAndMonth(PhoneNumber $phoneNumber, int $year, int $month, Expense $expense) : void
     {
-        $key = $this->getDataStoreKey($phoneNumber, $year, $month);
-
-        $maps = [];
-        foreach ($expenses as $expense) {
-            assert($expense instanceof Expense);
-            $maps[] = $expense->toMap();
-
-        }
-        $this->dataStore->put($key, json_encode($maps));
+        $this->dataStore->mapPutItem(
+            $this->getDataStoreKey($phoneNumber, $year, $month),
+            $this->incrementAndGetId($phoneNumber, $year, $month),
+            json_encode($expense->toMap())
+        );
     }
 
     public function getForPhoneAndMonth(PhoneNumber $phoneNumber, int $year, int $month) : array
     {
         $key = $this->getDataStoreKey($phoneNumber, $year, $month);
 
-        $jsonArray = json_decode($this->dataStore->get($key)->current(), true);
-
-        if (!$jsonArray) return [];
-
         return array_map(
-            function ($item) {return Expense::createFromMap($item);},
-            $jsonArray
+            function ($item) {return Expense::createFromMap(json_decode($item, true));},
+            $this->dataStore->mapGetAll($key)
         );
     }
 
@@ -52,8 +42,19 @@ class ExpenseRepository extends Repository
         $this->dataStore->remove($key);
     }
 
+    protected function incrementAndGetId(PhoneNumber $phone, int $year, int $month) : int
+    {
+        $key = $this->getIdKey($phone, $year, $month);
+        return $this->dataStore->scalarIncrement($key);
+    }
+
+    protected function getIdKey(PhoneNumber $phone, int $year, int $month)
+    {
+        return 'expenses:' . $phone . ':' . $year . ':' . ($month < 10 ? '0' : '') . $month . ':id';
+    }
+
     protected function getDataStoreKey(PhoneNumber $phone, int $year, int $month) : string
     {
-        return 'expenses' . $phone . '_' . $year . '_' . ($month < 10 ? '0' : '') . $month;
+        return 'expenses:' . $phone . ':' . $year . ':' . ($month < 10 ? '0' : '') . $month;
     }
 }

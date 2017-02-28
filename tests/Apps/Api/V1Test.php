@@ -7,7 +7,7 @@ use MrBill\Domain\DomainFactory;
 use MrBill\Model\Repository\RepositoryFactory;
 use MrBill\Persistence\DataStore;
 use MrBill\PhoneNumber;
-use MrBillTest\Model\Repository\MockDataStore;
+use MrBill\Persistence\MockDataStore;
 use PHPUnit\Framework\TestCase;
 
 class V1Test extends TestCase

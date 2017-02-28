@@ -6,7 +6,7 @@ use MrBill\Domain\DomainFactory;
 use MrBill\Domain\ExpenseSet;
 use MrBill\Model\Repository\RepositoryFactory;
 use MrBill\PhoneNumber;
-use MrBillTest\Model\Repository\MockDataStore;
+use MrBill\Persistence\MockDataStore;
 use PHPUnit\Framework\TestCase;
 
 class ExpenseSetTest extends TestCase

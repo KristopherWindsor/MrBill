@@ -4,6 +4,7 @@ namespace MrBillTest\Model\Repository;
 
 use MrBill\Model\Expense;
 use MrBill\Model\Repository\ExpenseRepository;
+use MrBill\Persistence\MockDataStore;
 use MrBill\PhoneNumber;
 use PHPUnit\Framework\TestCase;
 
@@ -85,12 +86,16 @@ class ExpenseRepositoryTest extends TestCase
         );
     }
 
-    public function testPutForPhoneAndMonth()
+    public function testAddForPhoneAndMonth()
     {
-        $this->expenseRepository->putForPhoneAndMonth($this->phone, $this->year, $this->month, [
-            $this->expense1,
-            $this->expense2,
-        ]);
+        $this->callAddForPhoneAndMonth(
+            $this->expenseRepository,
+            $this->phone, $this->year, $this->month, $this->expense1
+        );
+        $this->callAddForPhoneAndMonth(
+            $this->expenseRepository,
+            $this->phone, $this->year, $this->month, $this->expense2
+        );
 
         $this->assertEquals(
             $this->getStorageOfBothExpenses(),
@@ -111,8 +116,8 @@ class ExpenseRepositoryTest extends TestCase
         $fetched = $this->expenseRepository->getForPhoneAndMonth($this->phone, $this->year, $this->month);
 
         $this->assertCount(2, $fetched);
-        $this->assertEquals($this->expense1, $fetched[0]);
-        $this->assertEquals($this->expense2, $fetched[1]);
+        $this->assertEquals($this->expense1, $fetched[1]);
+        $this->assertEquals($this->expense2, $fetched[2]);
     }
 
     public function testRemoveForPhoneAndMonth()
@@ -121,8 +126,8 @@ class ExpenseRepositoryTest extends TestCase
 
         $this->expenseRepository->removeForPhoneAndMonth($this->phone, $this->year, $this->month);
 
-        $this->assertEmpty(
-            $this->mockDataStore->storage
+        $this->assertTrue(
+            !isset($this->mockDataStore->storage['expenses:' . $this->phone . ':' . $this->year . ':' . $this->month])
         );
     }
 
@@ -130,11 +135,13 @@ class ExpenseRepositoryTest extends TestCase
     {
         return
             [
-                'expenses14087226296_2017_02' => [
-                    '[{"phone":14087226296,"timestamp":1488012941,"amountInCents":599,"hashTags":["hash","tag"],' .
-                    '"description":"description","sourceType":"_m","sourceInfo":' .
-                    '["inf"],"entropy":"7"}]'
-                ]
+                'expenses:14087226296:2017:02' => [
+                    1 =>
+                        '{"phone":14087226296,"timestamp":1488012941,"amountInCents":599,"hashTags":["hash","tag"],' .
+                        '"description":"description","sourceType":"_m","sourceInfo":' .
+                        '["inf"],"entropy":"7"}',
+                ],
+                'expenses:14087226296:2017:02:id' => 1
             ];
     }
 
@@ -142,14 +149,30 @@ class ExpenseRepositoryTest extends TestCase
     {
         return
             [
-                'expenses14087226296_2017_02' => [
-                    '[{"phone":14087226296,"timestamp":1488012941,"amountInCents":599,"hashTags":["hash","tag"],' .
-                    '"description":"description","sourceType":"_m","sourceInfo":' .
-                    '["inf"],"entropy":"7"},' .
-                    '{"phone":14087226296,"timestamp":1488012941,"amountInCents":1370,"hashTags":["a","b"],' .
-                    '"description":"description2","sourceType":"_m","sourceInfo":' .
-                    '["inf"],"entropy":"9"}]'
-                ]
+                'expenses:14087226296:2017:02' => [
+                    1 =>
+                        '{"phone":14087226296,"timestamp":1488012941,"amountInCents":599,"hashTags":["hash","tag"],' .
+                        '"description":"description","sourceType":"_m","sourceInfo":' .
+                        '["inf"],"entropy":"7"}',
+                    2 =>
+                        '{"phone":14087226296,"timestamp":1488012941,"amountInCents":1370,"hashTags":["a","b"],' .
+                        '"description":"description2","sourceType":"_m","sourceInfo":' .
+                        '["inf"],"entropy":"9"}',
+                ],
+                'expenses:14087226296:2017:02:id' => 2
             ];
+    }
+
+    protected function callAddForPhoneAndMonth(
+        ExpenseRepository $object,
+        PhoneNumber $phoneNumber,
+        int $year,
+        int $month,
+        Expense $expense
+    ) : void {
+        $method = new \ReflectionMethod(ExpenseRepository::class, 'addForPhoneAndMonth');
+        $method->setAccessible(true);
+
+        $method->invoke($object, $phoneNumber, $year, $month, $expense);
     }
 }

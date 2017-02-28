@@ -5,7 +5,7 @@ namespace MrBillTest\Domain;
 use MrBill\Domain\DomainFactory;
 use MrBill\Model\Repository\RepositoryFactory;
 use MrBill\PhoneNumber;
-use MrBillTest\Model\Repository\MockDataStore;
+use MrBill\Persistence\MockDataStore;
 use PHPUnit\Framework\TestCase;
 
 class DomainFactoryTest extends TestCase

@@ -3,11 +3,11 @@
 use MrBill\Apps\Report\Report1;
 use MrBill\Domain\DomainFactory;
 use MrBill\Model\Repository\RepositoryFactory;
-use MrBill\Persistence\DataStore;
+use MrBill\Persistence\FileBasedDataStore;
 
 require_once dirname(__DIR__, 3) . '/vendor/autoload.php';
 
-$factory = new DomainFactory(new RepositoryFactory(new DataStore()));
+$factory = new DomainFactory(new RepositoryFactory(new FileBasedDataStore()));
 $report = new Report1($factory, $_GET);
 
 if ($report->hasInitializationError()) {

@@ -8,7 +8,7 @@ use MrBill\Model\Message;
 use MrBill\Model\Repository\RepositoryFactory;
 use MrBill\Persistence\DataStore;
 use MrBill\PhoneNumber;
-use MrBillTest\Model\Repository\MockDataStore;
+use MrBill\Persistence\MockDataStore;
 use PHPUnit\Framework\TestCase;
 
 class ConversationTest extends TestCase
@@ -50,15 +50,17 @@ class ConversationTest extends TestCase
         $this->conversation->addMessage($newMessage);
         $this->conversation->addMessage($expenseMessage);
 
-        $expenseEntropy = json_decode($this->mockDataStore->storage['expenses14087226296_2017_02'][0])[0]->entropy;
+        $expenseEntropy = json_decode($this->mockDataStore->storage['expenses:14087226296:2017:02'][1])->entropy;
 
+        // TODO change this test. The storage is too low-level. Should check if domain/repositories are called instead.
         $this->assertEquals(
-            '{"messages14087226296":["{\"phone\":14087226296,\"message\":\"messageX\",\"timestamp\":1488067264,\"isFr' .
-            'omUser\":true,\"entropy\":0}","{\"phone\":14087226296,\"message\":\"5 #h\",\"timestamp\":1488067264,\"is' .
-            'FromUser\":true,\"entropy\":0}"],"expenses14087226296_2017_02":["[{\"phone\":14087226296,\"timestamp\":1' .
-            '488067264,\"amountInCents\":500,\"hashTags\":[\"h\"],\"description\":\"#h\",\"sourceType\":\"_m\",\"sour' .
-            'ceInfo\":{\"message\":{\"phone\":14087226296,\"message\":\"5 #h\",\"timestamp\":1488067264,\"isFromUser' .
-            '\":true,\"entropy\":0}},\"entropy\":\"' . $expenseEntropy . '\"}]"]}',
+            '{"messages14087226296":["{\"phone\":14087226296,\"message\":\"5 #h\",\"timestamp\":1488067264,\"isFromUs' .
+            'er\":true,\"entropy\":0}","{\"phone\":14087226296,\"message\":\"messageX\",\"timestamp\":1488067264,\"is' .
+            'FromUser\":true,\"entropy\":0}"],"expenses:14087226296:2017:02:id":"1","expenses:14087226296:2017:02":{"' .
+            '1":"{\"phone\":14087226296,\"timestamp\":1488067264,\"amountInCents\":500,\"hashTags\":[\"h\"],\"descrip' .
+            'tion\":\"#h\",\"sourceType\":\"_m\",\"sourceInfo\":{\"message\":{\"phone\":14087226296,\"message\":\"5 #' .
+            'h\",\"timestamp\":1488067264,\"isFromUser\":true,\"entropy\":0}},\"entropy\":\"' . $expenseEntropy .
+            '\"}"}}',
             json_encode($this->mockDataStore->storage)
         );
     }

@@ -2,6 +2,7 @@
 
 namespace MrBillTest\Model\Repository;
 
+use MrBill\Persistence\MockDataStore;
 use MrBill\Model\Repository\RepositoryFactory;
 use MrBill\Persistence\DataStore;
 use PHPUnit\Framework\TestCase;

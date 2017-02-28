@@ -7,4 +7,4 @@ require_once dirname(dirname(__DIR__)) . '/vendor/autoload.php';
 $raw = file_get_contents('php://input');
 $headers = json_encode(getallheaders());
 $key = 'mail' . time();
-(new \MrBill\Persistence\DataStore())->put($key, $raw . $headers);
+(new \MrBill\Persistence\FileBasedDataStore())->listAddItem($key, $raw . $headers);

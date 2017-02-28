@@ -15,7 +15,10 @@ class TokenRepository extends Repository
 {
     public function persistToken(Token $token) : Token
     {
-        $this->dataStore->put($this->getDataStoreKey($token->phone, $token->documentId), json_encode($token->toMap()));
+        $this->dataStore->scalarPut(
+            $this->getDataStoreKey($token->phone, $token->documentId),
+            json_encode($token->toMap())
+        );
         return $token;
     }
 
@@ -25,7 +28,7 @@ class TokenRepository extends Repository
         if (!$this->dataStore->exists($key))
             return null;
 
-        $tokenString = $this->dataStore->get($key)->current();
+        $tokenString = $this->dataStore->scalarGet($key);
         return Token::createFromMap(json_decode($tokenString, true));
     }
 
@@ -38,6 +41,6 @@ class TokenRepository extends Repository
 
     protected function getDataStoreKey(PhoneNumber $phoneNumber, int $documentId) : string
     {
-        return 'token' . $phoneNumber . '_' . $documentId;
+        return 'token:' . $phoneNumber . ':' . $documentId;
     }
 }

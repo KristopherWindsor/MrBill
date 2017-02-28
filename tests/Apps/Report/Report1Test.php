@@ -10,7 +10,7 @@ use MrBill\Model\Repository\RepositoryFactory;
 use MrBill\Model\Token;
 use MrBill\Persistence\DataStore;
 use MrBill\PhoneNumber;
-use MrBillTest\Model\Repository\MockDataStore;
+use MrBill\Persistence\MockDataStore;
 use PHPUnit\Framework\TestCase;
 
 class Report1Test extends TestCase

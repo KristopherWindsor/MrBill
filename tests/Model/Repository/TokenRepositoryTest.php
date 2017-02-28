@@ -2,6 +2,7 @@
 
 namespace MrBillTest\Model\Repository;
 
+use MrBill\Persistence\MockDataStore;
 use MrBill\Model\Repository\TokenRepository;
 use MrBill\Model\Token;
 use MrBill\PhoneNumber;
@@ -43,9 +44,8 @@ class TokenRepositoryTest extends TestCase
 
         $this->assertEquals(
             [
-                'token14087226296_2' => [
+                'token:14087226296:2' =>
                     '{"phone":14087226296,"documentId":2,"secret":"abc123","expiry":1234567890}'
-                ]
             ],
             $this->mockDataStore->storage
         );

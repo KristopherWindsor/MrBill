@@ -3,68 +3,105 @@
 namespace MrBillTest\Persistence;
 
 use MrBill\Persistence\DataStore;
+use MrBill\Persistence\FileBasedDataStore;
+use MrBill\Persistence\MockDataStore;
 use PHPUnit\Framework\TestCase;
 
 class DataStoreTest extends TestCase
 {
-    /** @var DataStore */
-    protected $dataStore;
-    protected $key;
-
-    public function setUp()
+    public function getAllDataStores()
     {
-        $this->dataStore = new DataStore();
-        $this->key = uniqid();
+        return [
+            [new MockDataStore()],
+            [new FileBasedDataStore()],
+        ];
     }
 
-    public function tearDown()
+    /**
+     * @dataProvider getAllDataStores
+     * @param DataStore $dataStore
+     */
+    public function testExistsAndPutAndRemove(DataStore $dataStore)
     {
-        $this->dataStore->remove($this->key);
+        $this->assertFalse($dataStore->exists('key'));
+
+        $dataStore->scalarPut('key', 'value');
+
+        $this->assertTrue($dataStore->exists('key'));
+
+        $dataStore->remove('key');
+
+        $this->assertFalse($dataStore->exists('key'));
     }
 
-    public function testExistsAfterPut()
+    /**
+     * @dataProvider getAllDataStores
+     * @param DataStore $dataStore
+     */
+    public function testScalarGetAndPut(DataStore $dataStore)
     {
-        $this->assertFalse($this->dataStore->exists($this->key));
-        $this->dataStore->put($this->key, 'value');
-        $this->assertTrue($this->dataStore->exists($this->key));
+        $value = '[{abc"}]';
+
+        $this->assertEquals(null, $dataStore->scalarGet('key'));
+
+        $dataStore->scalarPut('key', $value);
+
+        $this->assertEquals($value, $dataStore->scalarGet('key'));
+
+        $dataStore->remove('key');
     }
 
-    public function testAppendAndGet()
+    /**
+     * @dataProvider getAllDataStores
+     * @param DataStore $dataStore
+     */
+    public function testScalarIncrement(DataStore $dataStore)
     {
-        $this->dataStore->append($this->key, 'item1');
-        $this->dataStore->append($this->key, 'item2');
-        $this->checkKeyForItems1And2();
+        $this->assertEquals(null, $dataStore->scalarGet('key'));
+
+        $this->assertEquals(1, $dataStore->scalarIncrement('key'));
+        $this->assertEquals(2, $dataStore->scalarIncrement('key'));
+
+        $this->assertEquals(2, $dataStore->scalarGet('key'));
+
+        $dataStore->remove('key');
     }
 
-    public function testPutAndGetNewlinesLost()
+    /**
+     * @dataProvider getAllDataStores
+     * @param DataStore $dataStore
+     */
+    public function testListAddItemAndGetAll(DataStore $dataStore)
     {
-        $this->dataStore->put($this->key, "\nit\nem1\n");
-        $this->checkKeyForItems1And2(1);
+        $this->assertEmpty($dataStore->listGetAll('key'));
+
+        $dataStore->listAddItem('key', 'a');
+
+        $this->assertEquals(['a'], $dataStore->listGetAll('key'));
+
+        $dataStore->listAddItem('key', 'b');
+
+        $this->assertEquals(['b', 'a'], $dataStore->listGetAll('key'));
+
+        $dataStore->remove('key');
     }
 
-    public function testAppendAndGetNewlinesLost()
+    /**
+     * @dataProvider getAllDataStores
+     * @param DataStore $dataStore
+     */
+    public function testMapPutItemAndGetAll(DataStore $dataStore)
     {
-        $this->dataStore->append($this->key, "\nit\nem1\n");
-        $this->dataStore->append($this->key, "\nit\nem2\n");
-        $this->checkKeyForItems1And2();
-    }
+        $this->assertEmpty($dataStore->mapGetAll('key'));
 
-    public function testDelete()
-    {
-        $this->dataStore->put($this->key, 'value');
-        $this->assertTrue($this->dataStore->exists($this->key));
+        $dataStore->mapPutItem('key', 'ak', 'av');
 
-        $this->dataStore->remove($this->key);
-        $this->assertFalse($this->dataStore->exists($this->key));
-    }
+        $this->assertEquals(['ak' => 'av'], $dataStore->mapGetAll('key'));
 
-    protected function checkKeyForItems1And2($totalExpectedItems = 2)
-    {
-        $index = -1;
-        $expected = ['item1', 'item2'];
-        foreach ($this->dataStore->get($this->key) as $index => $value) {
-            $this->assertEquals($expected[$index], $value);
-        }
-        $this->assertEquals($totalExpectedItems - 1, $index);
+        $dataStore->mapPutItem('key', 'bk', 'bv');
+
+        $this->assertEquals(['bk' => 'bv', 'ak' => 'av'], $dataStore->mapGetAll('key'));
+
+        $dataStore->remove('key');
     }
 }
