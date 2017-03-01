@@ -36,7 +36,7 @@ class ExpenseSet
     public function getExpenses() : Generator
     {
         // TODO use all months, not just current month
-        foreach ($this->expenseRepository->getForPhoneAndMonth($this->phone, 2017, 2) as $expense)
+        foreach ($this->expenseRepository->getForPhoneAndMonth($this->phone, 2017, 3) as $expense)
             /** @var Expense $expense */
             yield $expense;
     }

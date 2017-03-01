@@ -1,8 +1,12 @@
 FROM php:7.1-apache
 
 RUN apt-get update && apt-get install -y
-RUN apt-get install -y git
-RUN apt-get install -y zip unzip
+RUN apt-get install -y git zip unzip
+
+RUN a2enmod rewrite
+
+RUN pecl install redis-3.1.1 \
+    && docker-php-ext-enable redis
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
