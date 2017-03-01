@@ -7,7 +7,7 @@ use MrBill\Model\Message;
 use MrBill\Domain\DomainFactory;
 use MrBill\PhoneNumber;
 
-class V1
+class TwilioV1
 {
     /** @var PhoneNumber */
     protected $phone;
@@ -18,8 +18,7 @@ class V1
     protected $responseText = '';
     protected $addExtendedWelcomeMessages = false;
 
-    public function __construct(DomainFactory $domainFactory, array $post)
-    {
+    public function __construct (DomainFactory $domainFactory, array $post) {
         if (empty($post['MessageSid']) || empty($post['From']) || empty($post['Body'])) {
             $this->responseText = 'Something is wrong.';
             return;
@@ -68,6 +67,7 @@ class V1
                 '&amp;content=welcome2</Redirect>';
 
         $result .= '</Response>';
+
         return $result;
     }
 
