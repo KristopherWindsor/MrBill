@@ -72,10 +72,10 @@ class Report1Test extends TestCase
         $this->assertEquals('Jan 1st, 1970 &mdash; Jan 1st, 1970', $this->report1->getDateText());
 
         $this->conversation->addMessage(new Message($this->phone, '5 #h', $time, true, 0));
-        $this->assertEquals('Feb 14th, 2009 &mdash; Feb 14th, 2009', $this->report1->getDateText());
+        $this->assertEquals('Feb 13th, 2009 &mdash; Feb 13th, 2009', $this->report1->getDateText());
 
         $this->conversation->addMessage(new Message($this->phone, '5 #h', $time + 3600*24, true, 0));
-        $this->assertEquals('Feb 14th, 2009 &mdash; Feb 15th, 2009', $this->report1->getDateText());
+        $this->assertEquals('Feb 13th, 2009 &mdash; Feb 14th, 2009', $this->report1->getDateText());
     }
 
     public function testGetTableContents()

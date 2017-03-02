@@ -43,10 +43,14 @@ class Report1
         if ($this->hasInitializationError())
             return '';
 
-        $format = 'M jS, Y';
+        $formatter = function ($timestamp) {
+            $dateTime = new \DateTime('@' . $timestamp, new \DateTimeZone('America/Los_Angeles'));
+            return $dateTime->format('M jS, Y');
+        };
 
-        return date($format, $this->conversation->firstExpenseMessageTimestamp) . ' &mdash; ' .
-            date($format, $this->conversation->lastExpenseMessageTimestamp);
+        return
+            $formatter($this->conversation->firstExpenseMessageTimestamp) . ' &mdash; ' .
+            $formatter($this->conversation->lastExpenseMessageTimestamp);
     }
 
     public function getTableContents() : string
