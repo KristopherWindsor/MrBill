@@ -33,6 +33,28 @@ class HTTPCaller
         return $body;
     }
 
+    public function getSleepAndWelcome2() : string
+    {
+        $response = $this->guzzle->request('GET', 'api/sleep.php?sleep=0&content=welcome2');
+        assert($response->getStatusCode() == 200);
+
+        $body = (string) $response->getBody();
+        assert(strpos($body, 'We\'ll use hashtags for categories') > 0);
+
+        return $body;
+    }
+
+    public function getSleepAndWelcome3() : string
+    {
+        $response = $this->guzzle->request('GET', 'api/sleep.php?sleep=0&content=welcome3');
+        assert($response->getStatusCode() == 200);
+
+        $body = (string) $response->getBody();
+        assert(strpos($body, 'After you\'ve entered a few expenses') > 0);
+
+        return $body;
+    }
+
     public function get404() : string
     {
         $body = '';

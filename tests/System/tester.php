@@ -23,6 +23,8 @@ function tester($target)
 
     $caller->get404();
     $caller->getFaq();
+    $caller->getSleepAndWelcome2();
+    $caller->getSleepAndWelcome3();
 
     $interaction = [
         ['hello', 'Hi, I\'m Mr. Bill. Just text me each time you spend'],
