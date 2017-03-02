@@ -3,8 +3,8 @@
 namespace MrBillTest\Unit\Apps\Api;
 
 use MrBill\Apps\Api\Router;
+use MrBill\Container;
 use PHPUnit\Framework\TestCase;
-use Slim\App;
 use Slim\Http\Environment;
 use Slim\Http\Headers;
 use Slim\Http\Request;
@@ -19,7 +19,7 @@ class RouterTest extends TestCase
     {
         $request = $this->requestFactory('POST', '/twilio/v1', 'MessageSid=123&From=14087226296&Body=');
 
-        $app = (new Router)->getSlimAppWithRoutes(new App());
+        $app = (new Router)->getSlimAppWithRoutes(new Container());
 
         /** @var Response $response */
         $response = $app($request, new Response());
@@ -39,7 +39,7 @@ class RouterTest extends TestCase
     {
         $request = $this->requestFactory('GET', '/abcd');
 
-        $app = (new Router)->getSlimAppWithRoutes(new App());
+        $app = (new Router)->getSlimAppWithRoutes(new Container());
 
         /** @var Response $response */
         $response = $app($request, new Response());
