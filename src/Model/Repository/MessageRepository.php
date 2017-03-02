@@ -19,7 +19,7 @@ class MessageRepository extends Repository
     {
         $key = $this->getDataStoreKey($phoneNumber);
 
-        foreach ($this->dataStore->listGetAll($key) as $item)
+        foreach (array_reverse($this->dataStore->listGetAll($key)) as $item)
             yield Message::createFromMap(json_decode($item, true));
     }
 

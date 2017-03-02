@@ -57,17 +57,24 @@ class MessageRepositoryTest extends TestCase
     public function testPersistAndGetAll()
     {
         $phone = $this->message->phone;
+        $message2 = new Message(
+            $phone,
+            'another message',
+            self::TEST_TIME,
+            true,
+            0
+        );
 
-        for ($i = 0; $i < 2; $i++)
-            $this->messageRepository->persistMessage($this->message);
+        $this->messageRepository->persistMessage($this->message);
+        $this->messageRepository->persistMessage($message2);
 
         $messages = iterator_to_array(
             $this->messageRepository->getAllMessagesForPhone($phone)
         );
 
         $this->assertCount(2, $messages);
-        foreach ($messages as $message)
-            $this->assertEquals($this->message, $message);
+        $this->assertEquals($this->message, $messages[0]);
+        $this->assertEquals($message2, $messages[1]);
     }
 
     public function testPersistAndRemoveAll()
