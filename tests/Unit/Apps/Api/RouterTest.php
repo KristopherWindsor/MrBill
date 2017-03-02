@@ -1,6 +1,6 @@
 <?php
 
-namespace MrBillTest\Apps\Api;
+namespace MrBillTest\Unit\Apps\Api;
 
 use MrBill\Apps\Api\Router;
 use PHPUnit\Framework\TestCase;

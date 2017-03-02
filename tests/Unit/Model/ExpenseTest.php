@@ -1,6 +1,6 @@
 <?php
 
-namespace MrBillTest\Model;
+namespace MrBillTest\Unit\Model;
 
 use MrBill\Model\Expense;
 use MrBill\PhoneNumber;

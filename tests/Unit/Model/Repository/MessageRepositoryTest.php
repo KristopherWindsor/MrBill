@@ -1,6 +1,6 @@
 <?php
 
-namespace MrBillTest\Model\Repository;
+namespace MrBillTest\Unit\Model\Repository;
 
 use MrBill\Model\Message;
 use MrBill\Model\Repository\MessageRepository;

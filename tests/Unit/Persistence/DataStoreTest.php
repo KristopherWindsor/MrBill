@@ -1,6 +1,6 @@
 <?php
 
-namespace MrBillTest\Persistence;
+namespace MrBillTest\Unit\Persistence;
 
 use Generator;
 use MrBill\Persistence\DataStore;

@@ -1,6 +1,6 @@
 <?php
 
-namespace MrBillTest\Model;
+namespace MrBillTest\Unit\Model;
 
 use MrBill\Model\Token;
 use MrBill\PhoneNumber;

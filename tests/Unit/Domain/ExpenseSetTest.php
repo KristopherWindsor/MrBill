@@ -1,6 +1,6 @@
 <?php
 
-namespace MrBillTest\Domain;
+namespace MrBillTest\Unit\Domain;
 
 use MrBill\Domain\DomainFactory;
 use MrBill\Domain\ExpenseSet;

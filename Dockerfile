@@ -18,4 +18,4 @@ RUN cd /var/www && composer install
 
 RUN chown -R www-data:www-data /var/www/*
 
-RUN /var/www/vendor/bin/phpunit /var/www/tests
+RUN /var/www/vendor/bin/phpunit /var/www/tests/Unit

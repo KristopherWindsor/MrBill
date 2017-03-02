@@ -1,6 +1,6 @@
 <?php
 
-namespace MrBillTest\Apps\Api;
+namespace MrBillTest\Unit\Apps\Api;
 
 use MrBill\Apps\Api\TwilioV1;
 use MrBill\Domain\DomainFactory;

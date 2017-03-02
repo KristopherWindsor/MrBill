@@ -1,6 +1,6 @@
 <?php
 
-namespace MrBillTest\Apps\Report;
+namespace MrBillTest\Unit\Apps\Report;
 
 use MrBill\Apps\Report\Report1;
 use MrBill\Domain\Conversation;
