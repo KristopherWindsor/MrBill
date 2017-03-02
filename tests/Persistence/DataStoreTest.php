@@ -2,19 +2,21 @@
 
 namespace MrBillTest\Persistence;
 
+use Generator;
 use MrBill\Persistence\DataStore;
 use MrBill\Persistence\FileBasedDataStore;
 use MrBill\Persistence\MockDataStore;
+use MrBill\Persistence\RedisDataStore;
 use PHPUnit\Framework\TestCase;
 
 class DataStoreTest extends TestCase
 {
-    public function getAllDataStores()
+    public function getAllDataStores() : Generator
     {
-        return [
-            [new MockDataStore()],
-            [new FileBasedDataStore()],
-        ];
+        yield [new MockDataStore()];
+        yield [new FileBasedDataStore()];
+        if (getenv('MYREDIS_PORT_6379_TCP_ADDR'))
+            yield [new RedisDataStore()];
     }
 
     /**
@@ -23,14 +25,13 @@ class DataStoreTest extends TestCase
      */
     public function testExistsAndPutAndRemove(DataStore $dataStore)
     {
+        $dataStore->remove('key');
         $this->assertFalse($dataStore->exists('key'));
 
         $dataStore->scalarPut('key', 'value');
-
         $this->assertTrue($dataStore->exists('key'));
 
         $dataStore->remove('key');
-
         $this->assertFalse($dataStore->exists('key'));
     }
 
