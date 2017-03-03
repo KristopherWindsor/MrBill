@@ -35,7 +35,7 @@ class RouterTest extends TestCase
         );
     }
 
-    public function test404()
+    public function test404() : string
     {
         $request = $this->requestFactory('GET', '/abcd');
 
@@ -49,6 +49,25 @@ class RouterTest extends TestCase
             404,
             $response->getStatusCode()
         );
+
+        return (string) $response->getBody();
+    }
+
+    /**
+     * @depends test404
+     * @param string $fourOhFourResponse
+     */
+    public function testInvokeSameAsRegularUsage(string $fourOhFourResponse)
+    {
+        $container = new Container();
+        $container->get('slim')->getContainer()['request'] = $this->requestFactory('GET', '/abcd');
+
+        ob_start();
+        (new Router)($container);
+        $output = ob_get_clean();
+
+        $this->assertNotEmpty($output);
+        $this->assertEquals($fourOhFourResponse, $output);
     }
 
     protected function requestFactory(string $method, string $path, string $body = '') : Request
