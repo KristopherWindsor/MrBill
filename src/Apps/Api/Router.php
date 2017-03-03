@@ -20,7 +20,11 @@ class Router
             function (Request $request, Response $response, array $args) use ($container) {
                 $factory = $container->get('domainFactory');
 
-                $handler = new TwilioV1($factory, $request->getParsedBody() ?: []);
+                $handler = new TwilioV1(
+                    $factory,
+                    $request->getParsedBody() ?: [],
+                    $container->get('config')->publicUrl
+                );
                 $resultXml = $handler->getResult();
 
                 $response->getBody()->write($resultXml);

@@ -12,19 +12,24 @@ class TwilioV1
     /** @var PhoneNumber */
     protected $phone;
 
+    /** @var string */
+    protected $publicSiteUrl;
+
     /** @var Conversation */
     protected $conversation;
 
     protected $responseText = '';
+
     protected $addExtendedWelcomeMessages = false;
 
-    public function __construct (DomainFactory $domainFactory, array $post) {
+    public function __construct (DomainFactory $domainFactory, array $post, string $publicSiteUrl) {
         if (empty($post['MessageSid']) || empty($post['From']) || empty($post['Body'])) {
             $this->responseText = 'Something is wrong.';
             return;
         }
 
         $this->phone = new PhoneNumber($post['From']);
+        $this->publicSiteUrl = $publicSiteUrl;
         $this->conversation = $domainFactory->getConversation($this->phone);
 
         $incomingMessage = Message::createWithEntropy($this->phone, $post['Body'], time(), true);
@@ -63,8 +68,7 @@ class TwilioV1
             $result .= '<Message>' . $this->responseText . '</Message>';
 
         if ($this->addExtendedWelcomeMessages)
-            $result .= '<Redirect>https://mrbill.kristopherwindsor.com/api/sleep.php?sleep=6' .
-                '&amp;content=welcome2</Redirect>';
+            $result .= '<Redirect>' . $this->publicSiteUrl . '/api/sleep.php?sleep=6&amp;content=welcome2</Redirect>';
 
         $result .= '</Response>';
 
@@ -84,7 +88,7 @@ class TwilioV1
             '2/5 Every time you spend $$, send me a text like: 8.99 #eatout #lunch lunch with friends',
             '3/5 The hashtags are important for categorizing expenses. The description is optional.',
             '4/5 Once you have given me a few bills, I\'ll show you a report about your spending.',
-            '5/5 For more info, see the FAQ https://mrbill.kristopherwindsor.com/faq.php',
+            '5/5 For more info, see the FAQ ' . $this->publicSiteUrl . '/faq.php',
         ][$index % 5];
     }
 
@@ -106,7 +110,7 @@ class TwilioV1
     {
         $token = $this->conversation->getOrCreateActiveReportToken();
 
-        return 'Your report! https://mrbill.kristopherwindsor.com/report/1?p=' .
+        return 'Your report! ' . $this->publicSiteUrl . '/report/1?p=' .
             $this->phone . '&amp;s=' . $token->secret;
     }
 }

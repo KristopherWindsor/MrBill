@@ -5,7 +5,7 @@ namespace MrBill;
 class Config
 {
     /** @var string */
-    public $publicSiteUrl;
+    public $publicUrl;
 
     /** @var array|null */
     public $redis;
@@ -20,6 +20,6 @@ class Config
             ];
         }
 
-        $this->publicSiteUrl = getenv('MR_BILL_PUBLIC_URL');
+        $this->publicUrl = getenv('MR_BILL_PUBLIC_URL');
     }
 }

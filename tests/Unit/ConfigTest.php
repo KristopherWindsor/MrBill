@@ -46,6 +46,6 @@ class ConfigTest extends TestCase
             $config->redis
         );
 
-        $this->assertEquals('http://example.com', $config->publicSiteUrl);
+        $this->assertEquals('http://example.com', $config->publicUrl);
     }
 }

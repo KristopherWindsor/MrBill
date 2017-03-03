@@ -14,6 +14,8 @@ class TwilioV1Test extends TestCase
     const TEST_PHONE = 14087226296;
     const TEST_TIMESTAMP = 1487403557;
 
+    const PUBLIC_URL = 'http://example.com';
+
     /** @var PhoneNumber */
     private $testPhone;
 
@@ -33,14 +35,14 @@ class TwilioV1Test extends TestCase
 
     public function testInvalidRequest()
     {
-        $v1 = new TwilioV1($this->domainFactory, []);
+        $v1 = new TwilioV1($this->domainFactory, [], self::PUBLIC_URL);
         $this->assertEquals(
             '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>Something is wrong.</Message></Response>',
             $v1->getResult()
         );
     }
 
-    public function testWelcomeMessage()
+    public function doWelcomeMessage() : string
     {
         $request =
             [
@@ -48,23 +50,25 @@ class TwilioV1Test extends TestCase
                 'From' => '14087226296',
                 'Body' => 'hello',
             ];
-        $v1 = new TwilioV1($this->domainFactory, $request);
+        $v1 = new TwilioV1($this->domainFactory, $request, self::PUBLIC_URL);
 
+        return $v1->getResult();
+    }
+
+    public function testWelcomeMessage()
+    {
         $expected =
             '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>Hi, I\'m Mr. Bill. Just text me each time you ' .
                 'spend $$, and I\'ll help you track expenses. That\'s right... you keep track of your expenses by ' .
-                'texting them to me.</Message><Redirect>https://mrbill.kristopherwindsor.com/api/sleep.php?' .
+                'texting them to me.</Message><Redirect>' . self::PUBLIC_URL . '/api/sleep.php?' .
                 'sleep=6&amp;content=welcome2</Redirect></Response>';
 
-        $this->assertEquals(
-            $expected,
-            $v1->getResult()
-        );
+        $this->assertEquals($expected, $this->doWelcomeMessage());
     }
 
     public function testExpenseRecord()
     {
-        $this->testWelcomeMessage(); // Get those out of the way
+        $this->doWelcomeMessage(); // Get those out of the way
 
         $request =
             [
@@ -80,7 +84,7 @@ class TwilioV1Test extends TestCase
         ];
 
         for ($i = 1; $i < 7; $i++) {
-            $v1 = new TwilioV1($this->domainFactory, $request);
+            $v1 = new TwilioV1($this->domainFactory, $request, self::PUBLIC_URL);
             $this->assertEquals(
                 $expected[$i] ?? '<?xml version="1.0" encoding="UTF-8" ?><Response></Response>',
                 $v1->getResult(),
@@ -91,7 +95,7 @@ class TwilioV1Test extends TestCase
 
     public function testHelpRequest()
     {
-        $this->testWelcomeMessage(); // Get those out of the way
+        $this->doWelcomeMessage(); // Get those out of the way
 
         $request =
             [
@@ -100,13 +104,13 @@ class TwilioV1Test extends TestCase
                 'Body' => ' ?',
             ];
 
-        $v1 = new TwilioV1($this->domainFactory, $request);
+        $v1 = new TwilioV1($this->domainFactory, $request, self::PUBLIC_URL);
         $this->assertEquals(
             '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>1/5 Let\'s see how I can help you! Text "?" again to cycle through the help messages.</Message></Response>',
             $v1->getResult()
         );
 
-        $v1 = new TwilioV1($this->domainFactory, $request);
+        $v1 = new TwilioV1($this->domainFactory, $request, self::PUBLIC_URL);
         $this->assertEquals(
             '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>2/5 Every time you spend $$, send me a text like: 8.99 #eatout #lunch lunch with friends</Message></Response>',
             $v1->getResult()
@@ -115,7 +119,7 @@ class TwilioV1Test extends TestCase
 
     public function testCreateReportAndGetReply()
     {
-        $this->testWelcomeMessage(); // Get those out of the way
+        $this->doWelcomeMessage(); // Get those out of the way
 
         $request =
             [
@@ -124,13 +128,13 @@ class TwilioV1Test extends TestCase
                 'Body' => 'report',
             ];
 
-        $v1 = new TwilioV1($this->domainFactory, $request);
+        $v1 = new TwilioV1($this->domainFactory, $request, self::PUBLIC_URL);
 
         $secret = $this->domainFactory->getConversation($this->testPhone)->getExistingReportToken()->secret;
 
         $this->assertEquals(
             '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>Your report! ' .
-                'https://mrbill.kristopherwindsor.com/report/1?p=' . $this->testPhone . '&amp;s=' . $secret .
+                self::PUBLIC_URL . '/report/1?p=' . $this->testPhone . '&amp;s=' . $secret .
                 '</Message></Response>',
             $v1->getResult()
         );
