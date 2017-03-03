@@ -1,6 +1,6 @@
 <?php
 
-namespace MrBill;
+namespace MrBill\Apps;
 
 use MrBill\Domain\DomainFactory;
 use MrBill\Model\Repository\RepositoryFactory;

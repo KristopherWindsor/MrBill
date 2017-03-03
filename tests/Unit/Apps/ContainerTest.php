@@ -1,8 +1,8 @@
 <?php
 
-namespace MrBillTest\Unit\Apps\Api;
+namespace MrBillTest\Unit\Apps;
 
-use MrBill\Container;
+use MrBill\Apps\Container;
 use MrBill\Domain\DomainFactory;
 use MrBill\Model\Repository\RepositoryFactory;
 use MrBill\Persistence\DataStore;
