@@ -14,7 +14,7 @@ COPY . /var/www/
 
 RUN mkdir /var/www/data && chmod 0755 /var/www/data
 
-RUN cd /var/www && composer install
+RUN cd /var/www && composer install --optimize-autoloader
 
 RUN chown -R www-data:www-data /var/www/*
 
