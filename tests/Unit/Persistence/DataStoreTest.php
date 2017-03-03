@@ -3,6 +3,7 @@
 namespace MrBillTest\Unit\Persistence;
 
 use Generator;
+use MrBill\Apps\Container;
 use MrBill\Persistence\DataStore;
 use MrBill\Persistence\FileBasedDataStore;
 use MrBill\Persistence\MockDataStore;
@@ -15,8 +16,10 @@ class DataStoreTest extends TestCase
     {
         yield [new MockDataStore()];
         yield [new FileBasedDataStore()];
-        if (getenv('MYREDIS_PORT_6379_TCP_ADDR'))
-            yield [new RedisDataStore()];
+
+        $container = new Container();
+        if ($container->has('redis'))
+            yield [new RedisDataStore($container->get('redis'))];
     }
 
     /**

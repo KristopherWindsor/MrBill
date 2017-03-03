@@ -8,13 +8,9 @@ class RedisDataStore implements DataStore
 {
     private $redis;
 
-    public function __construct()
+    public function __construct(Client $redis)
     {
-        $this->redis = new Client([
-            'scheme' => 'tcp',
-            'host'   => getenv('MYREDIS_PORT_6379_TCP_ADDR'),
-            'port'   => 6379,
-        ]);
+        $this->redis = $redis;
     }
 
     public function exists(string $key) : bool
