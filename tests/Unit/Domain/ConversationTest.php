@@ -56,7 +56,7 @@ class ConversationTest extends TestCase
         $this->assertEquals(
             '{"messages14087226296":["{\"phone\":14087226296,\"message\":\"5 #h\",\"timestamp\":1488067264,\"isFromUs' .
             'er\":true,\"entropy\":0}","{\"phone\":14087226296,\"message\":\"messageX\",\"timestamp\":1488067264,\"is' .
-            'FromUser\":true,\"entropy\":0}"],"expenses:14087226296:2017:02:id":"1","expenses:14087226296:2017:02":{"' .
+            'FromUser\":true,\"entropy\":0}"],"expenses:14087226296:2017:02:meta":{"id":"1"},"expenses:14087226296:2017:02":{"' .
             '1":"{\"phone\":14087226296,\"timestamp\":1488067264,\"amountInCents\":500,\"hashTags\":[\"h\"],\"descrip' .
             'tion\":\"#h\",\"sourceType\":\"_m\",\"sourceInfo\":{\"message\":{\"phone\":14087226296,\"message\":\"5 #' .
             'h\",\"timestamp\":1488067264,\"isFromUser\":true,\"entropy\":0}},\"entropy\":\"' . $expenseEntropy .

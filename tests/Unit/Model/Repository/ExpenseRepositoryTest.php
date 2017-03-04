@@ -141,7 +141,7 @@ class ExpenseRepositoryTest extends TestCase
                         '"description":"description","sourceType":"_m","sourceInfo":' .
                         '["inf"],"entropy":"7"}',
                 ],
-                'expenses:14087226296:2017:02:id' => 1
+                'expenses:14087226296:2017:02:meta' => ["id" => 1]
             ];
     }
 
@@ -159,7 +159,7 @@ class ExpenseRepositoryTest extends TestCase
                         '"description":"description2","sourceType":"_m","sourceInfo":' .
                         '["inf"],"entropy":"9"}',
                 ],
-                'expenses:14087226296:2017:02:id' => 2
+                'expenses:14087226296:2017:02:meta' => ["id" => 2]
             ];
     }
 

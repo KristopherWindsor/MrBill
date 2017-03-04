@@ -44,13 +44,13 @@ class ExpenseRepository extends Repository
 
     protected function incrementAndGetId(PhoneNumber $phone, int $year, int $month) : int
     {
-        $key = $this->getIdKey($phone, $year, $month);
-        return $this->dataStore->scalarIncrement($key);
+        $key = $this->getMetaDataKey($phone, $year, $month);
+        return $this->dataStore->mapIncrementItem($key, 'id');
     }
 
-    protected function getIdKey(PhoneNumber $phone, int $year, int $month)
+    protected function getMetaDataKey(PhoneNumber $phone, int $year, int $month)
     {
-        return 'expenses:' . $phone . ':' . $year . ':' . ($month < 10 ? '0' : '') . $month . ':id';
+        return 'expenses:' . $phone . ':' . $year . ':' . ($month < 10 ? '0' : '') . $month . ':meta';
     }
 
     protected function getDataStoreKey(PhoneNumber $phone, int $year, int $month) : string
