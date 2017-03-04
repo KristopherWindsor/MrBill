@@ -48,7 +48,7 @@ class RedisDataStore implements DataStore
         return $this->redis->lrange($key, 0, -1);
     }
 
-    public function mapPutItem(string $mapKey, string $itemKey, $value) : void
+    public function mapPutItem(string $mapKey, string $itemKey, string $value) : void
     {
         $this->redis->hset($mapKey, $itemKey, $value);
     }
@@ -56,5 +56,10 @@ class RedisDataStore implements DataStore
     public function mapGetAll(string $key) : array
     {
         return $this->redis->hgetall($key);
+    }
+
+    public function mapIncrementItem(string $mapKey, string $itemKey) : int
+    {
+        return $this->redis->hincrby($mapKey, $itemKey, 1);
     }
 }

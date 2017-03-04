@@ -46,7 +46,7 @@ class MockDataStore implements DataStore
         return $this->storage[$key] ?? [];
     }
 
-    public function mapPutItem(string $mapKey, string $itemKey, $value) : void
+    public function mapPutItem(string $mapKey, string $itemKey, string $value) : void
     {
         $this->storage[$mapKey][$itemKey] = $value;
     }
@@ -54,5 +54,12 @@ class MockDataStore implements DataStore
     public function mapGetAll(string $key) : array
     {
         return $this->storage[$key] ?? [];
+    }
+
+    public function mapIncrementItem(string $mapKey, string $itemKey) : int
+    {
+        $currentValue = $this->storage[$mapKey][$itemKey] ?? 0;
+        $this->mapPutItem($mapKey, $itemKey, (string) ($currentValue + 1));
+        return $currentValue + 1;
     }
 }

@@ -56,7 +56,7 @@ class FileBasedDataStore implements DataStore
         return $list ?: [];
     }
 
-    public function mapPutItem(string $mapKey, string $itemKey, $value) : void
+    public function mapPutItem(string $mapKey, string $itemKey, string $value) : void
     {
         $map = $this->mapGetAll($mapKey);
         $map[$itemKey] = $value;
@@ -66,6 +66,18 @@ class FileBasedDataStore implements DataStore
     public function mapGetAll(string $key) : array
     {
         return $this->listGetAll($key);
+    }
+
+    public function mapIncrementItem(string $mapKey, string $itemKey) : int
+    {
+        $map = $this->mapGetAll($mapKey);
+
+        $currentValue = $map[$itemKey] ?? 0;
+        $map[$itemKey] = (string) ($currentValue + 1);
+
+        $this->scalarPut($mapKey, json_encode($map));
+
+        return $currentValue + 1;
     }
 
     protected function getFileNameForKey(string $key) : string
