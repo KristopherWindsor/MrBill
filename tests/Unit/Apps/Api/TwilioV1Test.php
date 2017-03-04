@@ -3,11 +3,18 @@
 namespace MrBillTest\Unit\Apps\Api;
 
 use MrBill\Apps\Api\TwilioV1;
+use MrBill\Apps\Container;
+use MrBill\Config;
 use MrBill\Domain\DomainFactory;
 use MrBill\Model\Repository\RepositoryFactory;
 use MrBill\PhoneNumber;
 use MrBill\Persistence\MockDataStore;
 use PHPUnit\Framework\TestCase;
+use Slim\App;
+use Slim\Http\Headers;
+use Slim\Http\Request;
+use Slim\Http\RequestBody;
+use Slim\Http\Uri;
 
 class TwilioV1Test extends TestCase
 {
@@ -35,7 +42,10 @@ class TwilioV1Test extends TestCase
 
     public function testInvalidRequest()
     {
-        $v1 = new TwilioV1($this->domainFactory, [], self::PUBLIC_URL);
+        $slim = new App();
+
+        $v1 = new TwilioV1($slim->getContainer());
+        $v1($slim->getContainer()['request'], $slim->getContainer()['response'], []);
         $this->assertEquals(
             '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>Something is wrong.</Message></Response>',
             $v1->getResult()
@@ -44,13 +54,8 @@ class TwilioV1Test extends TestCase
 
     public function doWelcomeMessage() : string
     {
-        $request =
-            [
-                'MessageSid' => 'abc',
-                'From' => '14087226296',
-                'Body' => 'hello',
-            ];
-        $v1 = new TwilioV1($this->domainFactory, $request, self::PUBLIC_URL);
+        $v1 = new TwilioV1();
+        $v1->run($this->domainFactory, self::PUBLIC_URL, new PhoneNumber('14087226296'), 'hello');
 
         return $v1->getResult();
     }
@@ -70,13 +75,6 @@ class TwilioV1Test extends TestCase
     {
         $this->doWelcomeMessage(); // Get those out of the way
 
-        $request =
-            [
-                'MessageSid' => 'abc',
-                'From' => self::TEST_PHONE,
-                'Body' => '$7 #tag',
-            ];
-
         $expected = [
             1 => '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>Got it. I\'ll send you a report once ' .
                 'I\'ve got a few more expenses.</Message></Response>',
@@ -84,7 +82,8 @@ class TwilioV1Test extends TestCase
         ];
 
         for ($i = 1; $i < 7; $i++) {
-            $v1 = new TwilioV1($this->domainFactory, $request, self::PUBLIC_URL);
+            $v1 = new TwilioV1();
+            $v1->run($this->domainFactory, self::PUBLIC_URL, new PhoneNumber(self::TEST_PHONE), '$7 #tag');
             $this->assertEquals(
                 $expected[$i] ?? '<?xml version="1.0" encoding="UTF-8" ?><Response></Response>',
                 $v1->getResult(),
@@ -97,38 +96,27 @@ class TwilioV1Test extends TestCase
     {
         $this->doWelcomeMessage(); // Get those out of the way
 
-        $request =
-            [
-                'MessageSid' => 'abc',
-                'From' => '14087226296',
-                'Body' => ' ?',
-            ];
-
-        $v1 = new TwilioV1($this->domainFactory, $request, self::PUBLIC_URL);
+        $v1 = new TwilioV1();
+        $v1->run($this->domainFactory, self::PUBLIC_URL, new PhoneNumber(self::TEST_PHONE), ' ?');
         $this->assertEquals(
             '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>1/5 Let\'s see how I can help you! Text "?" again to cycle through the help messages.</Message></Response>',
             $v1->getResult()
         );
 
-        $v1 = new TwilioV1($this->domainFactory, $request, self::PUBLIC_URL);
+        $v1 = new TwilioV1();
+        $v1->run($this->domainFactory, self::PUBLIC_URL, new PhoneNumber(self::TEST_PHONE), ' ?');
         $this->assertEquals(
             '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>2/5 Every time you spend $$, send me a text like: 8.99 #eatout #lunch lunch with friends</Message></Response>',
             $v1->getResult()
         );
     }
 
-    public function testCreateReportAndGetReply()
+    public function testCreateReportAndGetReply() : string
     {
         $this->doWelcomeMessage(); // Get those out of the way
 
-        $request =
-            [
-                'MessageSid' => 'abc',
-                'From' => '14087226296',
-                'Body' => 'report',
-            ];
-
-        $v1 = new TwilioV1($this->domainFactory, $request, self::PUBLIC_URL);
+        $v1 = new TwilioV1();
+        $v1->run($this->domainFactory, self::PUBLIC_URL, new PhoneNumber('14087226296'), 'report');
 
         $secret = $this->domainFactory->getConversation($this->testPhone)->getExistingReportToken()->secret;
 
@@ -138,5 +126,30 @@ class TwilioV1Test extends TestCase
                 '</Message></Response>',
             $v1->getResult()
         );
+
+        return $v1->getResult();
+    }
+
+    /**
+     * @depends testCreateReportAndGetReply
+     * @param string $manualRunResult
+     */
+    public function testInvokeSameAsManualRun(string $manualRunResult)
+    {
+        $uri = Uri::createFromString('http://doesnotmatter.com');
+        $request = (new Request('POST', $uri, new Headers(), [], [], new RequestBody()))
+            ->withHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+        $request->getBody()->write('MessageSid=abc&From=' . self::TEST_PHONE . '&Body=' . 'report');
+        $request->getBody()->rewind();
+
+        $slimContainer = (new App)->getContainer();
+        $slimContainer['myContainer'] = new Container();
+        $slimContainer['myContainer']->get('config')->publicUrl = self::PUBLIC_URL;
+
+        $v1 = new TwilioV1($slimContainer);
+        $v1($request, $slimContainer['response'], []);
+
+        $this->assertTrue(levenshtein($manualRunResult, $v1->getResult()) <= 13); // tokens will be random
     }
 }

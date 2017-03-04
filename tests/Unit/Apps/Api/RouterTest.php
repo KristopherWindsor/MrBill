@@ -17,7 +17,7 @@ class RouterTest extends TestCase
 {
     public function testTwilioV1()
     {
-        $request = $this->requestFactory('POST', '/twilio/v1', 'MessageSid=123&From=14087226296&Body=');
+        $request = $this->requestFactory('POST', '/twilio/v1', 'MessageSid=123&From=14087226296');
 
         $app = (new Router)->getSlimAppWithRoutes(new Container());
 

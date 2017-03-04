@@ -6,11 +6,15 @@ use MrBill\Domain\Conversation;
 use MrBill\Model\Message;
 use MrBill\Domain\DomainFactory;
 use MrBill\PhoneNumber;
+use Psr\Container\ContainerInterface;
+use Slim\Container;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
 class TwilioV1
 {
-    /** @var PhoneNumber */
-    protected $phone;
+    /** @var Container */
+    protected $slimContainer;
 
     /** @var string */
     protected $publicSiteUrl;
@@ -18,21 +22,64 @@ class TwilioV1
     /** @var Conversation */
     protected $conversation;
 
+    // Below represent input
+
+    /** @var PhoneNumber */
+    protected $phone;
+
+    /** @var string */
+    protected $messageText;
+
+    // Below represent output
+
     protected $responseText = '';
 
     protected $addExtendedWelcomeMessages = false;
 
-    public function __construct (DomainFactory $domainFactory, array $post, string $publicSiteUrl) {
-        if (empty($post['MessageSid']) || empty($post['From']) || empty($post['Body'])) {
-            $this->responseText = 'Something is wrong.';
-            return;
-        }
+    public function __construct(Container $slimContainer = null)
+    {
+        $this->slimContainer = $slimContainer;
+    }
 
-        $this->phone = new PhoneNumber($post['From']);
+    public function __invoke(Request $request, Response $response, $args) : Response
+    {
+        assert((bool) $this->slimContainer);
+
+        $body = $request->getParsedBody();
+        $isValid = isset($body['MessageSid']) && isset($body['From']) && isset($body['Body']);
+
+        if ($isValid) {
+            $myContainer = $this->slimContainer['myContainer'];
+            $this->run(
+                $myContainer->get('domainFactory'),
+                $myContainer->get('config')->publicUrl,
+                new PhoneNumber($body['From']),
+                $body['Body']
+            );
+        } else
+            $this->responseText = 'Something is wrong.';
+
+        return $response->write($this->getResult());
+    }
+
+    public function run(
+        DomainFactory $domainFactory,
+        string $publicSiteUrl,
+        PhoneNumber $fromPhone,
+        string $messageText
+    ) : void {
+
+        $this->phone = $fromPhone;
         $this->publicSiteUrl = $publicSiteUrl;
         $this->conversation = $domainFactory->getConversation($this->phone);
+        $this->messageText = $messageText;
 
-        $incomingMessage = Message::createWithEntropy($this->phone, $post['Body'], time(), true);
+        $this->computeResult();
+    }
+
+    protected function computeResult()
+    {
+        $incomingMessage = Message::createWithEntropy($this->phone, $this->messageText, time(), true);
         $messageWithMeaning = $this->conversation->addMessage($incomingMessage);
 
         $isTenthExpense = $messageWithMeaning->isExpenseMessage() && $this->conversation->totalExpenseMessages == 10;
