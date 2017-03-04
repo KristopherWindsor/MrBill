@@ -76,9 +76,9 @@ class Report1
             /** @var Expense $expenseRecord */
             $key = '#' . implode('#', $expenseRecord->hashTags);
             if (isset($data[$key])) {
-                $data[$key] += $expenseRecord->amountInCents / 100; // TODO some refactoring..
+                $data[$key] += $expenseRecord->amountInCents / ExpenseSet::CENTS_PER_DOLLAR;
             } else {
-                $data[$key] = $expenseRecord->amountInCents / 100;
+                $data[$key] = $expenseRecord->amountInCents / ExpenseSet::CENTS_PER_DOLLAR;
             }
         }
         ksort($data);

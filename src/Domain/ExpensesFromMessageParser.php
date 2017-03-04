@@ -7,8 +7,6 @@ use MrBill\Model\Message;
 
 class ExpensesFromMessageParser
 {
-    private const CENTS_PER_DOLLAR = 100;
-
     public function parse(Message $message) : array
     {
         $result = [];
@@ -21,7 +19,7 @@ class ExpensesFromMessageParser
                     $result[] = Expense::createFromMessageWithEntropy(
                         $message->phone,
                         $message->timestamp,
-                        $data['amount'] * self::CENTS_PER_DOLLAR,
+                        $data['amount'] * ExpenseSet::CENTS_PER_DOLLAR,
                         $data['hashtags'],
                         $data['description'],
                         ['message' => $message->toMap()]

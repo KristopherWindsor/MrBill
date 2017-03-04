@@ -9,6 +9,8 @@ use MrBill\PhoneNumber;
 
 class ExpenseSet
 {
+    const CENTS_PER_DOLLAR = 100;
+
     /** @var PhoneNumber */
     protected $phone;
 
