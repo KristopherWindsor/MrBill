@@ -6,6 +6,7 @@ use MrBill\Domain\Conversation;
 use MrBill\Domain\DomainFactory;
 use MrBill\Domain\ExpenseSet;
 use MrBill\Domain\ExpensesFromMessageParser;
+use MrBill\Domain\TokenSet;
 use MrBill\Model\Expense;
 use MrBill\PhoneNumber;
 
@@ -24,9 +25,9 @@ class Report1
 
         $phone = new PhoneNumber($get['p']);
         $conversation = $domainFactory->getConversation($phone);
+        $tokenSet = $domainFactory->getTokenSet($phone);
 
-        $token = $conversation->getExistingReportToken();
-        if (!$token || $token->isExpired() || $get['s'] != $token->secret)
+        if (!$tokenSet->hasValidTokenForDocumentWithSecret(TokenSet::REPORT_ID, $get['s']))
             return;
 
         $this->conversation = $conversation;

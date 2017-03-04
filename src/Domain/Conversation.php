@@ -17,8 +17,6 @@ use MrBill\PhoneNumber;
  */
 class Conversation
 {
-    private const REPORT_ID = 1;
-
     /** @var PhoneNumber */
     protected $phone;
 
@@ -27,9 +25,6 @@ class Conversation
 
     /** @var MessageRepository */
     protected $messageRepository;
-
-    /** @var TokenRepository */
-    protected $tokenRepository;
 
     public $totalMessages = 0;
     public $totalIncomingMessages = 0;
@@ -43,13 +38,11 @@ class Conversation
     public function __construct(
         PhoneNumber $phone,
         DomainFactory $domainFactory,
-        MessageRepository $messageRepository,
-        TokenRepository $tokenRepository
+        MessageRepository $messageRepository
     ) {
         $this->phone = $phone;
         $this->domainFactory = $domainFactory;
         $this->messageRepository = $messageRepository;
-        $this->tokenRepository = $tokenRepository;
 
         foreach ($messageRepository->getAllMessagesForPhone($phone) as $message) {
             $this->processOneMessage($message);
@@ -131,29 +124,5 @@ class Conversation
         $this->totalMessages                =
         $this->firstExpenseMessageTimestamp =
         $this->lastExpenseMessageTimestamp  = 0;
-
-        $this->tokenRepository->deleteToken($this->phone, 1);
-    }
-
-    public function getExistingReportToken() : ?Token
-    {
-        return $this->tokenRepository->getTokenIfExists($this->phone, self::REPORT_ID);
-    }
-
-    public function getOrCreateActiveReportToken() : Token
-    {
-        $existingToken = $this->tokenRepository->getTokenIfExists($this->phone, self::REPORT_ID);
-
-        return
-            $existingToken && !$existingToken->isExpired() ? $existingToken :
-
-            $this->tokenRepository->persistToken(
-                new Token(
-                    $this->phone,
-                    self::REPORT_ID,
-                    dechex(random_int(pow(2, 48), pow(2, 52) - 1)),
-                    time() + 3600 * 24 * 30
-                )
-            );
     }
 }

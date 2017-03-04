@@ -3,6 +3,7 @@
 namespace MrBill\Apps\Api;
 
 use MrBill\Domain\Conversation;
+use MrBill\Domain\TokenSet;
 use MrBill\Model\Message;
 use MrBill\Domain\DomainFactory;
 use MrBill\PhoneNumber;
@@ -21,6 +22,9 @@ class TwilioV1
 
     /** @var Conversation */
     protected $conversation;
+
+    /** @var TokenSet */
+    protected $tokenSet;
 
     // Below represent input
 
@@ -72,6 +76,7 @@ class TwilioV1
         $this->phone = $fromPhone;
         $this->publicSiteUrl = $publicSiteUrl;
         $this->conversation = $domainFactory->getConversation($this->phone);
+        $this->tokenSet = $domainFactory->getTokenSet($this->phone);
         $this->messageText = $messageText;
 
         $this->computeResult();
@@ -155,9 +160,10 @@ class TwilioV1
 
     protected function createReportAndGetReply() : string
     {
-        $token = $this->conversation->getOrCreateActiveReportToken();
+        $token = $this->tokenSet->getSecretIfActive(TokenSet::REPORT_ID) ?:
+            $this->tokenSet->createActiveTokenForDocument(TokenSet::REPORT_ID);
 
         return 'Your report! ' . $this->publicSiteUrl . '/report/1?p=' .
-            $this->phone . '&amp;s=' . $token->secret;
+            $this->phone . '&amp;s=' . $token;
     }
 }

@@ -70,18 +70,4 @@ class TokenTest extends TestCase
 
         $this->testConstructedInstance();
     }
-
-    public function testIsExpiredYes()
-    {
-        $this->token->expiry = time() - 10;
-
-        $this->assertTrue($this->token->isExpired());
-    }
-
-    public function testIsExpiredNo()
-    {
-        $this->token->expiry = time() + 10;
-
-        $this->assertFalse($this->token->isExpired());
-    }
 }

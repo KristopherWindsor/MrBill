@@ -142,26 +142,4 @@ class ConversationTest extends TestCase
         $this->assertEquals(0, $this->conversation->firstExpenseMessageTimestamp);
         $this->assertEquals(0, $this->conversation->lastExpenseMessageTimestamp);
     }
-
-    public function testGetOrCreateActiveReportToken()
-    {
-        $token = $this->conversation->getOrCreateActiveReportToken();
-        $this->assertEquals($this->testPhone, $token->phone);
-        $this->assertEquals(1, $token->documentId);
-        $this->assertNotEmpty($token->secret);
-        $this->assertFalse($token->isExpired());
-
-        // Might get a different instance, but the properties should be identical
-        $token2 = $this->conversation->getOrCreateActiveReportToken();
-        $this->assertTrue($token == $token2);
-    }
-
-    public function testGetExistingReportTokenAndGetOrCreateActiveReportToken()
-    {
-        $this->assertEmpty($this->conversation->getExistingReportToken());
-
-        $token = $this->conversation->getOrCreateActiveReportToken();
-
-        $this->assertTrue($token == $this->conversation->getExistingReportToken());
-    }
 }

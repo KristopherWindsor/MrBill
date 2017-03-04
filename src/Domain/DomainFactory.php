@@ -16,6 +16,9 @@ class DomainFactory
     /** @var ExpenseSet[] */
     protected $expenseSets = [];
 
+    /** @var TokenSet[] */
+    protected $tokenSets = [];
+
     public function __construct(RepositoryFactory $repositoryFactory)
     {
         $this->repositoryFactory = $repositoryFactory;
@@ -28,8 +31,7 @@ class DomainFactory
         new Conversation(
             $phoneNumber,
             $this,
-            $this->repositoryFactory->getMessageRepository(),
-            $this->repositoryFactory->getTokenRepository()
+            $this->repositoryFactory->getMessageRepository()
         );
     }
 
@@ -41,5 +43,12 @@ class DomainFactory
             $phoneNumber,
             $this->repositoryFactory->getExpenseRepository()
         );
+    }
+
+    public function getTokenSet(PhoneNumber $phoneNumber) : TokenSet
+    {
+        return $this->tokenSets[$phoneNumber->scalar] ?? $this->tokenSets[$phoneNumber->scalar] =
+
+        new TokenSet($phoneNumber, $this->repositoryFactory->getTokenRepository());
     }
 }

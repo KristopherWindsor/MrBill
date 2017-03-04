@@ -50,9 +50,4 @@ class Token implements Serializable
                 'expiry' => $this->expiry,
             ];
     }
-
-    public function isExpired() : bool
-    {
-        return $this->expiry < time();
-    }
 }

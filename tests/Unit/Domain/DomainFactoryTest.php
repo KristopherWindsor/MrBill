@@ -36,4 +36,11 @@ class DomainFactoryTest extends TestCase
         $expenseSet = $this->domainFactory->getExpenseSet($this->testPhone);
         $this->assertEquals($this->testPhone, $expenseSet->getPhoneNumber());
     }
+
+    public function testGetTokenSet()
+    {
+        $tokenSet1 = $this->domainFactory->getTokenSet($this->testPhone);
+        $tokenSet2 = $this->domainFactory->getTokenSet($this->testPhone);
+        $this->assertTrue($tokenSet1 === $tokenSet2);
+    }
 }

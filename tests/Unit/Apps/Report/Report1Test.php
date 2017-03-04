@@ -5,6 +5,7 @@ namespace MrBillTest\Unit\Apps\Report;
 use MrBill\Apps\Report\Report1;
 use MrBill\Domain\Conversation;
 use MrBill\Domain\DomainFactory;
+use MrBill\Domain\TokenSet;
 use MrBill\Model\Message;
 use MrBill\Model\Repository\RepositoryFactory;
 use MrBill\Model\Token;
@@ -27,6 +28,9 @@ class Report1Test extends TestCase
     /** @var Conversation */
     private $conversation;
 
+    /** @var TokenSet */
+    private $tokenSet;
+
     /** @var Report1 */
     private $report1;
 
@@ -35,17 +39,18 @@ class Report1Test extends TestCase
         $this->phone = new PhoneNumber(14087226296);
 
         $this->repositoryFactory = new RepositoryFactory(new MockDataStore());
-
         $this->domainFactory = new DomainFactory($this->repositoryFactory);
-
         $this->conversation = $this->domainFactory->getConversation($this->phone);
+        $this->tokenSet = $this->domainFactory->getTokenSet($this->phone);
 
-        $this->conversation->removeAllData();
         $this->conversation->addMessage(new Message($this->phone, 'hi', time(), true, 0));
 
         $this->report1 = new Report1(
             $this->domainFactory,
-            ['p' => $this->phone->scalar, 's' => $this->conversation->getOrCreateActiveReportToken()->secret]
+            [
+                'p' => $this->phone->scalar,
+                's' => $this->tokenSet->createActiveTokenForDocument(TokenSet::REPORT_ID)
+            ]
         );
     }
 

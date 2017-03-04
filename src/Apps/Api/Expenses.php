@@ -3,6 +3,7 @@
 namespace MrBill\Apps\Api;
 
 use MrBill\Domain\DomainFactory;
+use MrBill\Domain\TokenSet;
 use MrBill\Model\Expense;
 use MrBill\Model\Repository\RepositoryFactory;
 use MrBill\PhoneNumber;
@@ -12,15 +13,11 @@ use Slim\Http\Response;
 
 class Expenses
 {
-    /** @var RepositoryFactory */
-    protected $repositoryFactory;
-
     /** @var DomainFactory */
     protected $domainFactory;
 
     public function __construct(ContainerInterface $container)
     {
-        $this->repositoryFactory = $container->get('myContainer')->get('repositoryFactory');
         $this->domainFactory = $container->get('myContainer')->get('domainFactory');
     }
 
@@ -28,7 +25,10 @@ class Expenses
     {
         $phone = new PhoneNumber($args['phone']);
 
-        if ($this->isSecretValid($phone, $args['token'])) {
+        $isSecretValid = $this->domainFactory->getTokenSet($phone)
+            ->hasValidTokenForDocumentWithSecret(TokenSet::REPORT_ID, $args['token']);
+
+        if ($isSecretValid) {
             $response = $response->withHeader('Content-Type', 'application/json');
             $response->write($this->getExpenses($phone, (int) $args['year'], (int) $args['month']));
         } else {
@@ -36,14 +36,6 @@ class Expenses
         }
 
         return $response;
-    }
-
-    protected function isSecretValid(PhoneNumber $phone, string $secret) : bool
-    {
-        // TODO use domain instead - for magical document ID
-        $token = $this->repositoryFactory->getTokenRepository()->getTokenIfExists($phone, 1);
-
-        return $token && !$token->isExpired() && $token->secret == $secret;
     }
 
     protected function getExpenses(PhoneNumber $phone, int $year, int $month) : string

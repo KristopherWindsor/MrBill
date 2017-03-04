@@ -6,6 +6,7 @@ use MrBill\Apps\Api\TwilioV1;
 use MrBill\Apps\Container;
 use MrBill\Config;
 use MrBill\Domain\DomainFactory;
+use MrBill\Domain\TokenSet;
 use MrBill\Model\Repository\RepositoryFactory;
 use MrBill\PhoneNumber;
 use MrBill\Persistence\MockDataStore;
@@ -118,7 +119,7 @@ class TwilioV1Test extends TestCase
         $v1 = new TwilioV1();
         $v1->run($this->domainFactory, self::PUBLIC_URL, new PhoneNumber('14087226296'), 'report');
 
-        $secret = $this->domainFactory->getConversation($this->testPhone)->getExistingReportToken()->secret;
+        $secret = $this->domainFactory->getTokenSet($this->testPhone)->getSecretIfActive(TokenSet::REPORT_ID);
 
         $this->assertEquals(
             '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>Your report! ' .
