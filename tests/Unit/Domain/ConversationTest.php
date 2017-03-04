@@ -4,6 +4,8 @@ namespace MrBillTest\Unit\Domain;
 
 use MrBill\Domain\Conversation;
 use MrBill\Domain\DomainFactory;
+use MrBill\Domain\ExpenseSet;
+use MrBill\Model\Expense;
 use MrBill\Model\Message;
 use MrBill\Model\Repository\RepositoryFactory;
 use MrBill\Persistence\DataStore;
@@ -24,6 +26,9 @@ class ConversationTest extends TestCase
     /** @var Conversation */
     private $conversation;
 
+    /** @var ExpenseSet */
+    private $expenseSet;
+
     public function setUp()
     {
         $this->testPhone = new PhoneNumber(self::TEST_PHONE);
@@ -31,9 +36,10 @@ class ConversationTest extends TestCase
         $this->mockDataStore = new MockDataStore();
 
         $repositoryFactory = new RepositoryFactory($this->mockDataStore);
+        $domainFactory = new DomainFactory($repositoryFactory);
 
-        $this->conversation = (new DomainFactory($repositoryFactory))
-            ->getConversation($this->testPhone);
+        $this->conversation = $domainFactory->getConversation($this->testPhone);
+        $this->expenseSet = $domainFactory->getExpenseSet($this->testPhone);
     }
 
     public function testGetPhoneNumber()
@@ -52,17 +58,10 @@ class ConversationTest extends TestCase
 
         $expenseEntropy = json_decode($this->mockDataStore->storage['expenses:14087226296:2017:02'][1])->entropy;
 
-        // TODO change this test. The storage is too low-level. Should check if domain/repositories are called instead.
-        $this->assertEquals(
-            '{"messages14087226296":["{\"phone\":14087226296,\"message\":\"5 #h\",\"timestamp\":1488067264,\"isFromUs' .
-            'er\":true,\"entropy\":0}","{\"phone\":14087226296,\"message\":\"messageX\",\"timestamp\":1488067264,\"is' .
-            'FromUser\":true,\"entropy\":0}"],"expenses:14087226296:2017:02:meta":{"id":"1"},"expenses:14087226296:2017:02":{"' .
-            '1":"{\"phone\":14087226296,\"timestamp\":1488067264,\"amountInCents\":500,\"hashTags\":[\"h\"],\"descrip' .
-            'tion\":\"#h\",\"sourceType\":\"_m\",\"sourceInfo\":{\"message\":{\"phone\":14087226296,\"message\":\"5 #' .
-            'h\",\"timestamp\":1488067264,\"isFromUser\":true,\"entropy\":0}},\"entropy\":\"' . $expenseEntropy .
-            '\"}"}}',
-            json_encode($this->mockDataStore->storage)
-        );
+        /** @var Expense $addedExpense */
+        $addedExpense = $this->expenseSet->getAllExpenses()->current();
+        $this->assertEquals(500, $addedExpense->amountInCents);
+        $this->assertEquals(['h'], $addedExpense->hashTags);
     }
 
     public function testAddMessageAndCountTotalMessages()

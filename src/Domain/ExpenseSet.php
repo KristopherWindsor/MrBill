@@ -35,7 +35,37 @@ class ExpenseSet
         $this->expenseRepository->persist($expense);
     }
 
-    // TODO method to get all expenses for a month-range or all time
+    public function getAllMonthsWithExpenses() : array
+    {
+        $rangeData = $this->expenseRepository->getRangeOfMonthsWithData($this->phone);
+
+        return $this->getAllMonthsWithExpensesHelper($rangeData);
+    }
+
+    protected function getAllMonthsWithExpensesHelper(?array $rangeData) : array
+    {
+        if (!$rangeData)
+            return [];
+
+        $results = [];
+        for ($year = $rangeData['firstYear']; $year <= $rangeData['lastYear']; $year++)
+            for ($month = 1; $month <= 12; $month++)
+                if ($year > $rangeData['firstYear'] || $month >= $rangeData['firstMonth'])
+                    if ($year < $rangeData['lastYear'] || $month <= $rangeData['lastMonth'])
+                        $results[] = [$year, $month];
+
+        return $results;
+    }
+
+    public function getAllExpenses() : Generator
+    {
+        foreach ($this->getAllMonthsWithExpenses() as list($year, $month)) {
+            $expenses = $this->getExpensesForMonth($year, $month);
+            foreach ($expenses as $expense)
+                yield $expense;
+            unset($expenses);
+        }
+    }
 
     public function getExpensesForMonth(int $year, int $month) : array
     {

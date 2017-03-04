@@ -141,7 +141,13 @@ class ExpenseRepositoryTest extends TestCase
                         '"description":"description","sourceType":"_m","sourceInfo":' .
                         '["inf"],"entropy":"7"}',
                 ],
-                'expenses:14087226296:2017:02:meta' => ["id" => 1]
+                'expenses:14087226296:meta' => [
+                    'id' => 1,
+                    'firstYear' => '2017',
+                    'firstMonth' => '2',
+                    'lastYear' => '2017',
+                    'lastMonth' => '2'
+                ]
             ];
     }
 
@@ -159,7 +165,13 @@ class ExpenseRepositoryTest extends TestCase
                         '"description":"description2","sourceType":"_m","sourceInfo":' .
                         '["inf"],"entropy":"9"}',
                 ],
-                'expenses:14087226296:2017:02:meta' => ["id" => 2]
+                'expenses:14087226296:meta' => [
+                    'id' => 2,
+                    'firstYear' => '2017',
+                    'firstMonth' => '2',
+                    'lastYear' => '2017',
+                    'lastMonth' => '2'
+                ]
             ];
     }
 
