@@ -113,7 +113,7 @@ class TwilioV1Test extends TestCase
 
     public function testCreateReportAndGetReply() : string
     {
-        $this->doWelcomeMessage(); // Get those out of the way
+        $this->doWelcomeMessage();
 
         $v1 = new TwilioV1();
         $v1->run($this->domainFactory, self::PUBLIC_URL, new PhoneNumber('14087226296'), 'report');
@@ -136,6 +136,8 @@ class TwilioV1Test extends TestCase
      */
     public function testInvokeSameAsManualRun(string $manualRunResult)
     {
+        $this->doWelcomeMessage();
+
         $uri = Uri::createFromString('http://doesnotmatter.com');
         $request = (new Request('POST', $uri, new Headers(), [], [], new RequestBody()))
             ->withHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -145,11 +147,16 @@ class TwilioV1Test extends TestCase
 
         $slimContainer = (new App)->getContainer();
         $slimContainer['myContainer'] = new Container();
+        $slimContainer['myContainer']->items['domainFactory'] = $this->domainFactory;
         $slimContainer['myContainer']->get('config')->publicUrl = self::PUBLIC_URL;
 
         $v1 = new TwilioV1($slimContainer);
         $v1($request, $slimContainer['response'], []);
 
-        $this->assertTrue(levenshtein($manualRunResult, $v1->getResult()) <= 13); // tokens will be random
+        // Ignore random token secret in check
+        $part1 = explode('&amp;s=', $manualRunResult)[0];
+        $part2 = explode('&amp;s=', $v1->getResult())[0];
+        $this->assertNotEmpty($part1);
+        $this->assertEquals($part1, $part2);
     }
 }
