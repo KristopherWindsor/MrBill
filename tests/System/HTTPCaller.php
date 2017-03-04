@@ -97,4 +97,12 @@ class HTTPCaller
 
         return (string) $response->getBody();
     }
+
+    public function getExpensesData(string $phone, $year, $month, string $secret) : string
+    {
+        $response = $this->guzzle->request('GET', "{$this->domain}/expenses/{$phone}/{$year}/{$month}/{$secret}");
+        assert($response->getStatusCode() == 200);
+
+        return (string) $response->getBody();
+    }
 }

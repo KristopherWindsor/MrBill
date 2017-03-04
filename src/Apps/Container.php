@@ -13,7 +13,7 @@ use Slim\App;
 
 class Container implements ContainerInterface
 {
-    protected $items = [];
+    public $items = [];
 
     public function __construct(Config $config = null)
     {

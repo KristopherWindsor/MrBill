@@ -33,11 +33,10 @@ class ExpenseSet
         $this->expenseRepository->persist($expense);
     }
 
-    public function getExpenses() : Generator
+    // TODO method to get all expenses for a month-range or all time
+
+    public function getExpensesForMonth(int $year, int $month) : array
     {
-        // TODO use all months, not just current month
-        foreach ($this->expenseRepository->getForPhoneAndMonth($this->phone, 2017, 3) as $expense)
-            /** @var Expense $expense */
-            yield $expense;
+        return $this->expenseRepository->getForPhoneAndMonth($this->phone, $year, $month);
     }
 }

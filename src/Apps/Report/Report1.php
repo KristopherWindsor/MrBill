@@ -70,7 +70,8 @@ class Report1
     {
         $data = [];
 
-        foreach ($this->expenseSet->getExpenses() as $expenseRecord) {
+        // TODO month is hard-coded?
+        foreach ($this->expenseSet->getExpensesForMonth(2017, 3) as $expenseRecord) {
             /** @var Expense $expenseRecord */
             $key = '#' . implode('#', $expenseRecord->hashTags);
             if (isset($data[$key])) {

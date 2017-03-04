@@ -26,6 +26,10 @@ function tester($target)
     $caller->getSleepAndWelcome2();
     $caller->getSleepAndWelcome3();
 
+    $currentYear = date('Y');
+    $currentMonth = date('n');
+    $tokenSecret = null;
+
     $interaction = [
         ['hello', 'Hi, I\'m Mr. Bill. Just text me each time you spend'],
         ['blah', 'Not sure what you mean'],
@@ -48,10 +52,10 @@ function tester($target)
         if ($textIn == 'report') {
             assert(strpos($response, 'Your report') > 0);
 
-            $token = explode('&s=', $xml->Message)[1];
-            assert((bool) $token);
+            $tokenSecret = explode('&s=', $xml->Message)[1];
+            assert((bool) $tokenSecret);
 
-            $report = $caller->getReport($phoneForTesting, $token);
+            $report = $caller->getReport($phoneForTesting, $tokenSecret);
             fwrite(STDERR, $report . "\n\n");
 
             foreach ($textOut as $itemInReport)
@@ -60,6 +64,21 @@ function tester($target)
             assert(strpos($response, $textOut) > 0);
         }
     }
+
+    $expenseData = $caller->getExpensesData($phoneForTesting, $currentYear, $currentMonth, $tokenSecret);
+    fwrite(STDERR, $expenseData . "\n\n");
+
+    $expenseItems = json_decode($expenseData);
+    assert(count($expenseItems) == 3);
+    $expected = [
+        ['id' => 1, 'phone' => (int) $phoneForTesting, 'amountInCents' => 777, 'hashTags' => ['hash']],
+        ['id' => 2, 'phone' => (int) $phoneForTesting, 'amountInCents' => 400, 'hashTags' => ['tag']],
+        ['id' => 3, 'phone' => (int) $phoneForTesting, 'amountInCents' => 500, 'hashTags' => ['hash']],
+    ];
+    foreach ($expected as $index => $item)
+        foreach ($item as $key => $value) {
+            assert($expenseItems[$index]->$key === $value, "$index/$key");
+        }
 }
 
 try {
