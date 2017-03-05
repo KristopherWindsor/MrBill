@@ -77,8 +77,11 @@ class ExpenseRepositoryTest extends TestCase
 
     public function testPersistMultipleTimes()
     {
-        $this->expenseRepository->persist($this->expense1);
-        $this->expenseRepository->persist($this->expense2);
+        $id1 = $this->expenseRepository->persist($this->expense1);
+        $id2 = $this->expenseRepository->persist($this->expense2);
+
+        $this->assertEquals(1, $id1);
+        $this->assertEquals(2, $id2);
 
         $this->assertEquals(
             $this->getStorageOfBothExpenses(),
@@ -88,14 +91,17 @@ class ExpenseRepositoryTest extends TestCase
 
     public function testAddForPhoneAndMonth()
     {
-        $this->callAddForPhoneAndMonth(
+        $id1 = $this->callAddForPhoneAndMonth(
             $this->expenseRepository,
             $this->phone, $this->year, $this->month, $this->expense1
         );
-        $this->callAddForPhoneAndMonth(
+        $id2 = $this->callAddForPhoneAndMonth(
             $this->expenseRepository,
             $this->phone, $this->year, $this->month, $this->expense2
         );
+
+        $this->assertEquals(1, $id1);
+        $this->assertEquals(2, $id2);
 
         $this->assertEquals(
             $this->getStorageOfBothExpenses(),
@@ -120,17 +126,6 @@ class ExpenseRepositoryTest extends TestCase
         $this->assertEquals($this->expense2, $fetched[2]);
     }
 
-    public function testRemoveForPhoneAndMonth()
-    {
-        $this->testPersistOneTime();
-
-        $this->expenseRepository->removeForPhoneAndMonth($this->phone, $this->year, $this->month);
-
-        $this->assertTrue(
-            !isset($this->mockDataStore->storage['expenses:' . $this->phone . ':' . $this->year . ':' . $this->month])
-        );
-    }
-
     protected function getStorageOfOneExpense()
     {
         return
@@ -146,8 +141,11 @@ class ExpenseRepositoryTest extends TestCase
                     'firstYear' => '2017',
                     'firstMonth' => '2',
                     'lastYear' => '2017',
-                    'lastMonth' => '2'
-                ]
+                    'lastMonth' => '2',
+                ],
+                'expenses:14087226296:map' => [
+                    '1' => '201702',
+                ],
             ];
     }
 
@@ -171,7 +169,11 @@ class ExpenseRepositoryTest extends TestCase
                     'firstMonth' => '2',
                     'lastYear' => '2017',
                     'lastMonth' => '2'
-                ]
+                ],
+                'expenses:14087226296:map' => [
+                    '1' => '201702',
+                    '2' => '201702',
+                ],
             ];
     }
 
@@ -181,10 +183,10 @@ class ExpenseRepositoryTest extends TestCase
         int $year,
         int $month,
         Expense $expense
-    ) : void {
+    ) : int {
         $method = new \ReflectionMethod(ExpenseRepository::class, 'addForPhoneAndMonth');
         $method->setAccessible(true);
 
-        $method->invoke($object, $phoneNumber, $year, $month, $expense);
+        return $method->invoke($object, $phoneNumber, $year, $month, $expense);
     }
 }

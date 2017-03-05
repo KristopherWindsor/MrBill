@@ -7,24 +7,28 @@ use MrBill\PhoneNumber;
 
 class ExpenseRepository extends Repository
 {
-    public function persist(Expense $expense) : void
+    public function persist(Expense $expense) : int
     {
         $phone = $expense->phone;
         $year = (int) date('Y', $expense->timestamp);
         $month = (int) date('n', $expense->timestamp);
 
-        $this->addForPhoneAndMonth($phone, $year, $month, $expense);
+        return $this->addForPhoneAndMonth($phone, $year, $month, $expense);
     }
 
-    protected function addForPhoneAndMonth(PhoneNumber $phoneNumber, int $year, int $month, Expense $expense) : void
+    protected function addForPhoneAndMonth(PhoneNumber $phoneNumber, int $year, int $month, Expense $expense) : int
     {
         $this->updateRangeOfMonthsData($phoneNumber, $year, $month);
 
+        $id = $this->incrementAndGetId($phoneNumber);
+        $this->setMonthForId($phoneNumber, $id, $year, $month);
+
         $this->dataStore->mapPutItem(
             $this->getDataStoreKey($phoneNumber, $year, $month),
-            $this->incrementAndGetId($phoneNumber),
+            $id,
             json_encode($expense->toMap())
         );
+        return $id;
     }
 
     protected function updateRangeOfMonthsData(PhoneNumber $phoneNumber, int $year, int $month) : void
@@ -44,6 +48,12 @@ class ExpenseRepository extends Repository
             $this->dataStore->mapPutItem($key, 'lastYear', $year);
             $this->dataStore->mapPutItem($key, 'lastMonth', $month);
         }
+    }
+
+    protected function setMonthForId(PhoneNumber $phoneNumber, int $id, int $year, int $month)
+    {
+        $key = $this->getIdToMonthMapKey($phoneNumber);
+        $this->dataStore->mapPutItem($key, $id, $year . ($month < 10 ? '0' : '') . $month);
     }
 
     public function getForPhoneAndMonth(PhoneNumber $phoneNumber, int $year, int $month) : array
@@ -73,13 +83,6 @@ class ExpenseRepository extends Repository
         ];
     }
 
-    public function removeForPhoneAndMonth(PhoneNumber $phoneNumber, int $year, int $month) : void
-    {
-        $key = $this->getDataStoreKey($phoneNumber, $year, $month);
-
-        $this->dataStore->remove($key);
-    }
-
     protected function incrementAndGetId(PhoneNumber $phone) : int
     {
         $key = $this->getMetaDataKey($phone);
@@ -89,6 +92,11 @@ class ExpenseRepository extends Repository
     protected function getMetaDataKey(PhoneNumber $phone)
     {
         return 'expenses:' . $phone . ':meta';
+    }
+
+    protected function getIdToMonthMapKey(PhoneNumber $phone)
+    {
+        return 'expenses:' . $phone . ':map';
     }
 
     protected function getDataStoreKey(PhoneNumber $phone, int $year, int $month) : string
