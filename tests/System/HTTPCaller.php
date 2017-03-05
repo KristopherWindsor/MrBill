@@ -90,17 +90,28 @@ class HTTPCaller
         return (string) $response->getBody();
     }
 
-    public function getReport($phone, $token) : string
+    public function getReport(string $phone, $token) : string
     {
-        $response = $this->guzzle->request('GET', $this->domain . '/report/1?p=' . $phone . '&s=' . $token);
+        $response = $this->guzzle->request('GET', $this->domain . '/report?p=' . $phone . '&s=' . $token);
         assert($response->getStatusCode() == 200);
 
-        return (string) $response->getBody();
+        $body = (string) $response->getBody();
+        assert(strpos($body, 'This report is in beta') > 0);
+
+        return $body;
     }
 
     public function getExpensesData(string $phone, $year, $month, string $secret) : string
     {
         $response = $this->guzzle->request('GET', "{$this->domain}/expenses/{$phone}/{$year}/{$month}/{$secret}");
+        assert($response->getStatusCode() == 200);
+
+        return (string) $response->getBody();
+    }
+
+    public function getExpensesRange(string $phone, string $secret)
+    {
+        $response = $this->guzzle->request('GET', "{$this->domain}/expenses/range/{$phone}/{$secret}");
         assert($response->getStatusCode() == 200);
 
         return (string) $response->getBody();

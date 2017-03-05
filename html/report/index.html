@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Your Expenses &mdash; Mr. Bill</title>
+
+    <!-- Might be switching to React soon?? -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+    <script>
+        var phone, secret;
+
+        function getParameterByName(name) {
+            url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+
+        function handleExpensesRange(response) {
+            var months = ['', 'January', 'February', "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"];
+            $("#dateRange").html(months[response.firstMonth] + " " + response.firstYear + " &mdash; " +
+                months[response.lastMonth] + " " + response.lastYear);
+            $.get('/expenses/' + phone + '/2017/3/' + secret, null, renderExpensesTable);
+        }
+
+        function renderExpensesTable(response) {
+            var exp = $('<tbody/>');
+            for (var i in response) {
+                var row = $('<tr/>');
+                $("<td/>", {text : "#" + response[i].hashTags.join("#")}).appendTo(row);
+                $("<td/>", {text : response[i].amountInCents / 100}).appendTo(row);
+                row.appendTo(exp);
+            }
+            exp.appendTo($("#expenses"));
+        }
+
+        $(function () {
+            phone = getParameterByName('p');
+            secret = getParameterByName('s');
+
+            if (phone && secret)
+                $.get('/expenses/range/' + phone + '/' + secret, null, handleExpensesRange)
+                    .fail(function() {alert('No good');});
+            else alert('No auth');
+        });
+    </script>
+</head>
+<body>
+    <h1>Your Expenses</h1>
+
+    <h2 id="dateRange"></h2>
+
+    <p>This report is in beta.</p>
+
+    <table id="expenses">
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Amount</th>
+            </tr>
+        </thead>
+    </table>
+</body>
+</html>

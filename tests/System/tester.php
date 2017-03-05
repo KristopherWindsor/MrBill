@@ -36,11 +36,9 @@ function tester($target)
         ['?', 'Let\'s see how I can help you!'],
         ['?', 'Every time you spend'],
         ['$7.77 #hash', 'Got it. I\'ll send you a report once I\'ve got a few more expenses'],
-        ['report', ['<tr><td>#hash</td><td>7.77</td>']],
         ['4 #tag', '<Response></Response>'],
-        ['report', ['<tr><td>#hash</td><td>7.77</td>', '<tr><td>#tag</td><td>4</td>']],
         ['5 #hash', '<Response></Response>'],
-        ['report', ['<tr><td>#hash</td><td>12.77</td>', '<tr><td>#tag</td><td>4</td>']],
+        ['report', null],
     ];
     foreach ($interaction as list($textIn, $textOut)) {
         $response = $caller->announceMessageFromTwilio($phoneForTesting, $textIn);
@@ -57,17 +55,21 @@ function tester($target)
 
             $report = $caller->getReport($phoneForTesting, $tokenSecret);
             fwrite(STDERR, $report . "\n\n");
-
-            foreach ($textOut as $itemInReport)
-                assert(strpos($report, $itemInReport) > 0);
         } else {
             assert(strpos($response, $textOut) > 0);
         }
     }
 
+    $expenseRangeData = $caller->getExpensesRange($phoneForTesting, $tokenSecret);
+    fwrite(STDERR, $expenseRangeData . "\n\n");
+    $expenseRangeData = json_decode($expenseRangeData);
+    assert($expenseRangeData->firstYear == $currentYear);
+    assert($expenseRangeData->firstMonth == $currentMonth);
+    assert($expenseRangeData->lastYear == $currentYear);
+    assert($expenseRangeData->lastMonth == $currentMonth);
+
     $expenseData = $caller->getExpensesData($phoneForTesting, $currentYear, $currentMonth, $tokenSecret);
     fwrite(STDERR, $expenseData . "\n\n");
-
     $expenseItems = json_decode($expenseData);
     assert(count($expenseItems) == 3);
     $expected = [

@@ -82,10 +82,10 @@ class ExpenseRepository extends Repository
         }
 
         return [
-            'firstYear'  => $meta['firstYear'],
-            'firstMonth' => $meta['firstMonth'],
-            'lastYear'   => $meta['lastYear'],
-            'lastMonth'  => $meta['lastMonth'],
+            'firstYear'  => (int) $meta['firstYear'],
+            'firstMonth' => (int) $meta['firstMonth'],
+            'lastYear'   => (int) $meta['lastYear'],
+            'lastMonth'  => (int) $meta['lastMonth'],
         ];
     }
 

@@ -30,6 +30,11 @@ class ExpenseSet
         $this->expenseRepository->persist($expense);
     }
 
+    public function getBoundaryOfMonthsWithExpenses() : array
+    {
+        return $this->expenseRepository->getRangeOfMonthsWithData($this->phone);
+    }
+
     public function getAllMonthsWithExpenses() : array
     {
         $rangeData = $this->expenseRepository->getRangeOfMonthsWithData($this->phone);
