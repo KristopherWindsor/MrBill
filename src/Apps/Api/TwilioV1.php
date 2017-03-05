@@ -140,7 +140,7 @@ class TwilioV1
             '2/5 Every time you spend $$, send me a text like: 8.99 #eatout #lunch lunch with friends',
             '3/5 The hashtags are important for categorizing expenses. The description is optional.',
             '4/5 Once you have given me a few bills, I\'ll show you a report about your spending.',
-            '5/5 For more info, see the FAQ ' . $this->publicSiteUrl . '/faq.php',
+            '5/5 For more info, see the FAQ ' . $this->publicSiteUrl . '/faq.html',
         ][$index % 5];
     }
 

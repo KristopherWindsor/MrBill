@@ -24,7 +24,7 @@ class HTTPCaller
 
     public function getFaq() : string
     {
-        $response = $this->guzzle->request('GET', 'faq.php');
+        $response = $this->guzzle->request('GET', 'faq.html');
         assert($response->getStatusCode() == 200);
 
         $body = (string) $response->getBody();
