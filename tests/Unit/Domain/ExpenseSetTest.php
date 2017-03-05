@@ -153,5 +153,12 @@ class ExpenseSetTest extends TestCase
         $this->expenseSet->addExpense($this->expense2);
         $this->expenseSet->addExpense($this->expense3);
 
+        $results = [];
+        foreach ($this->expenseSet->getAllExpenses() as list($id, $expense))
+            $results[$id] = $expense;
+
+        $this->assertEquals($this->expense1, $results[1]);
+        $this->assertEquals($this->expense2, $results[2]);
+        $this->assertEquals($this->expense3, $results[3]);
     }
 }
