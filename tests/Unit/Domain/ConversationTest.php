@@ -7,6 +7,7 @@ use MrBill\Domain\DomainFactory;
 use MrBill\Domain\ExpenseSet;
 use MrBill\Model\Expense;
 use MrBill\Model\Message;
+use MrBill\Model\Repository\ExpenseRepository;
 use MrBill\Model\Repository\RepositoryFactory;
 use MrBill\Persistence\DataStore;
 use MrBill\PhoneNumber;
@@ -26,7 +27,6 @@ class ConversationTest extends TestCase
     /** @var Conversation */
     private $conversation;
 
-    /** @var ExpenseSet */
     private $expenseSet;
 
     public function setUp()
@@ -36,7 +36,20 @@ class ConversationTest extends TestCase
         $this->mockDataStore = new MockDataStore();
 
         $repositoryFactory = new RepositoryFactory($this->mockDataStore);
-        $domainFactory = new DomainFactory($repositoryFactory);
+        $domainFactory = new DomainFactoryChangeable($repositoryFactory);
+
+        $domainFactory->expenseSets[self::TEST_PHONE] =
+            new class($this->testPhone, $repositoryFactory->getExpenseRepository()) extends ExpenseSet {
+                public $addedExpenses = [];
+
+                public function __construct(PhoneNumber $phone, ExpenseRepository $expenseRepository) {
+                }
+
+                public function addExpense(Expense $expense)
+                {
+                    $this->addedExpenses[] = $expense;
+                }
+            };
 
         $this->conversation = $domainFactory->getConversation($this->testPhone);
         $this->expenseSet = $domainFactory->getExpenseSet($this->testPhone);
@@ -56,10 +69,9 @@ class ConversationTest extends TestCase
         $this->conversation->addMessage($newMessage);
         $this->conversation->addMessage($expenseMessage);
 
-        $expenseEntropy = json_decode($this->mockDataStore->storage['expenses:14087226296:2017:02'][1])->entropy;
-
+        $this->assertCount(1, $this->expenseSet->addedExpenses);
         /** @var Expense $addedExpense */
-        $addedExpense = $this->expenseSet->getAllExpenses()->current();
+        $addedExpense = $this->expenseSet->addedExpenses[0];
         $this->assertEquals(500, $addedExpense->amountInCents);
         $this->assertEquals(['h'], $addedExpense->hashTags);
     }

@@ -2,9 +2,9 @@
 
 namespace MrBillTest\Unit\Domain;
 
-use MrBill\Domain\DomainFactory;
 use MrBill\Domain\ExpenseSet;
-use MrBill\Model\Repository\RepositoryFactory;
+use MrBill\Model\Expense;
+use MrBill\Model\Repository\ExpenseRepository;
 use MrBill\PhoneNumber;
 use MrBill\Persistence\MockDataStore;
 use PHPUnit\Framework\TestCase;
@@ -22,20 +22,141 @@ class ExpenseSetTest extends TestCase
     /** @var ExpenseSet */
     private $expenseSet;
 
+    /** @var Expense */
+    private $expense1;
+
+    /** @var Expense */
+    private $expense2;
+
+    /** @var Expense */
+    private $expense3;
+
     public function setUp()
     {
         $this->testPhone = new PhoneNumber(self::TEST_PHONE);
 
         $this->mockDataStore = new MockDataStore();
 
-        $repositoryFactory = new RepositoryFactory($this->mockDataStore);
+        $this->expenseSet =
+            new class($this->testPhone, new ExpenseRepository($this->mockDataStore)) extends ExpenseSet {
+                public function getAllMonthsWithExpensesHelper(?array $rangeData) : array {
+                    return parent::getAllMonthsWithExpensesHelper($rangeData);
+                }
+            };
 
-        $this->expenseSet = (new DomainFactory($repositoryFactory))
-            ->getExpenseSet($this->testPhone);
+        $date = new \DateTime('2017-04-10');
+        $this->expense1 = Expense::createFromMessageWithEntropy(
+            $this->testPhone,
+            $date->getTimestamp(),
+            100,
+            ['h'],
+            '',
+            []
+        );
+        $this->expense2 = Expense::createFromMessageWithEntropy(
+            $this->testPhone,
+            $date->modify('+10 months')->getTimestamp(),
+            100,
+            ['h'],
+            '',
+            []
+        );
+        $this->expense3 = Expense::createFromMessageWithEntropy(
+            $this->testPhone,
+            $date->modify('+12 months')->getTimestamp(),
+            100,
+            ['h'],
+            '',
+            []
+        );
     }
 
     public function testGetPhoneNumber()
     {
         $this->assertEquals($this->testPhone, $this->expenseSet->getPhoneNumber());
+    }
+
+    public function testGetAllMonthsWithExpensesNoData()
+    {
+        $this->assertEquals([], $this->expenseSet->getAllMonthsWithExpenses());
+    }
+
+    public function testGetAllMonthsWithExpensesOneMonth()
+    {
+        $this->expenseSet->addExpense($this->expense1);
+
+        $this->assertEquals(
+            [[2017, 4]],
+            $this->expenseSet->getAllMonthsWithExpenses()
+        );
+    }
+
+    public function testGetAllMonthsWithExpensesMultipleMonths()
+    {
+        $this->expenseSet->addExpense($this->expense1);
+        $this->expenseSet->addExpense($this->expense2);
+
+        $this->assertEquals(
+            [
+                [2017, 4],
+                [2017, 5],
+                [2017, 6],
+                [2017, 7],
+                [2017, 8],
+                [2017, 9],
+                [2017, 10],
+                [2017, 11],
+                [2017, 12],
+                [2018, 1],
+                [2018, 2],
+            ],
+            $this->expenseSet->getAllMonthsWithExpenses()
+        );
+    }
+
+    public function testGetAllMonthsWithExpensesThreeYears() : array
+    {
+        $this->expenseSet->addExpense($this->expense1);
+        $this->expenseSet->addExpense($this->expense2);
+        $this->expenseSet->addExpense($this->expense3);
+
+        $allMonthsWithExpenses = $this->expenseSet->getAllMonthsWithExpenses();
+
+        $this->assertEquals(
+            [
+                [2017, 4],  [2017, 5],  [2017, 6],
+                [2017, 7],  [2017, 8],  [2017, 9],
+                [2017, 10], [2017, 11], [2017, 12],
+                [2018, 1],  [2018, 2],  [2018, 3],
+                [2018, 4],  [2018, 5],  [2018, 6],
+                [2018, 7],  [2018, 8],  [2018, 9],
+                [2018, 10], [2018, 11], [2018, 12],
+                [2019, 1],  [2019, 2],
+            ],
+            $allMonthsWithExpenses
+        );
+
+        return $allMonthsWithExpenses;
+    }
+
+    /**
+     * @depends testGetAllMonthsWithExpensesThreeYears
+     * @param array $allMonthsWithExpenses
+     */
+    public function testGetAllMonthsWithExpensesMonthsEnteredOutOfOrder(array $allMonthsWithExpenses)
+    {
+        $this->expenseSet->addExpense($this->expense3);
+        $this->expenseSet->addExpense($this->expense1);
+        $this->expenseSet->addExpense($this->expense2);
+
+        $this->assertEquals($allMonthsWithExpenses, $this->expenseSet->getAllMonthsWithExpenses());
+    }
+
+    public function testGetAllExpenses()
+    {
+        $this->expenseSet->addExpense($this->expense1);
+        $this->expenseSet->addExpense($this->expense2);
+        $this->expenseSet->addExpense($this->expense3);
+        
     }
 }
