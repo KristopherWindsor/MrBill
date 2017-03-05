@@ -31,6 +31,13 @@ class TokenTest extends TestCase
         );
     }
 
+    public function testInvalidParams()
+    {
+        $this->expectException(\Exception::class);
+
+        new Token($this->phoneNumber, self::TEST_DOCUMENT_ID, self::TEST_SECRET, 0);
+    }
+
     public function testConstructedInstance()
     {
         $this->assertEquals($this->phoneNumber, $this->token->phone);

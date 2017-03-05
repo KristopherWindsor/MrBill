@@ -54,6 +54,14 @@ class Report1Test extends TestCase
         );
     }
 
+    public function testInvalidRequestMissingParams()
+    {
+        $report = new Report1($this->domainFactory, ['p' => $this->phone->scalar]);
+        $this->assertTrue($report->hasInitializationError());
+        $this->assertEquals('', $report->getDateText());
+        $this->assertEquals('', $report->getTableContents());
+    }
+
     public function testInvalidRequestBadSecret()
     {
         $report = new Report1($this->domainFactory, ['p' => $this->phone->scalar, 's' => 'bad']);
