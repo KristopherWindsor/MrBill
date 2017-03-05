@@ -71,11 +71,6 @@ class ExpenseSetTest extends TestCase
         );
     }
 
-    public function testGetPhoneNumber()
-    {
-        $this->assertEquals($this->testPhone, $this->expenseSet->getPhoneNumber());
-    }
-
     public function testGetAllMonthsWithExpensesNoData()
     {
         $this->assertEquals([], $this->expenseSet->getAllMonthsWithExpenses());
@@ -157,6 +152,6 @@ class ExpenseSetTest extends TestCase
         $this->expenseSet->addExpense($this->expense1);
         $this->expenseSet->addExpense($this->expense2);
         $this->expenseSet->addExpense($this->expense3);
-        
+
     }
 }

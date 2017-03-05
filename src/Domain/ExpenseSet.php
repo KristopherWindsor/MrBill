@@ -25,11 +25,6 @@ class ExpenseSet
         $this->expenseRepository = $expenseRepository;
     }
 
-    public function getPhoneNumber()
-    {
-        return $this->phone;
-    }
-
     public function addExpense(Expense $expense)
     {
         $this->expenseRepository->persist($expense);
@@ -61,8 +56,8 @@ class ExpenseSet
     {
         foreach ($this->getAllMonthsWithExpenses() as list($year, $month)) {
             $expenses = $this->getExpensesForMonth($year, $month);
-            foreach ($expenses as $expense)
-                yield $expense;
+            foreach ($expenses as $id => $expense)
+                yield [$id, $expense];
             unset($expenses);
         }
     }

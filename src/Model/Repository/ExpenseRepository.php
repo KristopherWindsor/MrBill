@@ -56,6 +56,12 @@ class ExpenseRepository extends Repository
         $this->dataStore->mapPutItem($key, $id, $year . ($month < 10 ? '0' : '') . $month);
     }
 
+    /**
+     * @param PhoneNumber $phoneNumber
+     * @param int $year
+     * @param int $month
+     * @return Expense[] assoc array with ids as keys
+     */
     public function getForPhoneAndMonth(PhoneNumber $phoneNumber, int $year, int $month) : array
     {
         $key = $this->getDataStoreKey($phoneNumber, $year, $month);
