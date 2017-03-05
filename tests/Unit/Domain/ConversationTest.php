@@ -9,7 +9,6 @@ use MrBill\Model\Expense;
 use MrBill\Model\Message;
 use MrBill\Model\Repository\ExpenseRepository;
 use MrBill\Model\Repository\RepositoryFactory;
-use MrBill\Persistence\DataStore;
 use MrBill\PhoneNumber;
 use MrBill\Persistence\MockDataStore;
 use PHPUnit\Framework\TestCase;
@@ -24,6 +23,12 @@ class ConversationTest extends TestCase
     /** @var MockDataStore */
     private $mockDataStore;
 
+    /** @var RepositoryFactory */
+    private $repositoryFactory;
+
+    /** @var DomainFactory */
+    private $domainFactory;
+
     /** @var Conversation */
     private $conversation;
 
@@ -34,12 +39,11 @@ class ConversationTest extends TestCase
         $this->testPhone = new PhoneNumber(self::TEST_PHONE);
 
         $this->mockDataStore = new MockDataStore();
+        $this->repositoryFactory = new RepositoryFactory($this->mockDataStore);
+        $this->domainFactory = new DomainFactoryChangeable($this->repositoryFactory);
 
-        $repositoryFactory = new RepositoryFactory($this->mockDataStore);
-        $domainFactory = new DomainFactoryChangeable($repositoryFactory);
-
-        $domainFactory->expenseSets[self::TEST_PHONE] =
-            new class($this->testPhone, $repositoryFactory->getExpenseRepository()) extends ExpenseSet {
+        $this->domainFactory->expenseSets[self::TEST_PHONE] =
+            new class($this->testPhone, $this->repositoryFactory->getExpenseRepository()) extends ExpenseSet {
                 public $addedExpenses = [];
 
                 public function __construct(PhoneNumber $phone, ExpenseRepository $expenseRepository) {
@@ -51,13 +55,20 @@ class ConversationTest extends TestCase
                 }
             };
 
-        $this->conversation = $domainFactory->getConversation($this->testPhone);
-        $this->expenseSet = $domainFactory->getExpenseSet($this->testPhone);
+        $this->conversation = $this->domainFactory->getConversation($this->testPhone);
+        $this->expenseSet = $this->domainFactory->getExpenseSet($this->testPhone);
     }
 
     public function testGetPhoneNumber()
     {
         $this->assertEquals($this->testPhone, $this->conversation->getPhoneNumber());
+    }
+
+    public function testAddMessageWrongPhone()
+    {
+        $newMessage = new Message(new PhoneNumber(14081234567), 'messageX', time(), true, 0);
+        $this->expectException(\Exception::class);
+        $this->conversation->addMessage($newMessage);
     }
 
     public function testAddMessageAndCheckDataStore()
@@ -131,6 +142,24 @@ class ConversationTest extends TestCase
         $this->assertEquals(2, $this->conversation->totalExpenseMessages);
         $this->assertEquals($time + 1, $this->conversation->firstExpenseMessageTimestamp);
         $this->assertEquals($time + 2, $this->conversation->lastExpenseMessageTimestamp);
+    }
+
+    public function testLoadConversationWithExistingMessages()
+    {
+        $time = time();
+        $newMessage = new Message($this->testPhone, 'messageX', $time, true, 0);
+        $expenseMessage = new Message($this->testPhone, '5 #h', $time, true, 0);
+
+        $this->conversation->addMessage($newMessage);
+        $this->conversation->addMessage($expenseMessage);
+
+        $conversation = new Conversation(
+            $this->testPhone,
+            $this->domainFactory,
+            $this->repositoryFactory->getMessageRepository()
+        );
+        $this->assertEquals($conversation->totalMessages, 2);
+        $this->assertEquals($conversation->totalExpenseMessages, 1);
     }
 
     public function testRemoveAllData()

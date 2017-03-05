@@ -37,6 +37,9 @@ class ExpensesFromMessageParserTest extends TestCase
     {
         return
             [
+                ['notParseable', []],
+                ['not #parseable', []],
+                ['5 no hashtags', []],
                 ['5 #hash', [
                     'amount' => 5.00,
                     'hashtags' => ['hash'],
