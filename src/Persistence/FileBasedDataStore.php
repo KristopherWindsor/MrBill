@@ -49,8 +49,6 @@ class FileBasedDataStore implements DataStore
             return [];
 
         $value = $this->scalarGet($key);
-        if (!$value)
-            return [];
 
         $list = json_decode($value, true);
         return $list ?: [];
