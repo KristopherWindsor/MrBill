@@ -32,6 +32,6 @@ class MessageRepository extends Repository
 
     protected function getDataStoreKey(PhoneNumber $phone) : string
     {
-        return 'messages' . $phone;
+        return 'messages:' . $phone;
     }
 }

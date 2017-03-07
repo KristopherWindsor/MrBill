@@ -45,7 +45,7 @@ class MessageRepositoryTest extends TestCase
 
         $this->assertEquals(
             [
-                'messages14087226296' => [
+                'messages:14087226296' => [
                     '{"phone":14087226296,"message":"a message","timestamp":1488012941,"isFromUser":true,"entropy":0}',
                     '{"phone":14087226296,"message":"a message","timestamp":1488012941,"isFromUser":true,"entropy":0}'
                 ]
