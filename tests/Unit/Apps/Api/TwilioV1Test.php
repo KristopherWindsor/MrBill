@@ -123,7 +123,7 @@ class TwilioV1Test extends TestCase
 
         $this->assertEquals(
             '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>Your report! ' .
-                self::PUBLIC_URL . '/report/1?p=' . $this->testPhone . '&amp;s=' . $secret .
+                self::PUBLIC_URL . '/report?p=' . $this->testPhone . '&amp;s=' . $secret .
                 '</Message></Response>',
             $v1->getResult()
         );

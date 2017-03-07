@@ -163,7 +163,7 @@ class TwilioV1
         $token = $this->tokenSet->getSecretIfActive(TokenSet::REPORT_ID) ?:
             $this->tokenSet->createActiveTokenForDocument(TokenSet::REPORT_ID);
 
-        return 'Your report! ' . $this->publicSiteUrl . '/report/1?p=' .
+        return 'Your report! ' . $this->publicSiteUrl . '/report?p=' .
             $this->phone . '&amp;s=' . $token;
     }
 }
