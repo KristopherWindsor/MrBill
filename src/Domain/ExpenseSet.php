@@ -69,6 +69,8 @@ class ExpenseSet
 
     public function getExpensesForMonth(int $year, int $month) : array
     {
-        return $this->expenseRepository->getForPhoneAndMonth($this->phone, $year, $month);
+        $results = $this->expenseRepository->getForPhoneAndMonth($this->phone, $year, $month);
+        ksort($results, SORT_NUMERIC);
+        return $results;
     }
 }

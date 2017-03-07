@@ -6,6 +6,7 @@ use MrBill\Config;
 use MrBill\Domain\DomainFactory;
 use MrBill\Model\Repository\RepositoryFactory;
 use MrBill\Persistence\FileBasedDataStore;
+use MrBill\Persistence\RedisDataStore;
 use Predis\Client;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -30,7 +31,7 @@ class Container implements ContainerInterface
             return $this->items[$id] = new Config();
 
         elseif ($id == 'dataStore')
-            return $this->items[$id] = new FileBasedDataStore();
+            return $this->items[$id] = new RedisDataStore($this->get('redis'));
 
         elseif ($id == 'domainFactory')
             return $this->items[$id] = new DomainFactory($this->get('repositoryFactory'));

@@ -161,4 +161,21 @@ class ExpenseSetTest extends TestCase
         $this->assertEquals($this->expense2, $results[2]);
         $this->assertEquals($this->expense3, $results[3]);
     }
+
+    public function testGetExpensesForMonthWhenDataStoreGivesUnorderedResults()
+    {
+        for ($i = 0; $i < 4; $i++)
+            $this->expenseSet->addExpense($this->expense1);
+
+        $expensesForMonth = $this->mockDataStore->storage['expenses:14087226296:2017:04'];
+        $this->mockDataStore->storage['expenses:14087226296:2017:04'] = [
+            2 => $expensesForMonth[2],
+            1 => $expensesForMonth[1],
+            4 => $expensesForMonth[4],
+            3 => $expensesForMonth[3],
+        ];
+
+        $fromDomain = $this->expenseSet->getExpensesForMonth(2017, 4);
+        $this->assertEquals([1, 2, 3, 4], array_keys($fromDomain));
+    }
 }

@@ -79,7 +79,7 @@ function tester($target)
     ];
     foreach ($expected as $index => $item)
         foreach ($item as $key => $value) {
-            assert($expenseItems[$index]->$key === $value, "$index/$key");
+            assert($expenseItems[$index]->$key === $value, "$index/$key " . json_encode($value));
         }
 }
 
@@ -88,6 +88,8 @@ try {
 
     $duration = round((microtime(true) - $start) * 1000);
     echo "All good here ({$duration}ms)";
+} catch (\GuzzleHttp\Exception\ServerException $e) {
+    echo $e;
 } catch (AssertionError $throwable) {
     echo $throwable;
 } finally {
