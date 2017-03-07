@@ -1,0 +1,19 @@
+#!/bin/bash
+
+echo "Starting MrBill..."
+
+tmp=$(env | grep MR_BILL_PUBLIC_URL)
+if [[ ! $tmp ]]; then
+    echo "Required environment variable missing: MR_BILL_PUBLIC_URL"
+    sleep 1
+    exit 1
+fi
+
+tmp=$(env | grep MYREDIS_PORT_6379_TCP_ADDR)
+if [[ ! $tmp ]]; then
+    echo "Required environment variable missing: MYREDIS_PORT_6379_TCP_ADDR"
+    sleep 1
+    exit 1
+fi
+
+echo "Environment check passed."

@@ -21,3 +21,5 @@ RUN cd /var/www && composer install --optimize-autoloader
 RUN chown -R www-data:www-data /var/www/*
 
 RUN /var/www/vendor/bin/phpunit /var/www/tests/Unit
+
+CMD /var/www/scripts/envcheck && apache2-foreground
