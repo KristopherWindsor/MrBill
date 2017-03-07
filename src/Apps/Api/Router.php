@@ -14,7 +14,7 @@ class Router
     {
         $slim = $container->get('slim');
         $slim->getContainer()['myContainer'] = $container;
-        $slim->any('/twilio/v1', TwilioV1::class);
+        $slim->post('/twilio/v1', TwilioV1::class);
         $slim->get('/expenses/{phone}/{year}/{month}/{token}', Expenses::class);
         $slim->get('/expenses/range/{phone}/{token}', ExpensesRange::class);
         return $slim;
