@@ -25,4 +25,13 @@ class PhoneNumber implements JsonSerializable
     {
         return (int) $this->scalar;
     }
+
+    public static function getIfValid(string $phoneNumber) : ?PhoneNumber
+    {
+        try {
+            return new PhoneNumber($phoneNumber);
+        } catch (Exception $e) {
+            return null;
+        }
+    }
 }

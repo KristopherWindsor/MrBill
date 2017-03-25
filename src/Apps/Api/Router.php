@@ -15,8 +15,20 @@ class Router
         $slim = $container->get('slim');
         $slim->getContainer()['myContainer'] = $container;
         $slim->post('/twilio/v1', TwilioV1::class);
-        $slim->get('/expenses/{phone}/{year}/{month}/{token}', Expenses::class);
-        $slim->get('/expenses/range/{phone}/{token}', ExpensesRange::class);
+
+        $slim
+            ->group(
+                '/expenses',
+                function () use ($slim) {
+                    $slim->get('/create', ExpenseCreate::class);
+                    $slim->get('/range', ExpenseRange::class);
+                    $slim->get('/month/{year}/{month}', ExpenseReadMonth::class);
+                    $slim->get('/update/{id}', ExpenseUpdate::class);
+                    $slim->get('/delete/{id}', ExpenseDelete::class);
+                }
+            )
+            ->add(ReportAuth::class);
+
         return $slim;
     }
 

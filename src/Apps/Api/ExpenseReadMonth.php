@@ -11,7 +11,7 @@ use Psr\Container\ContainerInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-class Expenses
+class ExpenseReadMonth
 {
     /** @var DomainFactory */
     protected $domainFactory;
@@ -23,19 +23,11 @@ class Expenses
 
     public function __invoke(Request $request, Response $response, $args)
     {
-        $phone = new PhoneNumber($args['phone']);
+        $phone = $request->getAttribute('phone');
+        assert($phone instanceof PhoneNumber);
 
-        $isSecretValid = $this->domainFactory->getTokenSet($phone)
-            ->hasValidTokenForDocumentWithSecret(TokenSet::REPORT_ID, $args['token']);
-
-        if ($isSecretValid) {
-            $response = $response->withHeader('Content-Type', 'application/json');
-            $response->write($this->getExpenses($phone, (int) $args['year'], (int) $args['month']));
-        } else {
-            $response = $response->withStatus(401);
-        }
-
-        return $response;
+        $response = $response->withHeader('Content-Type', 'application/json');
+        return $response->write($this->getExpenses($phone, (int) $args['year'], (int) $args['month']));
     }
 
     protected function getExpenses(PhoneNumber $phone, int $year, int $month) : string

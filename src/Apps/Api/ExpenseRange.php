@@ -3,13 +3,12 @@
 namespace MrBill\Apps\Api;
 
 use MrBill\Domain\DomainFactory;
-use MrBill\Domain\TokenSet;
 use MrBill\PhoneNumber;
 use Psr\Container\ContainerInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-class ExpensesRange
+class ExpenseRange
 {
     /** @var DomainFactory */
     protected $domainFactory;
@@ -21,19 +20,11 @@ class ExpensesRange
 
     public function __invoke(Request $request, Response $response, $args)
     {
-        $phone = new PhoneNumber($args['phone']);
+        $phone = $request->getAttribute('phone');
+        assert($phone instanceof PhoneNumber);
 
-        $isSecretValid = $this->domainFactory->getTokenSet($phone)
-            ->hasValidTokenForDocumentWithSecret(TokenSet::REPORT_ID, $args['token']);
-
-        if ($isSecretValid) {
-            $response = $response->withHeader('Content-Type', 'application/json');
-            $response->write($this->getBoundaryOfMonthsWithExpenses($phone));
-        } else {
-            $response = $response->withStatus(401);
-        }
-
-        return $response;
+        $response = $response->withHeader('Content-Type', 'application/json');
+        return $response->write($this->getBoundaryOfMonthsWithExpenses($phone));
     }
 
     protected function getBoundaryOfMonthsWithExpenses(PhoneNumber $phone) : string

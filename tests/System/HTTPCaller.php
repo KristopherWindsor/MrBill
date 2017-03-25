@@ -103,7 +103,11 @@ class HTTPCaller
 
     public function getExpensesData(string $phone, $year, $month, string $secret) : string
     {
-        $response = $this->guzzle->request('GET', "{$this->domain}/expenses/{$phone}/{$year}/{$month}/{$secret}");
+        $response = $this->guzzle->request(
+            'GET',
+            "{$this->domain}/expenses/month/{$year}/{$month}",
+            ['headers' => ['phone' => $phone, 'token' => $secret]]
+        );
         assert($response->getStatusCode() == 200);
 
         return (string) $response->getBody();
@@ -111,7 +115,11 @@ class HTTPCaller
 
     public function getExpensesRange(string $phone, string $secret)
     {
-        $response = $this->guzzle->request('GET', "{$this->domain}/expenses/range/{$phone}/{$secret}");
+        $response = $this->guzzle->request(
+            'GET',
+            "{$this->domain}/expenses/range",
+            ['headers' => ['phone' => $phone, 'token' => $secret]]
+        );
         assert($response->getStatusCode() == 200);
 
         return (string) $response->getBody();

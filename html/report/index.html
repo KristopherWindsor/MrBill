@@ -24,7 +24,13 @@
                 "July", "August", "September", "October", "November", "December"];
             $("#dateRange").html(months[response.firstMonth] + " " + response.firstYear + " &mdash; " +
                 months[response.lastMonth] + " " + response.lastYear);
-            $.get('/expenses/' + phone + '/2017/3/' + secret, null, renderExpensesTable);
+            $.ajax(
+                '/expenses/month/2017/3',
+                {
+                    headers: {phone : phone, token: secret},
+                    success: renderExpensesTable
+                }
+            );
         }
 
         function renderExpensesTable(response) {
@@ -43,8 +49,14 @@
             secret = getParameterByName('s');
 
             if (phone && secret)
-                $.get('/expenses/range/' + phone + '/' + secret, null, handleExpensesRange)
-                    .fail(function() {alert('No good');});
+                $.ajax(
+                    '/expenses/range',
+                    {
+                        headers: {phone : phone, token: secret},
+                        fail: function() {alert('No good');},
+                        success: handleExpensesRange
+                    }
+                );
             else alert('No auth');
         });
     </script>
