@@ -106,6 +106,12 @@ class RedisDataStoreTest extends TestCase
         $this->assertEquals(['hgetall', ['key']], $this->mockPredisClient->lastCallInfo);
     }
 
+    public function testMapRemoveItem()
+    {
+        $this->redisDataStore->mapRemoveItem('key', 'item');
+        $this->assertEquals(['hdel', ['key', ['item']]], $this->mockPredisClient->lastCallInfo);
+    }
+
     public function testMapIncrementItem()
     {
         $this->redisDataStore->mapIncrementItem('key', 'value');

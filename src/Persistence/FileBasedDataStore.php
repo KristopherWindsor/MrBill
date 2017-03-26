@@ -72,6 +72,19 @@ class FileBasedDataStore implements DataStore
         return $this->listGetAll($key);
     }
 
+    public function mapRemoveItem(string $mapKey, string $itemKey) : bool
+    {
+        $map = $this->mapGetAll($mapKey);
+
+        if (isset($map[$itemKey])) {
+            unset($map[$itemKey]);
+            $this->scalarPut($mapKey, json_encode($map));
+            return true;
+        }
+
+        return false;
+    }
+
     public function mapIncrementItem(string $mapKey, string $itemKey) : int
     {
         $map = $this->mapGetAll($mapKey);

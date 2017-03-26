@@ -61,6 +61,15 @@ class MockDataStore implements DataStore
         return $this->storage[$key] ?? [];
     }
 
+    public function mapRemoveItem(string $mapKey, string $itemKey) : bool
+    {
+        if (isset($this->storage[$mapKey][$itemKey])) {
+            unset($this->storage[$mapKey][$itemKey]);
+            return true;
+        }
+        return false;
+    }
+
     public function mapIncrementItem(string $mapKey, string $itemKey) : int
     {
         $currentValue = $this->storage[$mapKey][$itemKey] ?? 0;

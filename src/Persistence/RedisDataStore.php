@@ -63,6 +63,11 @@ class RedisDataStore implements DataStore
         return $this->redis->hgetall($key);
     }
 
+    public function mapRemoveItem(string $mapKey, string $itemKey) : bool
+    {
+        return (bool) $this->redis->hdel($mapKey, [$itemKey]);
+    }
+
     public function mapIncrementItem(string $mapKey, string $itemKey) : int
     {
         return $this->redis->hincrby($mapKey, $itemKey, 1);

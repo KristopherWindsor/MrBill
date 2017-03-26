@@ -128,6 +128,20 @@ class DataStoreTest extends TestCase
      * @dataProvider getAllDataStores
      * @param DataStore $dataStore
      */
+    public function testPutAndRemove(DataStore $dataStore)
+    {
+        $this->assertFalse($dataStore->mapRemoveItem('key', 'itemKey'));
+
+        $dataStore->mapPutItem('key', 'itemKey', 'val');
+
+        $this->assertTrue($dataStore->mapRemoveItem('key', 'itemKey'));
+        $this->assertFalse($dataStore->mapRemoveItem('key', 'itemKey'));
+    }
+
+    /**
+     * @dataProvider getAllDataStores
+     * @param DataStore $dataStore
+     */
     public function testMapIncrement(DataStore $dataStore)
     {
         $dataStore->mapIncrementItem('key', 'a');
