@@ -18,6 +18,7 @@ interface DataStore
     public function listGetAll(string $key) : array;
 
     public function mapPutItem(string $mapKey, string $itemKey, string $value) : void;
+    public function mapGetItem(string $mapKey, string $itemKey) : ?string;
     public function mapGetAll(string $key) : array;
     public function mapIncrementItem(string $mapKey, string $itemKey) : int;
 }

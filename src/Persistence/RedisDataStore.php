@@ -53,6 +53,11 @@ class RedisDataStore implements DataStore
         $this->redis->hset($mapKey, $itemKey, $value);
     }
 
+    public function mapGetItem(string $mapKey, string $itemKey) : ?string
+    {
+        return $this->redis->hget($mapKey, $itemKey);
+    }
+
     public function mapGetAll(string $key) : array
     {
         return $this->redis->hgetall($key);

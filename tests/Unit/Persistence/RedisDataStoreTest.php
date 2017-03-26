@@ -36,7 +36,7 @@ class RedisDataStoreTest extends TestCase
 
                 if ($commandID == 'exists')
                     return false;
-                if ($commandID == 'get')
+                if ($commandID == 'get' || $commandID == 'hget')
                     return '';
                 if ($commandID == 'incr' || $commandID == 'hincrby')
                     return 0;
@@ -92,6 +92,12 @@ class RedisDataStoreTest extends TestCase
     {
         $this->redisDataStore->mapPutItem('key', 'x', 'value');
         $this->assertEquals(['hset', ['key', 'x', 'value']], $this->mockPredisClient->lastCallInfo);
+    }
+
+    public function testMapGetItem()
+    {
+        $this->redisDataStore->mapGetItem('key', 'item');
+        $this->assertEquals(['hget', ['key', 'item']], $this->mockPredisClient->lastCallInfo);
     }
 
     public function testMapGetAll()

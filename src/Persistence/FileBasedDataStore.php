@@ -61,6 +61,12 @@ class FileBasedDataStore implements DataStore
         $this->scalarPut($mapKey, json_encode($map));
     }
 
+    public function mapGetItem(string $mapKey, string $itemKey) : ?string
+    {
+        $map = $this->mapGetAll($mapKey);
+        return $map[$itemKey] ?? null;
+    }
+
     public function mapGetAll(string $key) : array
     {
         return $this->listGetAll($key);

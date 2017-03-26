@@ -51,6 +51,11 @@ class MockDataStore implements DataStore
         $this->storage[$mapKey][$itemKey] = $value;
     }
 
+    public function mapGetItem(string $mapKey, string $itemKey) : ?string
+    {
+        return $this->storage[$mapKey][$itemKey] ?? null;
+    }
+
     public function mapGetAll(string $key) : array
     {
         return $this->storage[$key] ?? [];
