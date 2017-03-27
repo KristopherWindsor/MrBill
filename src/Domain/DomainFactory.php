@@ -10,6 +10,9 @@ class DomainFactory
     /** @var RepositoryFactory */
     protected $repositoryFactory;
 
+    /** @var Account[] */
+    protected $accounts = [];
+
     /** @var Conversation[] */
     protected $conversations = [];
 
@@ -24,15 +27,31 @@ class DomainFactory
         $this->repositoryFactory = $repositoryFactory;
     }
 
-    public function getConversation(PhoneNumber $phoneNumber) : Conversation
+    public function getAccount(int $accountId) : ?Account
     {
-        return $this->conversations[$phoneNumber->scalar] ?? $this->conversations[$phoneNumber->scalar] =
+        return $this->accounts[$accountId] ?? $this->accounts[$accountId] =
+
+        Account::getByIDIfExists($accountId, $this->repositoryFactory->getAccountRepository());
+    }
+
+    public function getAccountByPhoneNumber(PhoneNumber $phone) : Account
+    {
+        $account = Account::getOrCreateForPhoneNumber($phone, $this->repositoryFactory->getAccountRepository());
+
+        return $this->accounts[$account->getByID()] ?? $this->accounts[$account->getByID()] = $account;
+    }
+
+    public function getConversation(int $accountId, PhoneNumber $phoneNumber) : Conversation
+    {
+        return $this->conversations[$accountId][$phoneNumber->scalar] ?? (
+               $this->conversations[$accountId][$phoneNumber->scalar] =
 
         new Conversation(
+            $accountId,
             $phoneNumber,
             $this,
             $this->repositoryFactory->getMessageRepository()
-        );
+        ));
     }
 
     public function getExpenseSet(PhoneNumber $phoneNumber) : ExpenseSet

@@ -4,6 +4,9 @@ namespace MrBill\Model\Repository;
 
 class RepositoryFactory extends Repository
 {
+    /** @var AccountRepository */
+    protected $accountRepository;
+
     /** @var MessageRepository */
     protected $messageRepository;
 
@@ -12,6 +15,11 @@ class RepositoryFactory extends Repository
 
     /** @var ExpenseRepository */
     protected $expenseRepository;
+
+    public function getAccountRepository() : AccountRepository
+    {
+        return $this->accountRepository ?? $this->accountRepository = new AccountRepository($this->dataStore);
+    }
 
     public function getMessageRepository() : MessageRepository
     {

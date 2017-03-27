@@ -9,9 +9,11 @@ use PHPUnit\Framework\TestCase;
 
 class MessageWithMeaningTest extends TestCase
 {
+    const TEST_ID = 123;
+
     public function testConstructor()
     {
-        $message = new Message(new PhoneNumber(14087226296), '5 #h', time(), true, 0);
+        $message = new Message(self::TEST_ID, new PhoneNumber(14087226296), '5 #h', time(), true, 0);
         $messageWithMeaning = new MessageWithMeaning($message, 0);
 
         $this->assertEquals($message, $messageWithMeaning->message);
@@ -31,7 +33,7 @@ class MessageWithMeaningTest extends TestCase
         bool $totalPrecedingIncomingMessages,
         string $meaningHint
     ) {
-        $message = new Message(new PhoneNumber(14087226296), $messageText, time(), $messageIsFromUser, 0);
+        $message = new Message(self::TEST_ID, new PhoneNumber(14087226296), $messageText, time(), $messageIsFromUser, 0);
         $withMeaning = new MessageWithMeaning($message, $totalPrecedingIncomingMessages);
 
         $this->assertEquals($meaningHint == 'exp',  $withMeaning->isExpenseMessage());

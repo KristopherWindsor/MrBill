@@ -22,9 +22,10 @@ class MessageTest extends TestCase
     public function testCreateWithEntropy()
     {
         $time = time();
-        $message1 = Message::createWithEntropy($this->testPhone, '?', $time, true);
-        $message2 = Message::createWithEntropy($this->testPhone, '?', $time, true);
+        $message1 = Message::createWithEntropy(123, $this->testPhone, '?', $time, true);
+        $message2 = Message::createWithEntropy(123, $this->testPhone, '?', $time, true);
 
+        $this->assertEquals(123, $message1->accountId);
         $this->assertEquals($this->testPhone, $message1->phone);
         $this->assertEquals('?', $message1->message);
         $this->assertEquals($time, $message1->timestamp);
@@ -35,20 +36,21 @@ class MessageTest extends TestCase
 
     public function testToMap()
     {
-        $message = new Message($this->testPhone, 'some message', self::TEST_TIMESTAMP, true, 2);
+        $message = new Message(123, $this->testPhone, 'some message', self::TEST_TIMESTAMP, true, 2);
 
         $this->assertEquals(
-            '{"phone":' . self::TEST_PHONE . ',"message":"some message","timestamp":' . self::TEST_TIMESTAMP .
-                ',"isFromUser":true,"entropy":2}',
+            '{"accountId":123,"phone":' . self::TEST_PHONE . ',"message":"some message","timestamp":' .
+                self::TEST_TIMESTAMP . ',"isFromUser":true,"entropy":2}',
             json_encode($message->toMap())
         );
     }
 
     public function testFromMap()
     {
-        $message = new Message($this->testPhone, 'some message', self::TEST_TIMESTAMP, true, 0);
+        $message = new Message(123, $this->testPhone, 'some message', self::TEST_TIMESTAMP, true, 0);
         $loadedMessage = Message::createFromMap($message->toMap());
 
+        $this->assertEquals(123, $loadedMessage->accountId);
         $this->assertEquals($this->testPhone, $loadedMessage->phone);
         $this->assertEquals('some message', $loadedMessage->message);
         $this->assertEquals(self::TEST_TIMESTAMP, $loadedMessage->timestamp);

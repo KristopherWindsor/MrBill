@@ -31,6 +31,8 @@ class TwilioV1
     /** @var PhoneNumber */
     protected $phone;
 
+    protected $accountId;
+
     /** @var string */
     protected $messageText;
 
@@ -73,9 +75,10 @@ class TwilioV1
         string $messageText
     ) : void {
 
+        $this->accountId = $domainFactory->getAccountByPhoneNumber($fromPhone)->getByID();
         $this->phone = $fromPhone;
         $this->publicSiteUrl = $publicSiteUrl;
-        $this->conversation = $domainFactory->getConversation($this->phone);
+        $this->conversation = $domainFactory->getConversation($this->accountId, $this->phone);
         $this->tokenSet = $domainFactory->getTokenSet($this->phone);
         $this->messageText = $messageText;
 
@@ -84,7 +87,7 @@ class TwilioV1
 
     protected function computeResult()
     {
-        $incomingMessage = Message::createWithEntropy($this->phone, $this->messageText, time(), true);
+        $incomingMessage = Message::createWithEntropy($this->accountId, $this->phone, $this->messageText, time(), true);
         $messageWithMeaning = $this->conversation->addMessage($incomingMessage);
 
         $isTenthExpense = $messageWithMeaning->isExpenseMessage() && $this->conversation->totalExpenseMessages == 10;
@@ -107,7 +110,13 @@ class TwilioV1
         }
 
         if ($this->responseText) {
-            $replyMessage = Message::createWithEntropy($this->phone, $this->responseText, time(), false);
+            $replyMessage = Message::createWithEntropy(
+                $this->accountId,
+                $this->phone,
+                $this->responseText,
+                time(),
+                false
+            );
             $this->conversation->addMessage($replyMessage);
         }
     }

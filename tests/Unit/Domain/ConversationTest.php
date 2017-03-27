@@ -15,6 +15,7 @@ use PHPUnit\Framework\TestCase;
 
 class ConversationTest extends TestCase
 {
+    const TEST_ID = 123;
     const TEST_PHONE = 14087226296;
 
     /** @var PhoneNumber */
@@ -55,7 +56,7 @@ class ConversationTest extends TestCase
                 }
             };
 
-        $this->conversation = $this->domainFactory->getConversation($this->testPhone);
+        $this->conversation = $this->domainFactory->getConversation(self::TEST_ID, $this->testPhone);
         $this->expenseSet = $this->domainFactory->getExpenseSet($this->testPhone);
     }
 
@@ -66,7 +67,7 @@ class ConversationTest extends TestCase
 
     public function testAddMessageWrongPhone()
     {
-        $newMessage = new Message(new PhoneNumber(14081234567), 'messageX', time(), true, 0);
+        $newMessage = new Message(self::TEST_ID, new PhoneNumber(14081234567), 'messageX', time(), true, 0);
         $this->expectException(\Exception::class);
         $this->conversation->addMessage($newMessage);
     }
@@ -74,8 +75,8 @@ class ConversationTest extends TestCase
     public function testAddMessageAndCheckDataStore()
     {
         $time = 1488067264;
-        $newMessage = new Message($this->testPhone, 'messageX', $time, true, 0);
-        $expenseMessage = new Message($this->testPhone, '5 #h', $time, true, 0);
+        $newMessage = new Message(self::TEST_ID, $this->testPhone, 'messageX', $time, true, 0);
+        $expenseMessage = new Message(self::TEST_ID, $this->testPhone, '5 #h', $time, true, 0);
 
         $this->conversation->addMessage($newMessage);
         $this->conversation->addMessage($expenseMessage);
@@ -89,8 +90,8 @@ class ConversationTest extends TestCase
 
     public function testAddMessageAndCountTotalMessages()
     {
-        $newMessage = new Message($this->testPhone, 'message' . uniqid(), time(), true, 0);
-        $outgoingMessage = new Message($this->testPhone, 'out', time(), false, 0);
+        $newMessage = new Message(self::TEST_ID, $this->testPhone, 'message' . uniqid(), time(), true, 0);
+        $outgoingMessage = new Message(self::TEST_ID, $this->testPhone, 'out', time(), false, 0);
 
         $this->assertEquals(0, $this->conversation->totalMessages);
         $this->conversation->addMessage($newMessage);
@@ -101,8 +102,8 @@ class ConversationTest extends TestCase
 
     public function testAddMessageAndCountIncomingMessages()
     {
-        $newMessage = new Message($this->testPhone, 'message' . uniqid(), time(), true, 0);
-        $outgoingMessage = new Message($this->testPhone, 'out', time(), false, 0);
+        $newMessage = new Message(self::TEST_ID, $this->testPhone, 'message' . uniqid(), time(), true, 0);
+        $outgoingMessage = new Message(self::TEST_ID, $this->testPhone, 'out', time(), false, 0);
 
         $this->conversation->addMessage($outgoingMessage);
         $this->assertEquals(0, $this->conversation->totalIncomingMessages);
@@ -114,8 +115,8 @@ class ConversationTest extends TestCase
 
     public function testAddMessageAndCountHelpMessages()
     {
-        $newMessage = new Message($this->testPhone, 'message' . uniqid(), time(), true, 0);
-        $helpMessage = new Message($this->testPhone, '?', time(), true, 0);
+        $newMessage = new Message(self::TEST_ID, $this->testPhone, 'message' . uniqid(), time(), true, 0);
+        $helpMessage = new Message(self::TEST_ID, $this->testPhone, '?', time(), true, 0);
 
         $this->conversation->addMessage($newMessage);
         $this->assertEquals(0, $this->conversation->totalHelpRequests);
@@ -128,9 +129,9 @@ class ConversationTest extends TestCase
     public function testAddMessageAndTrackExpenseMessages()
     {
         $time = time();
-        $newMessage = new Message($this->testPhone, 'message' . uniqid(), $time, true, 0);
-        $expenseMessage1 = new Message($this->testPhone, '5 #h', $time + 1, true, 0);
-        $expenseMessage2 = new Message($this->testPhone, '5 #h', $time + 2, true, 0);
+        $newMessage = new Message(self::TEST_ID, $this->testPhone, 'message' . uniqid(), $time, true, 0);
+        $expenseMessage1 = new Message(self::TEST_ID, $this->testPhone, '5 #h', $time + 1, true, 0);
+        $expenseMessage2 = new Message(self::TEST_ID, $this->testPhone, '5 #h', $time + 2, true, 0);
 
         $this->conversation->addMessage($newMessage);
         $this->assertEquals(0, $this->conversation->totalExpenseMessages);
@@ -147,13 +148,14 @@ class ConversationTest extends TestCase
     public function testLoadConversationWithExistingMessages()
     {
         $time = time();
-        $newMessage = new Message($this->testPhone, 'messageX', $time, true, 0);
-        $expenseMessage = new Message($this->testPhone, '5 #h', $time, true, 0);
+        $newMessage = new Message(self::TEST_ID, $this->testPhone, 'messageX', $time, true, 0);
+        $expenseMessage = new Message(self::TEST_ID, $this->testPhone, '5 #h', $time, true, 0);
 
         $this->conversation->addMessage($newMessage);
         $this->conversation->addMessage($expenseMessage);
 
         $conversation = new Conversation(
+            self::TEST_ID,
             $this->testPhone,
             $this->domainFactory,
             $this->repositoryFactory->getMessageRepository()
@@ -164,10 +166,10 @@ class ConversationTest extends TestCase
 
     public function testRemoveAllData()
     {
-        $newMessage = new Message($this->testPhone, 'message' . uniqid(), time(), true, 0);
-        $expenseMessage = new Message($this->testPhone, '5.55 #tag', time(), true, 0);
-        $outgoingMessage = new Message($this->testPhone, 'out', time(), false, 0);
-        $helpMessage = new Message($this->testPhone, '?', time(), true, 0);
+        $newMessage = new Message(self::TEST_ID, $this->testPhone, 'message' . uniqid(), time(), true, 0);
+        $expenseMessage = new Message(self::TEST_ID, $this->testPhone, '5.55 #tag', time(), true, 0);
+        $outgoingMessage = new Message(self::TEST_ID, $this->testPhone, 'out', time(), false, 0);
+        $helpMessage = new Message(self::TEST_ID, $this->testPhone, '?', time(), true, 0);
 
         $this->conversation->addMessage($newMessage);
         $this->conversation->addMessage($expenseMessage);

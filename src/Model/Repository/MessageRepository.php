@@ -10,28 +10,28 @@ class MessageRepository extends Repository
 {
     public function persistMessage(Message $message) : void
     {
-        $key = $this->getDataStoreKey($message->phone);
+        $key = $this->getDataStoreKey($message->accountId, $message->phone);
 
         $this->dataStore->listAddItem($key, json_encode($message->toMap()));
     }
 
-    public function getAllMessagesForPhone(PhoneNumber $phoneNumber) : Generator
+    public function getAllMessagesForPhone(int $accountId, PhoneNumber $phoneNumber) : Generator
     {
-        $key = $this->getDataStoreKey($phoneNumber);
+        $key = $this->getDataStoreKey($accountId, $phoneNumber);
 
         foreach (array_reverse($this->dataStore->listGetAll($key)) as $item)
             yield Message::createFromMap(json_decode($item, true));
     }
 
-    public function removeAllMessagesForPhone(PhoneNumber $phoneNumber) : void
+    public function removeAllMessagesForPhone(int $accountId, PhoneNumber $phoneNumber) : void
     {
-        $key = $this->getDataStoreKey($phoneNumber);
+        $key = $this->getDataStoreKey($accountId, $phoneNumber);
 
         $this->dataStore->remove($key);
     }
 
-    protected function getDataStoreKey(PhoneNumber $phone) : string
+    protected function getDataStoreKey(int $accountId, PhoneNumber $phone) : string
     {
-        return 'messages:' . $phone;
+        return 'messages:' . $accountId . ':' . $phone;
     }
 }

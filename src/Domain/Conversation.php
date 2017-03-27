@@ -17,6 +17,9 @@ use MrBill\PhoneNumber;
  */
 class Conversation
 {
+    /** @var int */
+    protected $accountId;
+
     /** @var PhoneNumber */
     protected $phone;
 
@@ -36,15 +39,17 @@ class Conversation
     public $lastExpenseMessageTimestamp = 0;
 
     public function __construct(
+        int $accountId,
         PhoneNumber $phone,
         DomainFactory $domainFactory,
         MessageRepository $messageRepository
     ) {
+        $this->accountId = $accountId;
         $this->phone = $phone;
         $this->domainFactory = $domainFactory;
         $this->messageRepository = $messageRepository;
 
-        foreach ($messageRepository->getAllMessagesForPhone($phone) as $message) {
+        foreach ($messageRepository->getAllMessagesForPhone($accountId, $phone) as $message) {
             $this->processOneMessage($message);
         }
     }
@@ -92,7 +97,7 @@ class Conversation
      */
     public function addMessage(Message $message) : MessageWithMeaning
     {
-        if ($this->phone != $message->phone)
+        if ($this->accountId != $message->accountId || $this->phone != $message->phone)
             throw new Exception();
 
         $this->messageRepository->persistMessage($message);
@@ -116,7 +121,7 @@ class Conversation
 
     public function removeAllData() : void
     {
-        $this->messageRepository->removeAllMessagesForPhone($this->phone);
+        $this->messageRepository->removeAllMessagesForPhone($this->accountId, $this->phone);
 
         $this->totalExpenseMessages         =
         $this->totalIncomingMessages        =

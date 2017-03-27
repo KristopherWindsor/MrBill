@@ -3,6 +3,8 @@
 namespace MrBillTest\Unit\Domain;
 
 use MrBill\Domain\DomainFactory;
+use MrBill\Model\Account as AccountModel;
+use MrBill\Model\Repository\AccountRepository;
 use MrBill\Model\Repository\RepositoryFactory;
 use MrBill\PhoneNumber;
 use MrBill\Persistence\MockDataStore;
@@ -25,9 +27,86 @@ class DomainFactoryTest extends TestCase
         $this->domainFactory = new DomainFactory(new RepositoryFactory(new MockDataStore()));
     }
 
+    public function testGetAccountExists()
+    {
+        $mockAccountRepository = $this
+            ->getMockBuilder(AccountRepository::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getAccountIfExists'])
+            ->getMock();
+
+        $accountModel = new AccountModel(123, []);
+        $mockAccountRepository
+            ->expects($this->once())
+            ->method('getAccountIfExists')
+            ->willReturn($accountModel);
+
+        $repositoryFactory = new RepositoryFactory(new MockDataStore());
+        $property = new \ReflectionProperty(RepositoryFactory::class, 'accountRepository');
+        $property->setAccessible(true);
+        $property->setValue($repositoryFactory, $mockAccountRepository);
+
+        $domainFactory = new DomainFactory($repositoryFactory);
+
+        $account1 = $domainFactory->getAccount(123);
+        $account2 = $domainFactory->getAccount(123);
+        $this->assertTrue($account1 === $account2);
+    }
+
+    public function testGetAccountDoesNotExist()
+    {
+        $mockAccountRepository = $this
+            ->getMockBuilder(AccountRepository::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getAccountIfExists'])
+            ->getMock();
+
+        $mockAccountRepository
+            ->expects($this->once())
+            ->method('getAccountIfExists')
+            ->willReturn(null);
+
+        $repositoryFactory = new RepositoryFactory(new MockDataStore());
+        $property = new \ReflectionProperty(RepositoryFactory::class, 'accountRepository');
+        $property->setAccessible(true);
+        $property->setValue($repositoryFactory, $mockAccountRepository);
+
+        $domainFactory = new DomainFactory($repositoryFactory);
+
+        $account = $domainFactory->getAccount(123);
+        $this->assertNull($account);
+    }
+
+    public function testGetAccountByPhoneNumber()
+    {
+        $mockAccountRepository = $this
+            ->getMockBuilder(AccountRepository::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getAccountByPhoneIfExists'])
+            ->getMock();
+
+        $accountModel = new AccountModel(123, []);
+        $mockAccountRepository
+            ->expects($this->exactly(2))
+            ->method('getAccountByPhoneIfExists')
+            ->willReturn($accountModel);
+
+        $repositoryFactory = new RepositoryFactory(new MockDataStore());
+        $property = new \ReflectionProperty(RepositoryFactory::class, 'accountRepository');
+        $property->setAccessible(true);
+        $property->setValue($repositoryFactory, $mockAccountRepository);
+
+        $domainFactory = new DomainFactory($repositoryFactory);
+
+        $phone = new PhoneNumber(self::TEST_PHONE);
+        $account1 = $domainFactory->getAccountByPhoneNumber($phone);
+        $account2 = $domainFactory->getAccountByPhoneNumber($phone);
+        $this->assertTrue($account1 === $account2);
+    }
+
     public function testGetConversation()
     {
-        $conversation = $this->domainFactory->getConversation($this->testPhone);
+        $conversation = $this->domainFactory->getConversation(123, $this->testPhone);
         $this->assertEquals($this->testPhone, $conversation->getPhoneNumber());
     }
 

@@ -17,28 +17,24 @@ class RepositoryFactoryTest extends TestCase
         $this->repositoryFactory = new RepositoryFactory(new MockDataStore());
     }
 
-    public function testGetMessageRepository()
+    public function listOfMethodNames()
     {
-        $a = $this->repositoryFactory->getMessageRepository();
-        $b = $this->repositoryFactory->getMessageRepository();
-
-        $this->assertNotEmpty($a);
-        $this->assertTrue($a === $b);
+        return [
+            ['getAccountRepository'],
+            ['getMessageRepository'],
+            ['getTokenRepository'],
+            ['getExpenseRepository'],
+        ];
     }
 
-    public function testGetTokenRepository()
+    /**
+     * @param string $methodName
+     * @dataProvider listOfMethodNames
+     */
+    public function testGetters(string $methodName)
     {
-        $a = $this->repositoryFactory->getTokenRepository();
-        $b = $this->repositoryFactory->getTokenRepository();
-
-        $this->assertNotEmpty($a);
-        $this->assertTrue($a === $b);
-    }
-
-    public function testGetExpenseRepository()
-    {
-        $a = $this->repositoryFactory->getExpenseRepository();
-        $b = $this->repositoryFactory->getExpenseRepository();
+        $a = $this->repositoryFactory->$methodName();
+        $b = $this->repositoryFactory->$methodName();
 
         $this->assertNotEmpty($a);
         $this->assertTrue($a === $b);

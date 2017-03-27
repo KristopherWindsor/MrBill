@@ -4,7 +4,6 @@ namespace MrBillTest\Unit\Apps\Api;
 
 use MrBill\Apps\Api\TwilioV1;
 use MrBill\Apps\Container;
-use MrBill\Config;
 use MrBill\Domain\DomainFactory;
 use MrBill\Domain\TokenSet;
 use MrBill\Model\Repository\RepositoryFactory;
@@ -37,8 +36,6 @@ class TwilioV1Test extends TestCase
         $repositoryFactory = new RepositoryFactory(new MockDataStore());
 
         $this->domainFactory = new DomainFactory($repositoryFactory);
-
-        $this->domainFactory->getConversation($this->testPhone)->removeAllData();
     }
 
     public function testInvalidRequest()

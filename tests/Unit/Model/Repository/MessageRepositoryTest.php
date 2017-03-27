@@ -5,13 +5,12 @@ namespace MrBillTest\Unit\Model\Repository;
 use MrBill\Model\Message;
 use MrBill\Model\Repository\MessageRepository;
 use MrBill\Persistence\MockDataStore;
-use MrBill\Model\Token;
-use MrBill\Persistence\DataStore;
 use MrBill\PhoneNumber;
 use PHPUnit\Framework\TestCase;
 
 class MessageRepositoryTest extends TestCase
 {
+    const TEST_ACCOUNT_ID = 123;
     const TEST_TIME = 1488012941;
 
     /** @var Message */
@@ -26,6 +25,7 @@ class MessageRepositoryTest extends TestCase
     public function setUp()
     {
         $this->message = new Message(
+            self::TEST_ACCOUNT_ID,
             new PhoneNumber(14087226296),
             'a message',
             self::TEST_TIME,
@@ -45,9 +45,9 @@ class MessageRepositoryTest extends TestCase
 
         $this->assertEquals(
             [
-                'messages:14087226296' => [
-                    '{"phone":14087226296,"message":"a message","timestamp":1488012941,"isFromUser":true,"entropy":0}',
-                    '{"phone":14087226296,"message":"a message","timestamp":1488012941,"isFromUser":true,"entropy":0}'
+                'messages:123:14087226296' => [
+                    '{"accountId":123,"phone":14087226296,"message":"a message","timestamp":1488012941,"isFromUser":true,"entropy":0}',
+                    '{"accountId":123,"phone":14087226296,"message":"a message","timestamp":1488012941,"isFromUser":true,"entropy":0}'
                 ]
             ],
             $this->mockDataStore->storage
@@ -58,6 +58,7 @@ class MessageRepositoryTest extends TestCase
     {
         $phone = $this->message->phone;
         $message2 = new Message(
+            self::TEST_ACCOUNT_ID,
             $phone,
             'another message',
             self::TEST_TIME,
@@ -69,7 +70,7 @@ class MessageRepositoryTest extends TestCase
         $this->messageRepository->persistMessage($message2);
 
         $messages = iterator_to_array(
-            $this->messageRepository->getAllMessagesForPhone($phone)
+            $this->messageRepository->getAllMessagesForPhone(self::TEST_ACCOUNT_ID, $phone)
         );
 
         $this->assertCount(2, $messages);
@@ -84,7 +85,7 @@ class MessageRepositoryTest extends TestCase
         for ($i = 0; $i < 2; $i++)
             $this->messageRepository->persistMessage($this->message);
 
-        $this->messageRepository->removeAllMessagesForPhone($phone);
+        $this->messageRepository->removeAllMessagesForPhone(self::TEST_ACCOUNT_ID, $phone);
 
         $this->assertEmpty($this->mockDataStore->storage);
     }

@@ -77,7 +77,7 @@ class ExpensesFromMessageParserTest extends TestCase
         $phone = new PhoneNumber(14087226296);
         $time = 1234567890;
 
-        $message = new Message($phone, " bad format \n 5 #h\n6 #t des \n\n ", $time, true, 0);
+        $message = new Message(123, $phone, " bad format \n 5 #h\n6 #t des \n\n ", $time, true, 0);
 
         $expenses = $this->parser->parse($message);
         $this->assertCount(2, $expenses);
