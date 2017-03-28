@@ -79,7 +79,7 @@ class TwilioV1
         $this->phone = $fromPhone;
         $this->publicSiteUrl = $publicSiteUrl;
         $this->conversation = $domainFactory->getConversation($this->accountId, $this->phone);
-        $this->tokenSet = $domainFactory->getTokenSet($this->phone);
+        $this->tokenSet = $domainFactory->getTokenSet($this->accountId);
         $this->messageText = $messageText;
 
         $this->computeResult();
@@ -172,7 +172,7 @@ class TwilioV1
         $token = $this->tokenSet->getSecretIfActive(TokenSet::REPORT_ID) ?:
             $this->tokenSet->createActiveTokenForDocument(TokenSet::REPORT_ID);
 
-        return 'Your report! ' . $this->publicSiteUrl . '/report?p=' .
-            $this->phone . '&amp;s=' . $token;
+        return 'Your report! ' . $this->publicSiteUrl . '/report?a=' .
+            $this->accountId . '&amp;s=' . $token;
     }
 }

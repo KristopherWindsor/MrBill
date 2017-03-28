@@ -115,7 +115,7 @@ class Conversation
             $parser = new ExpensesFromMessageParser();
             foreach ($parser->parse($messageWithMeaning->message) as $expense)
                 /** @var Expense $expense */
-                $this->domainFactory->getExpenseSet($this->phone)->addExpense($expense);
+                $this->domainFactory->getExpenseSet($this->accountId)->addExpense($expense);
         }
     }
 

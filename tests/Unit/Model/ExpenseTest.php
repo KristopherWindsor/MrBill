@@ -3,15 +3,11 @@
 namespace MrBillTest\Unit\Model;
 
 use MrBill\Model\Expense;
-use MrBill\PhoneNumber;
 use PHPUnit\Framework\TestCase;
 
 class ExpenseTest extends TestCase
 {
-    const TEST_PHONE = 14087226296;
-
-    /** @var PhoneNumber */
-    private $testPhone;
+    const TEST_ID = 123;
 
     /** @var int */
     private $time;
@@ -21,12 +17,10 @@ class ExpenseTest extends TestCase
 
     public function setUp()
     {
-        $this->testPhone = new PhoneNumber(self::TEST_PHONE);
-
         $this->time = time();
 
         $this->expense = new Expense(
-            $this->testPhone,
+            self::TEST_ID,
             $this->time,
             599,
             ['hash', 'tag'],
@@ -39,7 +33,7 @@ class ExpenseTest extends TestCase
 
     public function testConstructor()
     {
-        $this->assertEquals($this->testPhone, $this->expense->phone);
+        $this->assertEquals(self::TEST_ID, $this->expense->accountId);
         $this->assertEquals($this->time, $this->expense->timestamp);
         $this->assertEquals(599, $this->expense->amountInCents);
         $this->assertEquals(['hash', 'tag'], $this->expense->hashTags);
@@ -52,7 +46,7 @@ class ExpenseTest extends TestCase
     public function testCreateFromMessageWithEntropy()
     {
         $this->expense = Expense::createFromMessageWithEntropy(
-            $this->testPhone,
+            self::TEST_ID,
             $this->time,
             599,
             ['h'],
@@ -60,7 +54,7 @@ class ExpenseTest extends TestCase
             ['inf']
         );
         $expense2 = Expense::createFromMessageWithEntropy(
-            $this->testPhone,
+            self::TEST_ID,
             $this->time,
             599,
             ['h'],
@@ -68,7 +62,7 @@ class ExpenseTest extends TestCase
             ['inf']
         );
 
-        $this->assertEquals($this->testPhone, $this->expense->phone);
+        $this->assertEquals(self::TEST_ID, $this->expense->accountId);
         $this->assertEquals($this->time, $this->expense->timestamp);
         $this->assertEquals(599, $this->expense->amountInCents);
         $this->assertEquals(['h'], $this->expense->hashTags);
@@ -82,7 +76,7 @@ class ExpenseTest extends TestCase
     public function testToMap()
     {
         $this->assertEquals(
-            '{"phone":' . $this->testPhone . ',"timestamp":' . $this->time .
+            '{"accountId":' . self::TEST_ID . ',"timestamp":' . $this->time .
                 ',"amountInCents":599,"hashTags":["hash","tag"],"description":"description","sourceType":"_m",' .
                 '"sourceInfo":{"inf":"ok"},"entropy":"7"}',
             json_encode($this->expense->toMap())
@@ -93,7 +87,7 @@ class ExpenseTest extends TestCase
     {
         $loadedExpense = Expense::createFromMap($this->expense->toMap());
 
-        $this->assertEquals($this->expense->phone, $loadedExpense->phone);
+        $this->assertEquals($this->expense->accountId, $loadedExpense->accountId);
         $this->assertEquals($this->expense->timestamp, $loadedExpense->timestamp);
         $this->assertEquals($this->expense->amountInCents, $loadedExpense->amountInCents);
         $this->assertEquals($this->expense->hashTags, $loadedExpense->hashTags);

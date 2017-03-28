@@ -9,32 +9,32 @@ class ExpenseRepository extends Repository
 {
     public function persist(Expense $expense) : int
     {
-        $phone = $expense->phone;
+        $phone = $expense->accountId;
         $year = (int) date('Y', $expense->timestamp);
         $month = (int) date('n', $expense->timestamp);
 
-        return $this->addForPhoneAndMonth($phone, $year, $month, $expense);
+        return $this->addForAccountAndMonth($phone, $year, $month, $expense);
     }
 
-    protected function addForPhoneAndMonth(PhoneNumber $phoneNumber, int $year, int $month, Expense $expense) : int
+    protected function addForAccountAndMonth(int $accountId, int $year, int $month, Expense $expense) : int
     {
-        $this->updateRangeOfMonthsData($phoneNumber, $year, $month);
+        $this->updateRangeOfMonthsData($accountId, $year, $month);
 
-        $id = $this->incrementAndGetId($phoneNumber);
-        $this->setMonthForId($phoneNumber, $id, $year, $month);
+        $id = $this->incrementAndGetId($accountId);
+        $this->setMonthForId($accountId, $id, $year, $month);
 
         $this->dataStore->mapPutItem(
-            $this->getDataStoreKey($phoneNumber, $year, $month),
+            $this->getDataStoreKey($accountId, $year, $month),
             $id,
             json_encode($expense->toMap())
         );
         return $id;
     }
 
-    protected function updateRangeOfMonthsData(PhoneNumber $phoneNumber, int $year, int $month) : void
+    protected function updateRangeOfMonthsData(int $accountId, int $year, int $month) : void
     {
-        $data = $this->getRangeOfMonthsWithData($phoneNumber);
-        $key = $this->getMetaDataKey($phoneNumber);
+        $data = $this->getRangeOfMonthsWithData($accountId);
+        $key = $this->getMetaDataKey($accountId);
 
         if (!$data) {
             $this->dataStore->mapPutItem($key, 'firstYear', $year);
@@ -50,21 +50,21 @@ class ExpenseRepository extends Repository
         }
     }
 
-    protected function setMonthForId(PhoneNumber $phoneNumber, int $id, int $year, int $month)
+    protected function setMonthForId(int $accountId, int $id, int $year, int $month)
     {
-        $key = $this->getIdToMonthMapKey($phoneNumber);
+        $key = $this->getIdToMonthMapKey($accountId);
         $this->dataStore->mapPutItem($key, $id, $year . ($month < 10 ? '0' : '') . $month);
     }
 
     /**
-     * @param PhoneNumber $phoneNumber
+     * @param int $accountId
      * @param int $year
      * @param int $month
      * @return Expense[] assoc array with ids as keys
      */
-    public function getForPhoneAndMonth(PhoneNumber $phoneNumber, int $year, int $month) : array
+    public function getForAccountAndMonth(int $accountId, int $year, int $month) : array
     {
-        $key = $this->getDataStoreKey($phoneNumber, $year, $month);
+        $key = $this->getDataStoreKey($accountId, $year, $month);
 
         return array_map(
             function ($item) {return Expense::createFromMap(json_decode($item, true));},
@@ -72,9 +72,9 @@ class ExpenseRepository extends Repository
         );
     }
 
-    public function getRangeOfMonthsWithData(PhoneNumber $phone) : ?array
+    public function getRangeOfMonthsWithData(int $accountId) : ?array
     {
-        $key = $this->getMetaDataKey($phone);
+        $key = $this->getMetaDataKey($accountId);
         $meta = $this->dataStore->mapGetAll($key);
 
         if (empty($meta['firstYear'])) {
@@ -89,24 +89,24 @@ class ExpenseRepository extends Repository
         ];
     }
 
-    protected function incrementAndGetId(PhoneNumber $phone) : int
+    protected function incrementAndGetId(int $accountId) : int
     {
-        $key = $this->getMetaDataKey($phone);
+        $key = $this->getMetaDataKey($accountId);
         return $this->dataStore->mapIncrementItem($key, 'id');
     }
 
-    protected function getMetaDataKey(PhoneNumber $phone)
+    protected function getMetaDataKey(int $accountId)
     {
-        return 'expenses:' . $phone . ':meta';
+        return 'expenses:' . $accountId . ':meta';
     }
 
-    protected function getIdToMonthMapKey(PhoneNumber $phone)
+    protected function getIdToMonthMapKey(int $accountId)
     {
-        return 'expenses:' . $phone . ':map';
+        return 'expenses:' . $accountId . ':map';
     }
 
-    protected function getDataStoreKey(PhoneNumber $phone, int $year, int $month) : string
+    protected function getDataStoreKey(int $accountId, int $year, int $month) : string
     {
-        return 'expenses:' . $phone . ':' . $year . ':' . ($month < 10 ? '0' : '') . $month;
+        return 'expenses:' . $accountId . ':' . $year . ':' . ($month < 10 ? '0' : '') . $month;
     }
 }

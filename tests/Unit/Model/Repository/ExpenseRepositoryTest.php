@@ -5,18 +5,16 @@ namespace MrBillTest\Unit\Model\Repository;
 use MrBill\Model\Expense;
 use MrBill\Model\Repository\ExpenseRepository;
 use MrBill\Persistence\MockDataStore;
-use MrBill\PhoneNumber;
 use PHPUnit\Framework\TestCase;
 
 class ExpenseRepositoryTest extends TestCase
 {
+    const TEST_ID = 123;
+
     /** @var int */
     private $time;
 
     private $year, $month;
-
-    /** @var PhoneNumber */
-    private $phone;
 
     /** @var Expense */
     private $expense1;
@@ -36,10 +34,8 @@ class ExpenseRepositoryTest extends TestCase
         $this->year = (int) date('Y', $this->time);
         $this->month = (int) date('n', $this->time);
 
-        $this->phone = new PhoneNumber(14087226296);
-
         $this->expense1 = new Expense(
-            $this->phone,
+            self::TEST_ID,
             $this->time,
             599,
             ['hash', 'tag'],
@@ -50,7 +46,7 @@ class ExpenseRepositoryTest extends TestCase
         );
 
         $this->expense2 = new Expense(
-            $this->phone,
+            self::TEST_ID,
             $this->time,
             1370,
             ['a', 'b'],
@@ -89,15 +85,15 @@ class ExpenseRepositoryTest extends TestCase
         );
     }
 
-    public function testAddForPhoneAndMonth()
+    public function testAddForAccountAndMonth()
     {
-        $id1 = $this->callAddForPhoneAndMonth(
+        $id1 = $this->callAddForAccountAndMonth(
             $this->expenseRepository,
-            $this->phone, $this->year, $this->month, $this->expense1
+            self::TEST_ID, $this->year, $this->month, $this->expense1
         );
-        $id2 = $this->callAddForPhoneAndMonth(
+        $id2 = $this->callAddForAccountAndMonth(
             $this->expenseRepository,
-            $this->phone, $this->year, $this->month, $this->expense2
+            self::TEST_ID, $this->year, $this->month, $this->expense2
         );
 
         $this->assertEquals(1, $id1);
@@ -109,17 +105,17 @@ class ExpenseRepositoryTest extends TestCase
         );
     }
 
-    public function testGetForPhoneAndMonthNoResults()
+    public function testGetForAccountAndMonthNoResults()
     {
-        $fetched = $this->expenseRepository->getForPhoneAndMonth($this->phone, $this->year, $this->month);
+        $fetched = $this->expenseRepository->getForAccountAndMonth(self::TEST_ID, $this->year, $this->month);
         $this->assertCount(0, $fetched);
     }
 
-    public function testGetForPhoneAndMonthWithResults()
+    public function testGetForAccountAndMonthWithResults()
     {
         $this->testPersistMultipleTimes();
 
-        $fetched = $this->expenseRepository->getForPhoneAndMonth($this->phone, $this->year, $this->month);
+        $fetched = $this->expenseRepository->getForAccountAndMonth(self::TEST_ID, $this->year, $this->month);
 
         $this->assertCount(2, $fetched);
         $this->assertEquals($this->expense1, $fetched[1]);
@@ -130,20 +126,20 @@ class ExpenseRepositoryTest extends TestCase
     {
         return
             [
-                'expenses:14087226296:2017:02' => [
+                'expenses:123:2017:02' => [
                     1 =>
-                        '{"phone":14087226296,"timestamp":1488012941,"amountInCents":599,"hashTags":["hash","tag"],' .
+                        '{"accountId":123,"timestamp":1488012941,"amountInCents":599,"hashTags":["hash","tag"],' .
                         '"description":"description","sourceType":"_m","sourceInfo":' .
                         '["inf"],"entropy":"7"}',
                 ],
-                'expenses:14087226296:meta' => [
+                'expenses:123:meta' => [
                     'id' => 1,
                     'firstYear' => '2017',
                     'firstMonth' => '2',
                     'lastYear' => '2017',
                     'lastMonth' => '2',
                 ],
-                'expenses:14087226296:map' => [
+                'expenses:123:map' => [
                     '1' => '201702',
                 ],
             ];
@@ -153,40 +149,40 @@ class ExpenseRepositoryTest extends TestCase
     {
         return
             [
-                'expenses:14087226296:2017:02' => [
+                'expenses:123:2017:02' => [
                     1 =>
-                        '{"phone":14087226296,"timestamp":1488012941,"amountInCents":599,"hashTags":["hash","tag"],' .
+                        '{"accountId":123,"timestamp":1488012941,"amountInCents":599,"hashTags":["hash","tag"],' .
                         '"description":"description","sourceType":"_m","sourceInfo":' .
                         '["inf"],"entropy":"7"}',
                     2 =>
-                        '{"phone":14087226296,"timestamp":1488012941,"amountInCents":1370,"hashTags":["a","b"],' .
+                        '{"accountId":123,"timestamp":1488012941,"amountInCents":1370,"hashTags":["a","b"],' .
                         '"description":"description2","sourceType":"_m","sourceInfo":' .
                         '["inf"],"entropy":"9"}',
                 ],
-                'expenses:14087226296:meta' => [
+                'expenses:123:meta' => [
                     'id' => 2,
                     'firstYear' => '2017',
                     'firstMonth' => '2',
                     'lastYear' => '2017',
                     'lastMonth' => '2'
                 ],
-                'expenses:14087226296:map' => [
+                'expenses:123:map' => [
                     '1' => '201702',
                     '2' => '201702',
                 ],
             ];
     }
 
-    protected function callAddForPhoneAndMonth(
+    protected function callAddForAccountAndMonth(
         ExpenseRepository $object,
-        PhoneNumber $phoneNumber,
+        int $accountId,
         int $year,
         int $month,
         Expense $expense
     ) : int {
-        $method = new \ReflectionMethod(ExpenseRepository::class, 'addForPhoneAndMonth');
+        $method = new \ReflectionMethod(ExpenseRepository::class, 'addForAccountAndMonth');
         $method->setAccessible(true);
 
-        return $method->invoke($object, $phoneNumber, $year, $month, $expense);
+        return $method->invoke($object, $accountId, $year, $month, $expense);
     }
 }

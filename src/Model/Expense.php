@@ -2,8 +2,6 @@
 
 namespace MrBill\Model;
 
-use MrBill\PhoneNumber;
-
 class Expense extends Hashable implements Serializable
 {
     const STATUS_FROM_MESSAGE                = '_m';
@@ -11,8 +9,8 @@ class Expense extends Hashable implements Serializable
     const STATUS_FROM_ALERT_UNKNOWN_HASHTAGS = '_u';
     const STATUS_RESOLVED                    = '_r';
 
-    /** @var PhoneNumber */
-    public $phone;
+    /** @var int */
+    public $accountId;
     /** @var int */
     public $timestamp;
     /** @var int */
@@ -29,7 +27,7 @@ class Expense extends Hashable implements Serializable
     public $entropy;
 
     public function __construct(
-        PhoneNumber $phone,
+        int $accountId,
         int $timestamp,
         int $amountInCents,
         array $hashTags,
@@ -38,7 +36,7 @@ class Expense extends Hashable implements Serializable
         array $sourceInfo,
         string $entropy
     ) {
-        $this->phone = $phone;
+        $this->accountId = $accountId;
         $this->timestamp = $timestamp;
         $this->amountInCents = $amountInCents;
         $this->hashTags = $hashTags;
@@ -49,7 +47,7 @@ class Expense extends Hashable implements Serializable
     }
 
     public static function createFromMessageWithEntropy(
-        PhoneNumber $phone,
+        int $accountId,
         int $timestamp,
         int $amountInCents,
         array $hashTags,
@@ -59,7 +57,7 @@ class Expense extends Hashable implements Serializable
         $entropy = random_int(1 << 16, 1 << 32);
 
         return new Expense(
-            $phone,
+            $accountId,
             $timestamp,
             $amountInCents,
             $hashTags,
@@ -73,7 +71,7 @@ class Expense extends Hashable implements Serializable
     public static function createFromMap(array $map) : Expense
     {
         return new Expense(
-            new PhoneNumber($map['phone']),
+            $map['accountId'],
             $map['timestamp'],
             $map['amountInCents'],
             $map['hashTags'],
@@ -88,7 +86,7 @@ class Expense extends Hashable implements Serializable
     {
         return
             [
-                'phone'         => $this->phone,
+                'accountId'     => $this->accountId,
                 'timestamp'     => $this->timestamp,
                 'amountInCents' => $this->amountInCents,
                 'hashTags'      => $this->hashTags,

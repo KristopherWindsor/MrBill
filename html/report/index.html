@@ -7,7 +7,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 
     <script>
-        var phone, secret;
+        var accountId, secret;
 
         function getParameterByName(name) {
             url = window.location.href;
@@ -27,7 +27,7 @@
             $.ajax(
                 '/expenses/month/2017/3',
                 {
-                    headers: {phone : phone, token: secret},
+                    headers: {account : accountId, token: secret},
                     success: renderExpensesTable
                 }
             );
@@ -45,14 +45,14 @@
         }
 
         $(function () {
-            phone = getParameterByName('p');
+            accountId = getParameterByName('a');
             secret = getParameterByName('s');
 
-            if (phone && secret)
+            if (accountId && secret)
                 $.ajax(
                     '/expenses/range',
                     {
-                        headers: {phone : phone, token: secret},
+                        headers: {account : accountId, token: secret},
                         fail: function() {alert('No good');},
                         success: handleExpensesRange
                     }

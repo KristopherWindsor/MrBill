@@ -11,10 +11,7 @@ use PHPUnit\Framework\TestCase;
 
 class ExpenseSetTest extends TestCase
 {
-    const TEST_PHONE = 14087226296;
-
-    /** @var PhoneNumber */
-    private $testPhone;
+    const TEST_ID = 123;
 
     /** @var MockDataStore */
     private $mockDataStore;
@@ -33,12 +30,10 @@ class ExpenseSetTest extends TestCase
 
     public function setUp()
     {
-        $this->testPhone = new PhoneNumber(self::TEST_PHONE);
-
         $this->mockDataStore = new MockDataStore();
 
         $this->expenseSet =
-            new class($this->testPhone, new ExpenseRepository($this->mockDataStore)) extends ExpenseSet {
+            new class(self::TEST_ID, new ExpenseRepository($this->mockDataStore)) extends ExpenseSet {
                 public function getAllMonthsWithExpensesHelper(?array $rangeData) : array {
                     return parent::getAllMonthsWithExpensesHelper($rangeData);
                 }
@@ -46,7 +41,7 @@ class ExpenseSetTest extends TestCase
 
         $date = new \DateTime('2017-04-10');
         $this->expense1 = Expense::createFromMessageWithEntropy(
-            $this->testPhone,
+            self::TEST_ID,
             $date->getTimestamp(),
             100,
             ['h'],
@@ -54,7 +49,7 @@ class ExpenseSetTest extends TestCase
             []
         );
         $this->expense2 = Expense::createFromMessageWithEntropy(
-            $this->testPhone,
+            self::TEST_ID,
             $date->modify('+10 months')->getTimestamp(),
             100,
             ['h'],
@@ -62,7 +57,7 @@ class ExpenseSetTest extends TestCase
             []
         );
         $this->expense3 = Expense::createFromMessageWithEntropy(
-            $this->testPhone,
+            self::TEST_ID,
             $date->modify('+12 months')->getTimestamp(),
             100,
             ['h'],
@@ -167,8 +162,8 @@ class ExpenseSetTest extends TestCase
         for ($i = 0; $i < 4; $i++)
             $this->expenseSet->addExpense($this->expense1);
 
-        $expensesForMonth = $this->mockDataStore->storage['expenses:14087226296:2017:04'];
-        $this->mockDataStore->storage['expenses:14087226296:2017:04'] = [
+        $expensesForMonth = $this->mockDataStore->storage['expenses:123:2017:04'];
+        $this->mockDataStore->storage['expenses:123:2017:04'] = [
             2 => $expensesForMonth[2],
             1 => $expensesForMonth[1],
             4 => $expensesForMonth[4],

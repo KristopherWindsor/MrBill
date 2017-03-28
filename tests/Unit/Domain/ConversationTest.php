@@ -33,6 +33,7 @@ class ConversationTest extends TestCase
     /** @var Conversation */
     private $conversation;
 
+    /** @var object */
     private $expenseSet;
 
     public function setUp()
@@ -43,12 +44,9 @@ class ConversationTest extends TestCase
         $this->repositoryFactory = new RepositoryFactory($this->mockDataStore);
         $this->domainFactory = new DomainFactoryChangeable($this->repositoryFactory);
 
-        $this->domainFactory->expenseSets[self::TEST_PHONE] =
-            new class($this->testPhone, $this->repositoryFactory->getExpenseRepository()) extends ExpenseSet {
+        $this->domainFactory->expenseSets[self::TEST_ID] =
+            new class(self::TEST_ID, $this->repositoryFactory->getExpenseRepository()) extends ExpenseSet {
                 public $addedExpenses = [];
-
-                public function __construct(PhoneNumber $phone, ExpenseRepository $expenseRepository) {
-                }
 
                 public function addExpense(Expense $expense)
                 {
@@ -57,7 +55,7 @@ class ConversationTest extends TestCase
             };
 
         $this->conversation = $this->domainFactory->getConversation(self::TEST_ID, $this->testPhone);
-        $this->expenseSet = $this->domainFactory->getExpenseSet($this->testPhone);
+        $this->expenseSet = $this->domainFactory->getExpenseSet(self::TEST_ID);
     }
 
     public function testGetPhoneNumber()

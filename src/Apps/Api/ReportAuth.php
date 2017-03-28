@@ -25,12 +25,12 @@ class ReportAuth
         callable $next
     ) : ResponseInterface {
 
-        $phone = PhoneNumber::getIfValid((string) reset($request->getHeader('phone')));
-        if (!$phone) {
+        $accountId = (int) reset($request->getHeader('account'));
+        if (!$accountId || !$this->domainFactory->getAccount($accountId)) {
             return $response->withStatus(401);
         }
 
-        $isSecretValid = $this->domainFactory->getTokenSet($phone)->hasValidTokenForDocumentWithSecret(
+        $isSecretValid = $this->domainFactory->getTokenSet($accountId)->hasValidTokenForDocumentWithSecret(
             TokenSet::REPORT_ID,
             (string) reset($request->getHeader('token'))
         );
@@ -38,6 +38,6 @@ class ReportAuth
             return $response->withStatus(401);
         }
 
-        return $next($request->withAttribute('phone', $phone), $response);
+        return $next($request->withAttribute('accountId', $accountId), $response);
     }
 }

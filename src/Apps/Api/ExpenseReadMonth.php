@@ -23,23 +23,22 @@ class ExpenseReadMonth
 
     public function __invoke(Request $request, Response $response, $args)
     {
-        $phone = $request->getAttribute('phone');
-        assert($phone instanceof PhoneNumber);
+        $accountId = $request->getAttribute('accountId');
 
         $response = $response->withHeader('Content-Type', 'application/json');
-        return $response->write($this->getExpenses($phone, (int) $args['year'], (int) $args['month']));
+        return $response->write($this->getExpenses($accountId, (int) $args['year'], (int) $args['month']));
     }
 
-    protected function getExpenses(PhoneNumber $phone, int $year, int $month) : string
+    protected function getExpenses(int $accountId, int $year, int $month) : string
     {
         $resultData = [];
-        $expenseSet = $this->domainFactory->getExpenseSet($phone);
+        $expenseSet = $this->domainFactory->getExpenseSet($accountId);
 
         /** @var Expense $expense */
         foreach ($expenseSet->getExpensesForMonth($year, $month) as $id => $expense) {
             $resultData[] = [
                 'id'            => $id,
-                'phone'         => $phone,
+                'accountId'     => $accountId,
                 'timestamp'     => $expense->timestamp,
                 'amountInCents' => $expense->amountInCents,
                 'hashTags'      => $expense->hashTags,

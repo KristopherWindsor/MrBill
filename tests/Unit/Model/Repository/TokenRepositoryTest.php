@@ -5,11 +5,12 @@ namespace MrBillTest\Unit\Model\Repository;
 use MrBill\Persistence\MockDataStore;
 use MrBill\Model\Repository\TokenRepository;
 use MrBill\Model\Token;
-use MrBill\PhoneNumber;
 use PHPUnit\Framework\TestCase;
 
 class TokenRepositoryTest extends TestCase
 {
+    const TEST_ID = 123;
+
     /** @var Token */
     private $token;
 
@@ -22,7 +23,7 @@ class TokenRepositoryTest extends TestCase
     public function setUp()
     {
         $this->token = new Token(
-            new PhoneNumber(14087226296),
+            self::TEST_ID,
             2,
             'abc123',
             1234567890
@@ -44,8 +45,8 @@ class TokenRepositoryTest extends TestCase
 
         $this->assertEquals(
             [
-                'token:14087226296:2' =>
-                    '{"phone":14087226296,"documentId":2,"secret":"abc123","expiry":1234567890}'
+                'token:123:2' =>
+                    '{"accountId":123,"documentId":2,"secret":"abc123","expiry":1234567890}'
             ],
             $this->mockDataStore->storage
         );
@@ -56,7 +57,7 @@ class TokenRepositoryTest extends TestCase
         $this->persistToken();
 
         $this->tokenRepository->deleteToken(
-            $this->token->phone,
+            $this->token->accountId,
             $this->token->documentId
         );
 
@@ -68,7 +69,7 @@ class TokenRepositoryTest extends TestCase
         $this->persistToken();
 
         $tokenIfExists = $this->tokenRepository->getTokenIfExists(
-            $this->token->phone,
+            $this->token->accountId,
             $this->token->documentId
         );
 
@@ -79,7 +80,7 @@ class TokenRepositoryTest extends TestCase
     public function testGetTokenWhenDoesNotExist()
     {
         $tokenIfExists = $this->tokenRepository->getTokenIfExists(
-            $this->token->phone,
+            $this->token->accountId,
             $this->token->documentId
         );
 

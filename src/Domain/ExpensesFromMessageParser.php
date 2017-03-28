@@ -17,7 +17,7 @@ class ExpensesFromMessageParser
             foreach ($lines as $line) {
                 if ($data = $this->parseSingleLine($line)) {
                     $result[] = Expense::createFromMessageWithEntropy(
-                        $message->phone,
+                        $message->accountId,
                         $message->timestamp,
                         $data['amount'] * ExpenseSet::CENTS_PER_DOLLAR,
                         $data['hashtags'],

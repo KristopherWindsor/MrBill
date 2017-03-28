@@ -85,7 +85,7 @@ class ExpensesFromMessageParserTest extends TestCase
         /** @var Expense $expense1 */
         $expense1 = $expenses[0];
 
-        $this->assertEquals($phone,                       $expense1->phone);
+        $this->assertEquals(123,                          $expense1->accountId);
         $this->assertEquals($time,                        $expense1->timestamp);
         $this->assertEquals(500,                          $expense1->amountInCents);
         $this->assertEquals(['h'],                        $expense1->hashTags);

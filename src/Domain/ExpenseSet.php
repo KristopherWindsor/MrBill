@@ -11,17 +11,17 @@ class ExpenseSet
 {
     const CENTS_PER_DOLLAR = 100;
 
-    /** @var PhoneNumber */
-    protected $phone;
+    /** @var int */
+    protected $accountId;
 
     /** @var ExpenseRepository */
     protected $expenseRepository;
 
     public function __construct(
-        PhoneNumber $phone,
+        int $accountId,
         ExpenseRepository $expenseRepository
     ) {
-        $this->phone = $phone;
+        $this->accountId = $accountId;
         $this->expenseRepository = $expenseRepository;
     }
 
@@ -32,12 +32,12 @@ class ExpenseSet
 
     public function getBoundaryOfMonthsWithExpenses() : array
     {
-        return $this->expenseRepository->getRangeOfMonthsWithData($this->phone);
+        return $this->expenseRepository->getRangeOfMonthsWithData($this->accountId);
     }
 
     public function getAllMonthsWithExpenses() : array
     {
-        $rangeData = $this->expenseRepository->getRangeOfMonthsWithData($this->phone);
+        $rangeData = $this->expenseRepository->getRangeOfMonthsWithData($this->accountId);
 
         return $this->getAllMonthsWithExpensesHelper($rangeData);
     }
@@ -69,7 +69,7 @@ class ExpenseSet
 
     public function getExpensesForMonth(int $year, int $month) : array
     {
-        $results = $this->expenseRepository->getForPhoneAndMonth($this->phone, $year, $month);
+        $results = $this->expenseRepository->getForAccountAndMonth($this->accountId, $year, $month);
         ksort($results, SORT_NUMERIC);
         return $results;
     }

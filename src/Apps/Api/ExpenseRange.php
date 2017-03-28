@@ -20,16 +20,15 @@ class ExpenseRange
 
     public function __invoke(Request $request, Response $response, $args)
     {
-        $phone = $request->getAttribute('phone');
-        assert($phone instanceof PhoneNumber);
+        $accountId = $request->getAttribute('accountId');
 
         $response = $response->withHeader('Content-Type', 'application/json');
-        return $response->write($this->getBoundaryOfMonthsWithExpenses($phone));
+        return $response->write($this->getBoundaryOfMonthsWithExpenses($accountId));
     }
 
-    protected function getBoundaryOfMonthsWithExpenses(PhoneNumber $phone) : string
+    protected function getBoundaryOfMonthsWithExpenses(int $accountId) : string
     {
-        $expenseSet = $this->domainFactory->getExpenseSet($phone);
+        $expenseSet = $this->domainFactory->getExpenseSet($accountId);
         return json_encode($expenseSet->getBoundaryOfMonthsWithExpenses());
     }
 }

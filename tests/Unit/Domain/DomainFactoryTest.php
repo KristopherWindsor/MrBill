@@ -12,6 +12,7 @@ use PHPUnit\Framework\TestCase;
 
 class DomainFactoryTest extends TestCase
 {
+    const TEST_ID = 123;
     const TEST_PHONE = 14087226296;
 
     /** @var DomainFactory */
@@ -112,15 +113,15 @@ class DomainFactoryTest extends TestCase
 
     public function testGetExpenseSet()
     {
-        $expenseSet1 = $this->domainFactory->getExpenseSet($this->testPhone);
-        $expenseSet2 = $this->domainFactory->getExpenseSet($this->testPhone);
+        $expenseSet1 = $this->domainFactory->getExpenseSet(self::TEST_ID);
+        $expenseSet2 = $this->domainFactory->getExpenseSet(self::TEST_ID);
         $this->assertTrue($expenseSet1 === $expenseSet2);
     }
 
     public function testGetTokenSet()
     {
-        $tokenSet1 = $this->domainFactory->getTokenSet($this->testPhone);
-        $tokenSet2 = $this->domainFactory->getTokenSet($this->testPhone);
+        $tokenSet1 = $this->domainFactory->getTokenSet(self::TEST_ID);
+        $tokenSet2 = $this->domainFactory->getTokenSet(self::TEST_ID);
         $this->assertTrue($tokenSet1 === $tokenSet2);
     }
 }

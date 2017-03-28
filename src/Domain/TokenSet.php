@@ -10,23 +10,23 @@ class TokenSet
 {
     const REPORT_ID = 1;
 
-    /** @var PhoneNumber */
-    protected $phone;
+    /** @var int */
+    protected $accountId;
 
     /** @var TokenRepository */
     protected $tokenRepository;
 
     public function __construct(
-        PhoneNumber $phone,
+        int $accountId,
         TokenRepository $tokenRepository
     ) {
-        $this->phone = $phone;
+        $this->accountId = $accountId;
         $this->tokenRepository = $tokenRepository;
     }
 
     public function hasValidTokenForDocumentWithSecret(int $id, string $secret) : bool
     {
-        $token = $this->tokenRepository->getTokenIfExists($this->phone, $id);
+        $token = $this->tokenRepository->getTokenIfExists($this->accountId, $id);
 
         return $token && $token->expiry >= time() && $token->secret == $secret;
     }
@@ -35,7 +35,7 @@ class TokenSet
     {
         $EXPIRY_WINDOW = 3600;
 
-        $token = $this->tokenRepository->getTokenIfExists($this->phone, $documentId);
+        $token = $this->tokenRepository->getTokenIfExists($this->accountId, $documentId);
 
         return $token && $token->expiry >= time() + $EXPIRY_WINDOW ? $token->secret : null;
     }
@@ -43,7 +43,7 @@ class TokenSet
     public function createActiveTokenForDocument(int $documentId) : string
     {
         $token = new Token(
-            $this->phone,
+            $this->accountId,
             $documentId,
             dechex(random_int(pow(2, 48), pow(2, 52) - 1)),
             time() + 3600 * 24 * 30

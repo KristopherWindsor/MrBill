@@ -54,20 +54,20 @@ class DomainFactory
         ));
     }
 
-    public function getExpenseSet(PhoneNumber $phoneNumber) : ExpenseSet
+    public function getExpenseSet(int $accountId) : ExpenseSet
     {
-        return $this->expenseSets[$phoneNumber->scalar] ?? $this->expenseSets[$phoneNumber->scalar] =
+        return $this->expenseSets[$accountId] ?? $this->expenseSets[$accountId] =
 
         new ExpenseSet(
-            $phoneNumber,
+            $accountId,
             $this->repositoryFactory->getExpenseRepository()
         );
     }
 
-    public function getTokenSet(PhoneNumber $phoneNumber) : TokenSet
+    public function getTokenSet(int $accountId) : TokenSet
     {
-        return $this->tokenSets[$phoneNumber->scalar] ?? $this->tokenSets[$phoneNumber->scalar] =
+        return $this->tokenSets[$accountId] ?? $this->tokenSets[$accountId] =
 
-        new TokenSet($phoneNumber, $this->repositoryFactory->getTokenRepository());
+        new TokenSet($accountId, $this->repositoryFactory->getTokenRepository());
     }
 }

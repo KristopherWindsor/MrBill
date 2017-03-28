@@ -116,11 +116,12 @@ class TwilioV1Test extends TestCase
         $v1 = new TwilioV1();
         $v1->run($this->domainFactory, self::PUBLIC_URL, new PhoneNumber('14087226296'), 'report');
 
-        $secret = $this->domainFactory->getTokenSet($this->testPhone)->getSecretIfActive(TokenSet::REPORT_ID);
+        $account = $this->domainFactory->getAccountByPhoneNumber(new PhoneNumber('14087226296'));
+        $secret = $this->domainFactory->getTokenSet($account->getByID())->getSecretIfActive(TokenSet::REPORT_ID);
 
         $this->assertEquals(
             '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>Your report! ' .
-                self::PUBLIC_URL . '/report?p=' . $this->testPhone . '&amp;s=' . $secret .
+                self::PUBLIC_URL . '/report?a=' . $account->getByID() . '&amp;s=' . $secret .
                 '</Message></Response>',
             $v1->getResult()
         );

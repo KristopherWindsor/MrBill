@@ -8,32 +8,32 @@ use MrBill\PhoneNumber;
 class Token implements Serializable
 {
     /** @var PhoneNumber */
-    public $phone;
+    public $accountId;
     public $documentId;
     public $secret;
     public $expiry;
 
-    public function __construct(PhoneNumber $phoneNumber, int $documentId, string $secret, int $expiry)
+    public function __construct(int $accountId, int $documentId, string $secret, int $expiry)
     {
         if (!$documentId || !$secret || !$expiry)
             throw new Exception();
 
-        $this->phone = $phoneNumber;
+        $this->accountId = $accountId;
         $this->documentId = $documentId;
         $this->secret = $secret;
         $this->expiry = $expiry;
     }
 
-    public static function createWithRandomSecret(PhoneNumber $phoneNumber, int $documentId, int $expiry) : Token
+    public static function createWithRandomSecret(int $accountId, int $documentId, int $expiry) : Token
     {
         $secret = uniqid();
-        return new static($phoneNumber, $documentId, $secret, $expiry);
+        return new static($accountId, $documentId, $secret, $expiry);
     }
 
     public static function createFromMap(array $map) : Token
     {
         return new static(
-            new PhoneNumber($map['phone']),
+            $map['accountId'],
             $map['documentId'],
             $map['secret'],
             $map['expiry']
@@ -44,7 +44,7 @@ class Token implements Serializable
     {
         return
             [
-                'phone' => $this->phone,
+                'accountId' => $this->accountId,
                 'documentId' => $this->documentId,
                 'secret' => $this->secret,
                 'expiry' => $this->expiry,

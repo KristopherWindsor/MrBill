@@ -16,15 +16,15 @@ class TokenRepository extends Repository
     public function persistToken(Token $token) : Token
     {
         $this->dataStore->scalarPut(
-            $this->getDataStoreKey($token->phone, $token->documentId),
+            $this->getDataStoreKey($token->accountId, $token->documentId),
             json_encode($token->toMap())
         );
         return $token;
     }
 
-    public function getTokenIfExists(PhoneNumber $phoneNumber, int $documentId) : ?Token
+    public function getTokenIfExists(int $accountId, int $documentId) : ?Token
     {
-        $key = $this->getDataStoreKey($phoneNumber, $documentId);
+        $key = $this->getDataStoreKey($accountId, $documentId);
         if (!$this->dataStore->exists($key))
             return null;
 
@@ -32,15 +32,15 @@ class TokenRepository extends Repository
         return Token::createFromMap(json_decode($tokenString, true));
     }
 
-    public function deleteToken(PhoneNumber $phoneNumber, int $documentId) : void
+    public function deleteToken(int $accountId, int $documentId) : void
     {
-        $key = $this->getDataStoreKey($phoneNumber, $documentId);
+        $key = $this->getDataStoreKey($accountId, $documentId);
 
         $this->dataStore->remove($key);
     }
 
-    protected function getDataStoreKey(PhoneNumber $phoneNumber, int $documentId) : string
+    protected function getDataStoreKey(int $accountId, int $documentId) : string
     {
-        return 'token:' . $phoneNumber . ':' . $documentId;
+        return 'token:' . $accountId . ':' . $documentId;
     }
 }

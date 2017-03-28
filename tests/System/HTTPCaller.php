@@ -90,9 +90,9 @@ class HTTPCaller
         return (string) $response->getBody();
     }
 
-    public function getReport(string $phone, $token) : string
+    public function getReport(int $accountId, $token) : string
     {
-        $response = $this->guzzle->request('GET', $this->domain . '/report?p=' . $phone . '&s=' . $token);
+        $response = $this->guzzle->request('GET', $this->domain . '/report?a=' . $accountId . '&s=' . $token);
         assert($response->getStatusCode() == 200);
 
         $body = (string) $response->getBody();
@@ -101,24 +101,24 @@ class HTTPCaller
         return $body;
     }
 
-    public function getExpensesData(string $phone, $year, $month, string $secret) : string
+    public function getExpensesData(int $accountId, $year, $month, string $secret) : string
     {
         $response = $this->guzzle->request(
             'GET',
             "{$this->domain}/expenses/month/{$year}/{$month}",
-            ['headers' => ['phone' => $phone, 'token' => $secret]]
+            ['headers' => ['account' => $accountId, 'token' => $secret]]
         );
         assert($response->getStatusCode() == 200);
 
         return (string) $response->getBody();
     }
 
-    public function getExpensesRange(string $phone, string $secret)
+    public function getExpensesRange(int $accountId, string $secret)
     {
         $response = $this->guzzle->request(
             'GET',
             "{$this->domain}/expenses/range",
-            ['headers' => ['phone' => $phone, 'token' => $secret]]
+            ['headers' => ['account' => $accountId, 'token' => $secret]]
         );
         assert($response->getStatusCode() == 200);
 

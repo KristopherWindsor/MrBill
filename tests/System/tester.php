@@ -28,6 +28,7 @@ function tester($target)
 
     $currentYear = date('Y');
     $currentMonth = date('n');
+    $accountId = null;
     $tokenSecret = null;
 
     $interaction = [
@@ -50,17 +51,20 @@ function tester($target)
         if ($textIn == 'report') {
             assert(strpos($response, 'Your report') > 0);
 
-            $tokenSecret = explode('&s=', $xml->Message)[1];
+            $accountIdAndTokenSecret = explode('?a=', $xml->Message)[1];
+            list($accountId, $tokenSecret) = explode('&s=', $accountIdAndTokenSecret);
+            assert(ctype_digit($accountId));
+            $accountId = (int) $accountId;
             assert((bool) $tokenSecret);
 
-            $report = $caller->getReport($phoneForTesting, $tokenSecret);
+            $report = $caller->getReport($accountId, $tokenSecret);
             fwrite(STDERR, $report . "\n\n");
         } else {
             assert(strpos($response, $textOut) > 0);
         }
     }
 
-    $expenseRangeData = $caller->getExpensesRange($phoneForTesting, $tokenSecret);
+    $expenseRangeData = $caller->getExpensesRange($accountId, $tokenSecret);
     fwrite(STDERR, $expenseRangeData . "\n\n");
     $expenseRangeData = json_decode($expenseRangeData);
     assert($expenseRangeData->firstYear == $currentYear);
@@ -68,14 +72,14 @@ function tester($target)
     assert($expenseRangeData->lastYear == $currentYear);
     assert($expenseRangeData->lastMonth == $currentMonth);
 
-    $expenseData = $caller->getExpensesData($phoneForTesting, $currentYear, $currentMonth, $tokenSecret);
+    $expenseData = $caller->getExpensesData($accountId, $currentYear, $currentMonth, $tokenSecret);
     fwrite(STDERR, $expenseData . "\n\n");
     $expenseItems = json_decode($expenseData);
     assert(count($expenseItems) == 3);
     $expected = [
-        ['id' => 1, 'phone' => (int) $phoneForTesting, 'amountInCents' => 777, 'hashTags' => ['hash']],
-        ['id' => 2, 'phone' => (int) $phoneForTesting, 'amountInCents' => 400, 'hashTags' => ['tag']],
-        ['id' => 3, 'phone' => (int) $phoneForTesting, 'amountInCents' => 500, 'hashTags' => ['hash']],
+        ['id' => 1, 'accountId' => $accountId, 'amountInCents' => 777, 'hashTags' => ['hash']],
+        ['id' => 2, 'accountId' => $accountId, 'amountInCents' => 400, 'hashTags' => ['tag']],
+        ['id' => 3, 'accountId' => $accountId, 'amountInCents' => 500, 'hashTags' => ['hash']],
     ];
     foreach ($expected as $index => $item)
         foreach ($item as $key => $value) {
