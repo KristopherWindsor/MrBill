@@ -48,9 +48,10 @@ class ConversationTest extends TestCase
             new class(self::TEST_ID, $this->repositoryFactory->getExpenseRepository()) extends ExpenseSet {
                 public $addedExpenses = [];
 
-                public function addExpense(Expense $expense)
+                public function addExpense(Expense $expense) : int
                 {
                     $this->addedExpenses[] = $expense;
+                    return count($this->addedExpenses);
                 }
             };
 

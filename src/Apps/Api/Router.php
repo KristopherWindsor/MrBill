@@ -20,11 +20,11 @@ class Router
             ->group(
                 '/expenses',
                 function () use ($slim) {
-                    $slim->get('/create', ExpenseCreate::class);
+                    $slim->post('', ExpenseCreate::class);
                     $slim->get('/range', ExpenseRange::class);
                     $slim->get('/month/{year}/{month}', ExpenseReadMonth::class);
-                    $slim->get('/update/{id}', ExpenseUpdate::class);
-                    $slim->get('/delete/{id}', ExpenseDelete::class);
+                    $slim->put('/{id}', ExpenseUpdate::class);
+                    $slim->delete('/{id}', ExpenseDelete::class);
                 }
             )
             ->add(ReportAuth::class);

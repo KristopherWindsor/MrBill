@@ -124,4 +124,34 @@ class HTTPCaller
 
         return (string) $response->getBody();
     }
+
+    public function addExpense(
+        int $accountId,
+        string $secret,
+        int $timestamp,
+        int $amountInCents,
+        array $hashTags,
+        string $description
+    ) : int {
+        $request = new Request(
+            'POST',
+            $this->domain . '/expenses',
+            [
+                'Content-Type' => 'application/json',
+                'account'      => $accountId,
+                'token'        => $secret,
+            ],
+            json_encode([
+                'timestamp'     => $timestamp,
+                'amountInCents' => $amountInCents,
+                'hashTags'      => $hashTags,
+                'description'   => $description,
+            ])
+        );
+
+        $response = $this->guzzle->send($request);
+        assert($response->getStatusCode() == 200);
+
+        return intval((string) $response->getBody());
+    }
 }

@@ -25,9 +25,9 @@ class ExpenseSet
         $this->expenseRepository = $expenseRepository;
     }
 
-    public function addExpense(Expense $expense)
+    public function addExpense(Expense $expense) : int
     {
-        $this->expenseRepository->persist($expense);
+        return $this->expenseRepository->persist($expense);
     }
 
     public function getBoundaryOfMonthsWithExpenses() : array

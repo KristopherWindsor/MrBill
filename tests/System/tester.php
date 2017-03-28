@@ -72,14 +72,19 @@ function tester($target)
     assert($expenseRangeData->lastYear == $currentYear);
     assert($expenseRangeData->lastMonth == $currentMonth);
 
+    $newExpenseId = $caller->addExpense($accountId, $tokenSecret, time(), 99, ['newExpense'], 'some description');
+    fwrite(STDERR, 'Added expense ID: ' . $newExpenseId . "\n\n");
+    assert($newExpenseId == 4);
+
     $expenseData = $caller->getExpensesData($accountId, $currentYear, $currentMonth, $tokenSecret);
     fwrite(STDERR, $expenseData . "\n\n");
     $expenseItems = json_decode($expenseData);
-    assert(count($expenseItems) == 3);
+    assert(count($expenseItems) == 4);
     $expected = [
         ['id' => 1, 'accountId' => $accountId, 'amountInCents' => 777, 'hashTags' => ['hash']],
         ['id' => 2, 'accountId' => $accountId, 'amountInCents' => 400, 'hashTags' => ['tag']],
         ['id' => 3, 'accountId' => $accountId, 'amountInCents' => 500, 'hashTags' => ['hash']],
+        ['id' => 4, 'accountId' => $accountId, 'amountInCents' =>  99, 'hashTags' => ['newExpense']],
     ];
     foreach ($expected as $index => $item)
         foreach ($item as $key => $value) {

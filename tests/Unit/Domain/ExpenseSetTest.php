@@ -66,6 +66,12 @@ class ExpenseSetTest extends TestCase
         );
     }
 
+    public function testAddExpenseID()
+    {
+        $id = $this->expenseSet->addExpense($this->expense1);
+        $this->assertEquals(1, $id);
+    }
+
     public function testGetAllMonthsWithExpensesNoData()
     {
         $this->assertEquals([], $this->expenseSet->getAllMonthsWithExpenses());
