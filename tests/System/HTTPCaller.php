@@ -154,4 +154,14 @@ class HTTPCaller
 
         return intval((string) $response->getBody());
     }
+
+    public function deleteExpense(int $accountId, string $secret, int $expenseId) : void
+    {
+        $response = $this->guzzle->request(
+            'DELETE',
+            "{$this->domain}/expenses/{$expenseId}",
+            ['headers' => ['account' => $accountId, 'token' => $secret]]
+        );
+        assert($response->getStatusCode() == 200);
+    }
 }

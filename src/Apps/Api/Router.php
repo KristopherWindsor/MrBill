@@ -22,9 +22,9 @@ class Router
                 function () use ($slim) {
                     $slim->post('', ExpenseCreate::class);
                     $slim->get('/range', ExpenseRange::class);
-                    $slim->get('/month/{year}/{month}', ExpenseReadMonth::class);
-                    $slim->put('/{id}', ExpenseUpdate::class);
-                    $slim->delete('/{id}', ExpenseDelete::class);
+                    $slim->get('/month/{year:[0-9]+}/{month:[0-9]+}', ExpenseReadMonth::class);
+                    $slim->put('/{id:[0-9]+}', ExpenseUpdate::class);
+                    $slim->delete('/{id:[0-9]+}', ExpenseDelete::class);
                 }
             )
             ->add(ReportAuth::class);

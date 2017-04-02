@@ -56,6 +56,25 @@ class ExpenseRepository extends Repository
         $this->dataStore->mapPutItem($key, $id, $year . ($month < 10 ? '0' : '') . $month);
     }
 
+    public function deleteById(int $accountId, int $expenseId)
+    {
+        $key = $this->getIdToMonthMapKey($accountId);
+        $monthAndYear = $this->dataStore->mapGetItem($key, $expenseId);
+
+        if (!$monthAndYear)
+            throw new \Exception();
+        assert(strlen($monthAndYear) == 6);
+
+        $this->dataStore->mapRemoveItem($key, $expenseId);
+
+        $year = (int) substr($monthAndYear, 0, 4);
+        $month = (int) substr($monthAndYear, 4, 2);
+        $this->dataStore->mapRemoveItem(
+            $this->getDataStoreKey($accountId, $year, $month),
+            $expenseId
+        );
+    }
+
     /**
      * @param int $accountId
      * @param int $year

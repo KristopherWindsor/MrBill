@@ -4,12 +4,14 @@ namespace MrBillTest\Unit\Model\Repository;
 
 use MrBill\Model\Expense;
 use MrBill\Model\Repository\ExpenseRepository;
+use MrBill\Persistence\DataStore;
 use MrBill\Persistence\MockDataStore;
 use PHPUnit\Framework\TestCase;
 
 class ExpenseRepositoryTest extends TestCase
 {
-    const TEST_ID = 123;
+    const TEST_ACCOUNT_ID = 123;
+    const TEST_EXPENSE_ID = 456;
 
     /** @var int */
     private $time;
@@ -35,7 +37,7 @@ class ExpenseRepositoryTest extends TestCase
         $this->month = (int) date('n', $this->time);
 
         $this->expense1 = new Expense(
-            self::TEST_ID,
+            self::TEST_ACCOUNT_ID,
             $this->time,
             599,
             ['hash', 'tag'],
@@ -45,7 +47,7 @@ class ExpenseRepositoryTest extends TestCase
         );
 
         $this->expense2 = new Expense(
-            self::TEST_ID,
+            self::TEST_ACCOUNT_ID,
             $this->time,
             1370,
             ['a', 'b'],
@@ -83,15 +85,40 @@ class ExpenseRepositoryTest extends TestCase
         );
     }
 
+    public function testDeleteByIdNoItem()
+    {
+        $this->expectException(\Exception::class);
+        $this->expenseRepository->deleteById(self::TEST_ACCOUNT_ID, 1);
+    }
+
+    public function testDeleteByIdGoRight()
+    {
+        $mockDataStore = $this->getMockBuilder(MockDataStore::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['mapGetItem', 'mapRemoveItem'])
+            ->getMock();
+
+        $mockDataStore->expects($this->once())
+            ->method('mapGetItem')
+            ->with('expenses:123:map', '456')
+            ->willReturn('201702');
+        $mockDataStore->expects($this->exactly(2))
+            ->method('mapRemoveItem')
+            ->with($this->stringContains('expenses'), '456');
+
+        $expenseRepository = new ExpenseRepository($mockDataStore);
+        $expenseRepository->deleteById(self::TEST_ACCOUNT_ID, self::TEST_EXPENSE_ID);
+    }
+
     public function testAddForAccountAndMonth()
     {
         $id1 = $this->callAddForAccountAndMonth(
             $this->expenseRepository,
-            self::TEST_ID, $this->year, $this->month, $this->expense1
+            self::TEST_ACCOUNT_ID, $this->year, $this->month, $this->expense1
         );
         $id2 = $this->callAddForAccountAndMonth(
             $this->expenseRepository,
-            self::TEST_ID, $this->year, $this->month, $this->expense2
+            self::TEST_ACCOUNT_ID, $this->year, $this->month, $this->expense2
         );
 
         $this->assertEquals(1, $id1);
@@ -105,7 +132,7 @@ class ExpenseRepositoryTest extends TestCase
 
     public function testGetForAccountAndMonthNoResults()
     {
-        $fetched = $this->expenseRepository->getForAccountAndMonth(self::TEST_ID, $this->year, $this->month);
+        $fetched = $this->expenseRepository->getForAccountAndMonth(self::TEST_ACCOUNT_ID, $this->year, $this->month);
         $this->assertCount(0, $fetched);
     }
 
@@ -113,7 +140,7 @@ class ExpenseRepositoryTest extends TestCase
     {
         $this->testPersistMultipleTimes();
 
-        $fetched = $this->expenseRepository->getForAccountAndMonth(self::TEST_ID, $this->year, $this->month);
+        $fetched = $this->expenseRepository->getForAccountAndMonth(self::TEST_ACCOUNT_ID, $this->year, $this->month);
 
         $this->assertCount(2, $fetched);
         $this->assertEquals($this->expense1, $fetched[1]);

@@ -72,6 +72,19 @@ class ExpenseSetTest extends TestCase
         $this->assertEquals(1, $id);
     }
 
+    public function testDeleteExpense()
+    {
+        $mockRepository = $this->getMockBuilder(ExpenseRepository::class)
+            ->setMethods(['deleteById'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $mockRepository->expects($this->once())->method('deleteById')->with(3, 5);
+
+        $expenseSet = new ExpenseSet(3, $mockRepository);
+        $expenseSet->deleteExpense(5);
+    }
+
     public function testGetAllMonthsWithExpensesNoData()
     {
         $this->assertEquals([], $this->expenseSet->getAllMonthsWithExpenses());

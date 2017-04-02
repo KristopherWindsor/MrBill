@@ -30,6 +30,11 @@ class ExpenseSet
         return $this->expenseRepository->persist($expense);
     }
 
+    public function deleteExpense(int $expenseId) : void
+    {
+        $this->expenseRepository->deleteById($this->accountId, $expenseId);
+    }
+
     public function getBoundaryOfMonthsWithExpenses() : array
     {
         return $this->expenseRepository->getRangeOfMonthsWithData($this->accountId);
