@@ -33,8 +33,7 @@ class Expense extends Hashable implements Serializable
         array $hashTags,
         string $description,
         string $sourceType,
-        array $sourceInfo,
-        string $entropy
+        array $sourceInfo
     ) {
         $this->accountId = $accountId;
         $this->timestamp = $timestamp;
@@ -43,10 +42,9 @@ class Expense extends Hashable implements Serializable
         $this->description = $description;
         $this->sourceType = $sourceType;
         $this->sourceInfo = $sourceInfo;
-        $this->entropy = $entropy;
     }
 
-    public static function createFromMessageWithEntropy(
+    public static function createFromMessage(
         int $accountId,
         int $timestamp,
         int $amountInCents,
@@ -54,7 +52,6 @@ class Expense extends Hashable implements Serializable
         string $description,
         array $sourceInfo
     ) : Expense {
-        $entropy = random_int(1 << 16, 1 << 32);
 
         return new Expense(
             $accountId,
@@ -63,8 +60,7 @@ class Expense extends Hashable implements Serializable
             $hashTags,
             $description,
             self::STATUS_FROM_MESSAGE,
-            $sourceInfo,
-            $entropy
+            $sourceInfo
         );
     }
 
@@ -77,8 +73,7 @@ class Expense extends Hashable implements Serializable
             $map['hashTags'],
             $map['description'],
             $map['sourceType'],
-            $map['sourceInfo'],
-            $map['entropy']
+            $map['sourceInfo']
         );
     }
 
@@ -93,7 +88,6 @@ class Expense extends Hashable implements Serializable
                 'description'   => $this->description,
                 'sourceType'    => $this->sourceType,
                 'sourceInfo'    => $this->sourceInfo,
-                'entropy'       => $this->entropy,
             ];
     }
 }

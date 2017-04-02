@@ -40,7 +40,7 @@ class ExpenseSetTest extends TestCase
             };
 
         $date = new \DateTime('2017-04-10');
-        $this->expense1 = Expense::createFromMessageWithEntropy(
+        $this->expense1 = Expense::createFromMessage(
             self::TEST_ID,
             $date->getTimestamp(),
             100,
@@ -48,7 +48,7 @@ class ExpenseSetTest extends TestCase
             '',
             []
         );
-        $this->expense2 = Expense::createFromMessageWithEntropy(
+        $this->expense2 = Expense::createFromMessage(
             self::TEST_ID,
             $date->modify('+10 months')->getTimestamp(),
             100,
@@ -56,7 +56,7 @@ class ExpenseSetTest extends TestCase
             '',
             []
         );
-        $this->expense3 = Expense::createFromMessageWithEntropy(
+        $this->expense3 = Expense::createFromMessage(
             self::TEST_ID,
             $date->modify('+12 months')->getTimestamp(),
             100,

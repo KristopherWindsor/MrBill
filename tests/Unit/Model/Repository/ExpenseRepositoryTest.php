@@ -41,8 +41,7 @@ class ExpenseRepositoryTest extends TestCase
             ['hash', 'tag'],
             'description',
             Expense::STATUS_FROM_MESSAGE,
-            ['inf'],
-            7
+            ['inf']
         );
 
         $this->expense2 = new Expense(
@@ -52,8 +51,7 @@ class ExpenseRepositoryTest extends TestCase
             ['a', 'b'],
             'description2',
             Expense::STATUS_FROM_MESSAGE,
-            ['inf'],
-            9
+            ['inf']
         );
 
         $this->mockDataStore = new MockDataStore();
@@ -130,7 +128,7 @@ class ExpenseRepositoryTest extends TestCase
                     1 =>
                         '{"accountId":123,"timestamp":1488012941,"amountInCents":599,"hashTags":["hash","tag"],' .
                         '"description":"description","sourceType":"_m","sourceInfo":' .
-                        '["inf"],"entropy":"7"}',
+                        '["inf"]}',
                 ],
                 'expenses:123:meta' => [
                     'id' => 1,
@@ -153,11 +151,11 @@ class ExpenseRepositoryTest extends TestCase
                     1 =>
                         '{"accountId":123,"timestamp":1488012941,"amountInCents":599,"hashTags":["hash","tag"],' .
                         '"description":"description","sourceType":"_m","sourceInfo":' .
-                        '["inf"],"entropy":"7"}',
+                        '["inf"]}',
                     2 =>
                         '{"accountId":123,"timestamp":1488012941,"amountInCents":1370,"hashTags":["a","b"],' .
                         '"description":"description2","sourceType":"_m","sourceInfo":' .
-                        '["inf"],"entropy":"9"}',
+                        '["inf"]}',
                 ],
                 'expenses:123:meta' => [
                     'id' => 2,

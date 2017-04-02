@@ -26,8 +26,7 @@ class ExpenseTest extends TestCase
             ['hash', 'tag'],
             'description',
             Expense::STATUS_FROM_MESSAGE,
-            ['inf' => 'ok'],
-            7
+            ['inf' => 'ok']
         );
     }
 
@@ -40,20 +39,11 @@ class ExpenseTest extends TestCase
         $this->assertEquals('description', $this->expense->description);
         $this->assertEquals(Expense::STATUS_FROM_MESSAGE, $this->expense->sourceType);
         $this->assertEquals(['inf' => 'ok'], $this->expense->sourceInfo);
-        $this->assertEquals(7, $this->expense->entropy);
     }
 
-    public function testCreateFromMessageWithEntropy()
+    public function testCreateFromMessage()
     {
-        $this->expense = Expense::createFromMessageWithEntropy(
-            self::TEST_ID,
-            $this->time,
-            599,
-            ['h'],
-            'des',
-            ['inf']
-        );
-        $expense2 = Expense::createFromMessageWithEntropy(
+        $this->expense = Expense::createFromMessage(
             self::TEST_ID,
             $this->time,
             599,
@@ -69,8 +59,6 @@ class ExpenseTest extends TestCase
         $this->assertEquals('des', $this->expense->description);
         $this->assertEquals(Expense::STATUS_FROM_MESSAGE, $this->expense->sourceType);
         $this->assertEquals(['inf'], $this->expense->sourceInfo);
-
-        $this->assertNotEquals($this->expense, $expense2);
     }
 
     public function testToMap()
@@ -78,7 +66,7 @@ class ExpenseTest extends TestCase
         $this->assertEquals(
             '{"accountId":' . self::TEST_ID . ',"timestamp":' . $this->time .
                 ',"amountInCents":599,"hashTags":["hash","tag"],"description":"description","sourceType":"_m",' .
-                '"sourceInfo":{"inf":"ok"},"entropy":"7"}',
+                '"sourceInfo":{"inf":"ok"}}',
             json_encode($this->expense->toMap())
         );
     }
@@ -94,6 +82,5 @@ class ExpenseTest extends TestCase
         $this->assertEquals($this->expense->description, $loadedExpense->description);
         $this->assertEquals($this->expense->sourceType, $loadedExpense->sourceType);
         $this->assertEquals($this->expense->sourceInfo, $loadedExpense->sourceInfo);
-        $this->assertEquals($this->expense->entropy, $loadedExpense->entropy);
     }
 }

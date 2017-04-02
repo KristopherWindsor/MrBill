@@ -63,8 +63,7 @@ class ExpenseCreate
                     'fromAPI' => [
                         'time' => time(),
                     ]
-                ],
-                '' // TODO Entropy will be removed...
+                ]
             )
         );
     }
