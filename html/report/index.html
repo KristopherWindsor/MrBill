@@ -25,7 +25,7 @@
             $("#dateRange").html(months[response.firstMonth] + " " + response.firstYear + " &mdash; " +
                 months[response.lastMonth] + " " + response.lastYear);
             $.ajax(
-                '/expenses/month/2017/3',
+                '/expenses/month/' + response.lastYear + '/' + response.lastMonth,
                 {
                     headers: {account : accountId, token: secret},
                     success: renderExpensesTable
