@@ -91,12 +91,11 @@ function tester($target)
             assert($expenseItems[$index]->$key === $value, "$index/$key " . json_encode($value));
         }
 
-    for ($id = 1; $id <= 4; $id++)
-        $caller->deleteExpense($accountId, $tokenSecret, $id);
+    $caller->deleteExpense($accountId, $tokenSecret, 1);
     $expenseData = $caller->getExpensesData($accountId, $currentYear, $currentMonth, $tokenSecret);
     fwrite(STDERR, $expenseData . "\n\n");
     $expenseItems = json_decode($expenseData);
-    assert(count($expenseItems) == 0);
+    assert(count($expenseItems) == 3);
 }
 
 try {

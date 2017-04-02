@@ -96,7 +96,7 @@ class HTTPCaller
         assert($response->getStatusCode() == 200);
 
         $body = (string) $response->getBody();
-        assert(strpos($body, 'This report is in beta') > 0);
+        assert(strpos($body, '<h1>Your Expenses</h1>') > 0);
 
         return $body;
     }

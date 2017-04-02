@@ -3,78 +3,236 @@
 <head>
     <title>Your Expenses &mdash; Mr. Bill</title>
 
-    <!-- Might be switching to React soon?? -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 
     <script>
-        var accountId, secret;
+
+        class BaseTab {
+            constructor(accountId, secret, element) {
+                this.accountId = accountId;
+                this.secret = secret;
+                this.element = element;
+            }
+
+            activate() {
+                this.data = {};
+                this.renderNotReady();
+            }
+
+            deactivate() {
+                this.element.html('');
+            }
+
+            renderNotReady() {
+                this.element.html('Loading...');
+            }
+
+            renderError() {
+                this.element.html('Error, please try again.');
+            }
+        }
+
+        class Reports extends BaseTab {
+            activate() {
+                super.activate();
+                this.render();
+            }
+
+            render() {
+                this.element.html('Not implemented');
+            }
+        }
+
+        class Expenses extends BaseTab {
+            activate() {
+                super.activate();
+
+                let self = this;
+                $.ajax(
+                    '/expenses/range',
+                    {
+                        headers: {account : this.accountId, token: this.secret},
+                        fail: function() {self.renderError();},
+                        success: function(response) {self.fetchData1(response);}
+                    }
+                );
+            }
+
+            fetchData1(response) {
+                this.data.range = response;
+                this.data.current = {year: response.lastYear, month: response.lastMonth};
+
+                let self = this;
+                $.ajax(
+                    '/expenses/month/' + response.lastYear + '/' + response.lastMonth,
+                    {
+                        headers: {account : this.accountId, token: this.secret},
+                        fail: function() {self.renderError();},
+                        success: function(response) {self.fetchData2(response);}
+                    }
+                );
+            }
+
+            fetchData2(response) {
+                this.data.expenses = response;
+                this.render();
+            }
+
+            deleteExpense(id) {
+                let self = this;
+
+                this.data.expenses = this.data.expenses.filter(function (item){return item.id !== id});
+
+                $.ajax(
+                    '/expenses/' + id,
+                    {
+                        type: "DELETE",
+                        headers: {account : this.accountId, token: this.secret},
+                        fail: function() {self.renderError();}
+                    }
+                );
+            }
+
+            render() {
+                this.element.html('');
+
+                let table = $('<table/>');
+
+                let thead = $('<thead/>');
+                $('<tr><th>When?</th><th>$ Amount</th><th>Hashtags</th><th>Description</th><th></th></tr>').appendTo(thead);
+
+                let tbody = $('<tbody/>');
+                for (let expense of this.data.expenses) {
+                    let row = $('<tr data-expense-id="' + expense.id + '" />');
+                    $("<td/>", {text : Expenses.timeConverter(expense.timestamp)}).appendTo(row);
+                    $("<td/>", {text : expense.amountInCents / 100}).appendTo(row);
+                    $("<td/>", {text : "#" + expense.hashTags.join("#")}).appendTo(row);
+                    $("<td/>", {text : expense.description}).appendTo(row);
+                    $('<td><a href="#">Delete</a></td>').appendTo(row);
+
+                    row.appendTo(tbody);
+                }
+
+                table.append(thead);
+                table.append(tbody);
+                this.element.append(table);
+
+                let self = this;
+                table.find("a").on("click", function (elem) {
+                    let expenseId = $(elem.currentTarget).parent().parent().data('expenseId');
+                    $(elem.currentTarget).parent().parent().remove();
+                    self.deleteExpense(expenseId);
+                    self.renderTotal();
+                });
+
+                this.element.append($("<p/>"));
+                this.renderTotal();
+            }
+
+            renderTotal() {
+                let total = 0;
+                for (let expense of this.data.expenses) {
+                    total += expense.amountInCents;
+                }
+
+                this.element.find("p").text("Total: $" + (total / 100));
+            }
+
+            static timeConverter(timestamp) {
+                let a = new Date(timestamp * 1000);
+                let months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                let month = months[a.getMonth()];
+                let date = a.getDate();
+                let hour = a.getHours();
+                let min = a.getMinutes();
+                let ampm = 'am';
+                if (hour > 12) {
+                    hour -= 12;
+                    ampm = 'pm';
+                }
+                return month + ' ' + date + ' ' + hour + ':' + min + ampm;
+            }
+        }
+
+        class Categories extends BaseTab {
+            activate() {
+                super.activate();
+                this.render();
+            }
+
+            render() {
+                this.element.html('Not implemented');
+            }
+        }
 
         function getParameterByName(name) {
             url = window.location.href;
             name = name.replace(/[\[\]]/g, "\\$&");
-            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+            let regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
                 results = regex.exec(url);
             if (!results) return null;
             if (!results[2]) return '';
             return decodeURIComponent(results[2].replace(/\+/g, " "));
         }
 
-        function handleExpensesRange(response) {
-            var months = ['', 'January', 'February', "March", "April", "May", "June",
-                "July", "August", "September", "October", "November", "December"];
-            $("#dateRange").html(months[response.firstMonth] + " " + response.firstYear + " &mdash; " +
-                months[response.lastMonth] + " " + response.lastYear);
-            $.ajax(
-                '/expenses/month/' + response.lastYear + '/' + response.lastMonth,
-                {
-                    headers: {account : accountId, token: secret},
-                    success: renderExpensesTable
-                }
-            );
-        }
+        var tabs = [];
 
-        function renderExpensesTable(response) {
-            var exp = $('<tbody/>');
-            for (var i in response) {
-                var row = $('<tr/>');
-                $("<td/>", {text : "#" + response[i].hashTags.join("#")}).appendTo(row);
-                $("<td/>", {text : response[i].amountInCents / 100}).appendTo(row);
-                row.appendTo(exp);
-            }
-            exp.appendTo($("#expenses"));
-        }
-
-        $(function () {
+        function init() {
             accountId = getParameterByName('a');
             secret = getParameterByName('s');
 
-            if (accountId && secret)
-                $.ajax(
-                    '/expenses/range',
-                    {
-                        headers: {account : accountId, token: secret},
-                        fail: function() {alert('No good');},
-                        success: handleExpensesRange
-                    }
-                );
-            else alert('No auth');
-        });
+            // TODO tabs.push(new Reports(accountId, secret, $("#reports")));
+            tabs.push(new Expenses(accountId, secret, $("#expenses")));
+            tabs.push(new Categories(accountId, secret, $("#categories")));
+
+            activateTab(0);
+        }
+
+        var activeTabIndex = -1;
+        function activateTab(tabIndex) {
+            if (activeTabIndex === tabIndex)
+                return;
+            if (activeTabIndex >= 0)
+                tabs[activeTabIndex].deactivate();
+            tabs[tabIndex].activate();
+            activeTabIndex = tabIndex;
+        }
+
+        $(init);
     </script>
+
+    <style>
+        body {font-family: sans-serif; color: #232625; background-color: #96ceb4;}
+
+        #tabs {list-style-type: none; margin: 0; padding: 0; float: right;}
+        #tabs li {display: inline-block; padding: .4em;}
+        #tabs li a {text-decoration: none; color: #222;}
+        #tabs li:hover {text-decoration: underline;}
+
+        #content {margin-top: 1em;}
+
+        #expenses table {width: 100%; border-collapse: collapse;}
+        #expenses thead tr {border-bottom: 1px solid #232625;}
+        #expenses tbody tr:first-child td {padding-top: 1em;}
+        #expenses th {text-align: left; padding: .3em .7em;}
+        #expenses td {padding: .3em .7em;}
+        #expenses td a {color: #232625; font-size: smaller;}
+        #expenses p {margin-top: 2em;}
+    </style>
 </head>
 <body>
+    <ul id="tabs">
+        <!-- <li><a href="#" onclick="activateTab(0); return false">Reports</a></li> -->
+        <li><a href="#" onclick="activateTab(0); return false">Expenses</a></li>
+        <li><a href="#" onclick="activateTab(1); return false">Categories</a></li>
+    </ul>
+
     <h1>Your Expenses</h1>
 
-    <h2 id="dateRange"></h2>
-
-    <p>This report is in beta.</p>
-
-    <table id="expenses">
-        <thead>
-            <tr>
-                <th>Category</th>
-                <th>Amount</th>
-            </tr>
-        </thead>
-    </table>
+    <div id="content">
+        <div id="reports"></div>
+        <div id="expenses"></div>
+        <div id="categories"></div>
+    </div>
 </body>
 </html>
