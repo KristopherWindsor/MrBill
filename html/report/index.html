@@ -52,7 +52,7 @@
                     '/expenses/range',
                     {
                         headers: {account : this.accountId, token: this.secret},
-                        fail: function() {self.renderError();},
+                        error: function() {self.renderError();},
                         success: function(response) {self.fetchData1(response);}
                     }
                 );
@@ -67,7 +67,7 @@
                     '/expenses/month/' + response.lastYear + '/' + response.lastMonth,
                     {
                         headers: {account : this.accountId, token: this.secret},
-                        fail: function() {self.renderError();},
+                        error: function() {self.renderError();},
                         success: function(response) {self.fetchData2(response);}
                     }
                 );
@@ -88,7 +88,10 @@
                     {
                         type: "DELETE",
                         headers: {account : this.accountId, token: this.secret},
-                        fail: function() {self.renderError();}
+                        error: function(jqXHR) {
+                            if (jqXHR.status !== 404)
+                                self.renderError();
+                        }
                     }
                 );
             }
