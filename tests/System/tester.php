@@ -72,7 +72,7 @@ function tester($target)
     assert($expenseRangeData->lastYear == $currentYear);
     assert($expenseRangeData->lastMonth == $currentMonth);
 
-    $newExpenseId = $caller->addExpense($accountId, $tokenSecret, time(), 99, ['newExpense'], 'some description');
+    $newExpenseId = $caller->addExpense($accountId, $tokenSecret, time(), 99, ['newExpense'], 'some description', '2month');
     fwrite(STDERR, 'Added expense ID: ' . $newExpenseId . "\n\n");
     assert($newExpenseId == 4);
 

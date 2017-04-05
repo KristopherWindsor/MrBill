@@ -99,15 +99,47 @@
                 let table = $('<table/>');
 
                 let thead = $('<thead/>');
-                $('<tr><th>When?</th><th>$ Amount</th><th>Hashtags</th><th>Description</th><th></th></tr>').appendTo(thead);
+                $('<tr><th>When?</th><th>$ Amount</th><th>Hashtags</th><th>Description</th><th>Depreciation</th><th></th></tr>').appendTo(thead);
+
+                let depreciationOptions = {
+                    "" : "None",
+                    "1week" : "1 week",
+                    "2week" : "2 weeks",
+                    "30day" : "30 days",
+                    "1month" : "1 month",
+                    "2month" : "2 months",
+                    "3month" : "3 months",
+                    "4month" : "4 months",
+                    "6month" : "6 months",
+                    "12month" : "12 months",
+                    "24month" : "24 months",
+                    "1year" : "1 year",
+                    "2year" : "2 years"
+                };
 
                 let tbody = $('<tbody/>');
                 for (let expense of this.data.expenses) {
                     let row = $('<tr data-expense-id="' + expense.id + '" />');
+
+                    let depreciation = $("<select/>");
+                    for (let depreciationOption in depreciationOptions) {
+                        $(
+                            "<option/>",
+                            {
+                                text: depreciationOptions[depreciationOption],
+                                value: depreciationOption,
+                                selected : (expense.depreciation === depreciationOption)
+                            }
+                        ).appendTo(depreciation);
+                    }
+
                     $("<td/>", {text : Expenses.timeConverter(expense.timestamp)}).appendTo(row);
                     $("<td/>", {text : expense.amountInCents / 100}).appendTo(row);
                     $("<td/>", {text : "#" + expense.hashTags.join("#")}).appendTo(row);
                     $("<td/>", {text : expense.description}).appendTo(row);
+                    let td = $("<td/>");
+                    td.append(depreciation);
+                    td.appendTo(row);
                     $('<td><a href="#">Delete</a></td>').appendTo(row);
 
                     row.appendTo(tbody);

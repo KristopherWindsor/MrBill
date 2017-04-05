@@ -131,7 +131,8 @@ class HTTPCaller
         int $timestamp,
         int $amountInCents,
         array $hashTags,
-        string $description
+        string $description,
+        ?string $depreciation
     ) : int {
         $request = new Request(
             'POST',
@@ -146,6 +147,7 @@ class HTTPCaller
                 'amountInCents' => $amountInCents,
                 'hashTags'      => $hashTags,
                 'description'   => $description,
+                'depreciation'  => $depreciation,
             ])
         );
 
