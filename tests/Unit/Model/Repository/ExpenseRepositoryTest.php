@@ -4,7 +4,6 @@ namespace MrBillTest\Unit\Model\Repository;
 
 use MrBill\Model\Expense;
 use MrBill\Model\Repository\ExpenseRepository;
-use MrBill\Persistence\DataStore;
 use MrBill\Persistence\MockDataStore;
 use PHPUnit\Framework\TestCase;
 
@@ -42,6 +41,7 @@ class ExpenseRepositoryTest extends TestCase
             599,
             ['hash', 'tag'],
             'description',
+            null,
             Expense::STATUS_FROM_MESSAGE,
             ['inf']
         );
@@ -52,6 +52,7 @@ class ExpenseRepositoryTest extends TestCase
             1370,
             ['a', 'b'],
             'description2',
+            null,
             Expense::STATUS_FROM_MESSAGE,
             ['inf']
         );
@@ -154,7 +155,7 @@ class ExpenseRepositoryTest extends TestCase
                 'expenses:123:2017:02' => [
                     1 =>
                         '{"accountId":123,"timestamp":1488012941,"amountInCents":599,"hashTags":["hash","tag"],' .
-                        '"description":"description","sourceType":"_m","sourceInfo":' .
+                        '"description":"description","depreciation":null,"sourceType":"_m","sourceInfo":' .
                         '["inf"]}',
                 ],
                 'expenses:123:meta' => [
@@ -177,11 +178,11 @@ class ExpenseRepositoryTest extends TestCase
                 'expenses:123:2017:02' => [
                     1 =>
                         '{"accountId":123,"timestamp":1488012941,"amountInCents":599,"hashTags":["hash","tag"],' .
-                        '"description":"description","sourceType":"_m","sourceInfo":' .
+                        '"description":"description","depreciation":null,"sourceType":"_m","sourceInfo":' .
                         '["inf"]}',
                     2 =>
                         '{"accountId":123,"timestamp":1488012941,"amountInCents":1370,"hashTags":["a","b"],' .
-                        '"description":"description2","sourceType":"_m","sourceInfo":' .
+                        '"description":"description2","depreciation":null,"sourceType":"_m","sourceInfo":' .
                         '["inf"]}',
                 ],
                 'expenses:123:meta' => [

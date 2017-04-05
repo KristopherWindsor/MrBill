@@ -43,6 +43,7 @@ class ExpenseReadMonth
                 'amountInCents' => $expense->amountInCents,
                 'hashTags'      => $expense->hashTags,
                 'description'   => $expense->description,
+                'depreciation'  => $expense->depreciation,
             ];
         }
 

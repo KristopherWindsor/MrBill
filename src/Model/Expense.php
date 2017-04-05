@@ -9,6 +9,19 @@ class Expense extends Hashable implements Serializable
     const STATUS_FROM_ALERT_UNKNOWN_HASHTAGS = '_u';
     const STATUS_RESOLVED                    = '_r';
 
+    const DEPRECIATE_1_WEEK   = '1w';
+    const DEPRECIATE_2_WEEK   = '2w';
+    const DEPRECIATE_30_DAYS  = '30d';
+    const DEPRECIATE_1_MONTH  = '1m';
+    const DEPRECIATE_2_MONTH  = '2m';
+    const DEPRECIATE_3_MONTH  = '3m';
+    const DEPRECIATE_4_MONTH  = '4m';
+    const DEPRECIATE_6_MONTH  = '6m';
+    const DEPRECIATE_12_MONTH = '12m';
+    const DEPRECIATE_24_MONTH = '24m';
+    const DEPRECIATE_1_YEAR   = '1y';
+    const DEPRECIATE_2_YEAR   = '2y';
+
     /** @var int */
     public $accountId;
     /** @var int */
@@ -19,6 +32,8 @@ class Expense extends Hashable implements Serializable
     public $hashTags;
     /** @var string */
     public $description;
+    /** @var string|null */
+    public $depreciation;
     /** @var string */
     public $sourceType;
     /** @var array */
@@ -32,6 +47,7 @@ class Expense extends Hashable implements Serializable
         int $amountInCents,
         array $hashTags,
         string $description,
+        ?string $depreciation,
         string $sourceType,
         array $sourceInfo
     ) {
@@ -40,6 +56,7 @@ class Expense extends Hashable implements Serializable
         $this->amountInCents = $amountInCents;
         $this->hashTags = $hashTags;
         $this->description = $description;
+        $this->depreciation = $depreciation;
         $this->sourceType = $sourceType;
         $this->sourceInfo = $sourceInfo;
     }
@@ -59,6 +76,7 @@ class Expense extends Hashable implements Serializable
             $amountInCents,
             $hashTags,
             $description,
+            null,
             self::STATUS_FROM_MESSAGE,
             $sourceInfo
         );
@@ -72,6 +90,7 @@ class Expense extends Hashable implements Serializable
             $map['amountInCents'],
             $map['hashTags'],
             $map['description'],
+            $map['depreciation'] ?? null,
             $map['sourceType'],
             $map['sourceInfo']
         );
@@ -86,6 +105,7 @@ class Expense extends Hashable implements Serializable
                 'amountInCents' => $this->amountInCents,
                 'hashTags'      => $this->hashTags,
                 'description'   => $this->description,
+                'depreciation'  => $this->depreciation,
                 'sourceType'    => $this->sourceType,
                 'sourceInfo'    => $this->sourceInfo,
             ];

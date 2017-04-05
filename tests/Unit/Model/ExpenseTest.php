@@ -25,6 +25,7 @@ class ExpenseTest extends TestCase
             599,
             ['hash', 'tag'],
             'description',
+            '1m',
             Expense::STATUS_FROM_MESSAGE,
             ['inf' => 'ok']
         );
@@ -37,6 +38,7 @@ class ExpenseTest extends TestCase
         $this->assertEquals(599, $this->expense->amountInCents);
         $this->assertEquals(['hash', 'tag'], $this->expense->hashTags);
         $this->assertEquals('description', $this->expense->description);
+        $this->assertEquals('1m', $this->expense->depreciation);
         $this->assertEquals(Expense::STATUS_FROM_MESSAGE, $this->expense->sourceType);
         $this->assertEquals(['inf' => 'ok'], $this->expense->sourceInfo);
     }
@@ -65,8 +67,8 @@ class ExpenseTest extends TestCase
     {
         $this->assertEquals(
             '{"accountId":' . self::TEST_ID . ',"timestamp":' . $this->time .
-                ',"amountInCents":599,"hashTags":["hash","tag"],"description":"description","sourceType":"_m",' .
-                '"sourceInfo":{"inf":"ok"}}',
+                ',"amountInCents":599,"hashTags":["hash","tag"],"description":"description","depreciation":"1m",' .
+                '"sourceType":"_m","sourceInfo":{"inf":"ok"}}',
             json_encode($this->expense->toMap())
         );
     }
@@ -80,6 +82,7 @@ class ExpenseTest extends TestCase
         $this->assertEquals($this->expense->amountInCents, $loadedExpense->amountInCents);
         $this->assertEquals($this->expense->hashTags, $loadedExpense->hashTags);
         $this->assertEquals($this->expense->description, $loadedExpense->description);
+        $this->assertEquals($this->expense->depreciation, $loadedExpense->depreciation);
         $this->assertEquals($this->expense->sourceType, $loadedExpense->sourceType);
         $this->assertEquals($this->expense->sourceInfo, $loadedExpense->sourceInfo);
     }
