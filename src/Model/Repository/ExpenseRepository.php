@@ -9,26 +9,31 @@ class ExpenseRepository extends Repository
 {
     public function persist(Expense $expense) : int
     {
-        $phone = $expense->accountId;
-        $year = (int) date('Y', $expense->timestamp);
-        $month = (int) date('n', $expense->timestamp);
-
-        return $this->addForAccountAndMonth($phone, $year, $month, $expense);
+        $expenseId = $this->incrementAndGetId($expense->accountId);
+        $this->persistExpenseForId($expenseId, $expense);
+        return $expenseId;
     }
 
-    protected function addForAccountAndMonth(int $accountId, int $year, int $month, Expense $expense) : int
+    protected function incrementAndGetId(int $accountId) : int
     {
+        $key = $this->getMetaDataKey($accountId);
+        return $this->dataStore->mapIncrementItem($key, 'id');
+    }
+
+    protected function persistExpenseForId(int $expenseId, Expense $expense) : void
+    {
+        $accountId = $expense->accountId;
+        list($year, $month) = $this->getYearAndMonthForExpense($expense);
+
         $this->updateRangeOfMonthsData($accountId, $year, $month);
 
-        $id = $this->incrementAndGetId($accountId);
-        $this->setMonthForId($accountId, $id, $year, $month);
+        $this->setMonthForId($accountId, $expenseId, $year, $month);
 
         $this->dataStore->mapPutItem(
             $this->getDataStoreKey($accountId, $year, $month),
-            $id,
+            $expenseId,
             json_encode($expense->toMap())
         );
-        return $id;
     }
 
     protected function updateRangeOfMonthsData(int $accountId, int $year, int $month) : void
@@ -50,10 +55,75 @@ class ExpenseRepository extends Repository
         }
     }
 
+    public function getRangeOfMonthsWithData(int $accountId) : ?array
+    {
+        $key = $this->getMetaDataKey($accountId);
+        $meta = $this->dataStore->mapGetAll($key);
+
+        if (empty($meta['firstYear'])) {
+            return null;
+        }
+
+        return [
+            'firstYear'  => (int) $meta['firstYear'],
+            'firstMonth' => (int) $meta['firstMonth'],
+            'lastYear'   => (int) $meta['lastYear'],
+            'lastMonth'  => (int) $meta['lastMonth'],
+        ];
+    }
+
     protected function setMonthForId(int $accountId, int $id, int $year, int $month)
     {
         $key = $this->getIdToMonthMapKey($accountId);
         $this->dataStore->mapPutItem($key, $id, $year . ($month < 10 ? '0' : '') . $month);
+    }
+
+    public function updateIfExists(int $accountId, int $expenseId, Expense $expense) : bool
+    {
+        $existingExpense = $this->getById($accountId, $expenseId);
+        if (!$existingExpense)
+            return false;
+
+        $newYearAndMonth = $this->getYearAndMonthForExpense($expense);
+        $oldYearAndMonth = $this->getYearAndMonthForExpense($existingExpense);
+        if ($newYearAndMonth != $oldYearAndMonth) {
+            $this->deleteById($accountId, $expenseId);
+        }
+
+        $this->persistExpenseForId($expenseId, $expense);
+        return true;
+    }
+
+    protected function getById(int $accountId, int $expenseId) : ?Expense
+    {
+        list($year, $month) = $this->getMonthAndYearForId($accountId, $expenseId);
+
+        $key = $this->getDataStoreKey($accountId, $year, $month);
+        $data = $this->dataStore->mapGetItem($key, $expenseId);
+
+        if (!$data) return null;
+
+        return Expense::createFromMap(json_decode($data, true));
+    }
+
+    protected function getMonthAndYearForId(int $accountId, int $expenseId) : ?array
+    {
+        $key = $this->getIdToMonthMapKey($accountId);
+        $value = $this->dataStore->mapGetItem($key, $expenseId);
+
+        if (!$value) return null;
+
+        $year = (int) substr($value, 0, 4);
+        $month = (int) substr($value, 4, 2);
+        return [$year, $month];
+    }
+
+    protected function getYearAndMonthForExpense(Expense $expense)
+    {
+        $year = (int) date('Y', $expense->timestamp);
+        $month = (int) date('n', $expense->timestamp);
+
+        return [$year, $month];
     }
 
     public function deleteById(int $accountId, int $expenseId)
@@ -89,29 +159,6 @@ class ExpenseRepository extends Repository
             function ($item) {return Expense::createFromMap(json_decode($item, true));},
             $this->dataStore->mapGetAll($key)
         );
-    }
-
-    public function getRangeOfMonthsWithData(int $accountId) : ?array
-    {
-        $key = $this->getMetaDataKey($accountId);
-        $meta = $this->dataStore->mapGetAll($key);
-
-        if (empty($meta['firstYear'])) {
-            return null;
-        }
-
-        return [
-            'firstYear'  => (int) $meta['firstYear'],
-            'firstMonth' => (int) $meta['firstMonth'],
-            'lastYear'   => (int) $meta['lastYear'],
-            'lastMonth'  => (int) $meta['lastMonth'],
-        ];
-    }
-
-    protected function incrementAndGetId(int $accountId) : int
-    {
-        $key = $this->getMetaDataKey($accountId);
-        return $this->dataStore->mapIncrementItem($key, 'id');
     }
 
     protected function getMetaDataKey(int $accountId)
