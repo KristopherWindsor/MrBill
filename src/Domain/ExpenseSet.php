@@ -30,6 +30,11 @@ class ExpenseSet
         return $this->expenseRepository->persist($expense);
     }
 
+    public function updateIfExists(int $expenseId, Expense $expense) : bool
+    {
+        return $this->expenseRepository->updateIfExists($this->accountId, $expenseId, $expense);
+    }
+
     public function deleteExpense(int $expenseId) : void
     {
         $this->expenseRepository->deleteById($this->accountId, $expenseId);

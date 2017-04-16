@@ -157,6 +157,37 @@ class HTTPCaller
         return intval((string) $response->getBody());
     }
 
+    public function updateExpense(
+        int $accountId,
+        string $secret,
+        int $expenseId,
+        int $timestamp,
+        int $amountInCents,
+        array $hashTags,
+        string $description,
+        ?string $depreciation
+    ) : void {
+        $request = new Request(
+            'PUT',
+            $this->domain . '/expenses/' . $expenseId,
+            [
+                'Content-Type' => 'application/json',
+                'account'      => $accountId,
+                'token'        => $secret,
+            ],
+            json_encode([
+                'timestamp'     => $timestamp,
+                'amountInCents' => $amountInCents,
+                'hashTags'      => $hashTags,
+                'description'   => $description,
+                'depreciation'  => $depreciation,
+            ])
+        );
+
+        $response = $this->guzzle->send($request);
+        assert($response->getStatusCode() == 200);
+    }
+
     public function deleteExpense(int $accountId, string $secret, int $expenseId) : void
     {
         $response = $this->guzzle->request(

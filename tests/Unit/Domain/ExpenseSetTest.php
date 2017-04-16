@@ -72,6 +72,19 @@ class ExpenseSetTest extends TestCase
         $this->assertEquals(1, $id);
     }
 
+    public function testUpdateIfExists()
+    {
+        $mockRepository = $this->getMockBuilder(ExpenseRepository::class)
+            ->setMethods(['updateIfExists'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $mockRepository->expects($this->once())->method('updateIfExists')->with(3, 5, $this->expense1);
+
+        $expenseSet = new ExpenseSet(3, $mockRepository);
+        $expenseSet->updateIfExists(5, $this->expense1);
+    }
+
     public function testDeleteExpense()
     {
         $mockRepository = $this->getMockBuilder(ExpenseRepository::class)

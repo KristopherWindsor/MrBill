@@ -57,8 +57,8 @@ function tester($target)
             $accountId = (int) $accountId;
             assert((bool) $tokenSecret);
 
-            $report = $caller->getReport($accountId, $tokenSecret);
-            fwrite(STDERR, $report . "\n\n");
+            $caller->getReport($accountId, $tokenSecret);
+            fwrite(STDERR, "Got report HTML.\n\n");
         } else {
             assert(strpos($response, $textOut) > 0);
         }
@@ -76,15 +76,18 @@ function tester($target)
     fwrite(STDERR, 'Added expense ID: ' . $newExpenseId . "\n\n");
     assert($newExpenseId == 4);
 
+    $caller->updateExpense($accountId, $tokenSecret, 2, time(), 444, ['updatedExpense'], 'updated', null);
+    fwrite(STDERR, "Updated expense.\n\n");
+
     $expenseData = $caller->getExpensesData($accountId, $currentYear, $currentMonth, $tokenSecret);
     fwrite(STDERR, $expenseData . "\n\n");
     $expenseItems = json_decode($expenseData);
     assert(count($expenseItems) == 4);
     $expected = [
         ['id' => 1, 'accountId' => $accountId, 'amountInCents' => 777, 'hashTags' => ['hash']],
-        ['id' => 2, 'accountId' => $accountId, 'amountInCents' => 400, 'hashTags' => ['tag']],
+        ['id' => 2, 'accountId' => $accountId, 'amountInCents' => 444, 'hashTags' => ['updatedExpense']],
         ['id' => 3, 'accountId' => $accountId, 'amountInCents' => 500, 'hashTags' => ['hash']],
-        ['id' => 4, 'accountId' => $accountId, 'amountInCents' =>  99, 'hashTags' => ['newExpense']],
+        ['id' => 4, 'accountId' => $accountId, 'amountInCents' =>  99, 'hashTags' => ['newExpense'], 'depreciation' => '2month'],
     ];
     foreach ($expected as $index => $item)
         foreach ($item as $key => $value) {

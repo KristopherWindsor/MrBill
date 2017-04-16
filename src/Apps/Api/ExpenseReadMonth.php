@@ -34,7 +34,7 @@ class ExpenseReadMonth
         $resultData = [];
         $expenseSet = $this->domainFactory->getExpenseSet($accountId);
 
-        $depreciationOptions = array_flip(ExpenseCreate::DEPRECIATION_OPTIONS);
+        $depreciationOptions = array_flip(ExpenseValidator::DEPRECIATION_OPTIONS);
 
         /** @var Expense $expense */
         foreach ($expenseSet->getExpensesForMonth($year, $month) as $id => $expense) {
